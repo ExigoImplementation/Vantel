@@ -1,0 +1,258 @@
+﻿@model EventsMapViewModel
+@{
+    ViewBag.Title = Resources.Common.Map;
+}
+
+<section id="view-events-map" class="row">
+    <header class="col-12 col-md-12 col-lg-12 col-xl-12">
+        <h2>@ViewBag.Title</h2>
+    </header>
+    <aside class="col-12 col-md-4 col-lg-3 col-xl-3">
+        <nav>
+            @Html.Navigation()
+        </nav>
+        <section class="search">
+            <input type="text" class="form-control" placeholder="@Resources.Common.Search" data-holds="search" />
+            <button type="button" data-action="calendar-search"><i class="fa fa-search"></i></button>
+        </section>
+        <hr />
+        <section>
+            <header>
+                <h4>@Resources.Common.EventTypes</h4>
+            </header>
+            <ul class="legend">
+                @foreach (var eventType in Model.CalendarFilters.EventTypes)
+                {
+                    <li data-filter="eventID" data-filter-value="@eventType.CalendarEventTypeID">
+                        <i class="fa fa-square" style="color: @eventType.Color;"></i> @eventType.CalendarEventTypeDescription
+                    </li>
+                }
+            </ul>
+        </section>
+        <section>
+            <header>
+                <h4>@Resources.Common.Speakers</h4>
+            </header>
+            <ul class="legend">
+                @foreach (var speaker in Model.CalendarFilters.Speakers.OrderBy(speaker => speaker.Description))
+                {
+                    <li data-filter="speakerID" data-filter-value="@speaker.CalendarSpeakerID">
+                        <i class="fa fa-user"></i> @speaker.Description
+                    </li>
+                }
+            </ul>
+        </section>
+        <section>
+            <header>
+                <h4>@Resources.Common.Country</h4>
+            </header>
+            <ul class="legend">
+                @foreach (var country in Model.CalendarFilters.Countries.OrderBy(country => country.CountryName))
+                {
+                    <li data-filter="country" data-filter-value="@country.CountryCode">
+                        <i class="fa fa-flag"></i> @country.CountryName
+                    </li>
+                }
+            </ul>
+        </section>
+    </aside>
+    <section class="col-12 col-md-8 col-lg-9 col-xl-9">
+        <div id="map" data-widget="map" style="min-height: 500px"></div>
+    </section>
+</section>
+@section scripts{
+    <script>
+        require(["jquery", "gmaps"], function ($) {
+            // settings
+            var context = "#view-events-map",
+                $context = $(context),
+                mapFilters = [],
+                geocoder = new google.maps.Geocoder(),
+                map,
+                locations = [
+                    @foreach (var evnt in Model.Events)
+	                {
+                        var infoWindowContent =
+                            "<div id='content'>"
+                            + ((evnt.Title.IsNotNullOrEmpty())            ? "<h4>"                                             + evnt.Title + "</h4>"     : "")
+                            + ((evnt.Description.IsNotNullOrEmpty())      ? "</br>" + Resources.Common.Description      + ": " + evnt.Description         : "")
+                            + ((evnt.ConferenceNumber.IsNotNullOrEmpty()) ? "</br>" + Resources.Common.ConferenceNumber + ": " + evnt.ConferenceNumber    : "")
+                            + ((evnt.ConferencePIN.IsNotNullOrEmpty())    ? "</br>" + Resources.Common.ConferencePIN    + ": " + evnt.ConferencePIN       : "")
+                            + ((evnt.Cost.IsNotNullOrEmpty())             ? "</br>" + Resources.Common.Cost             + ": " + evnt.Cost                : "")
+                            + ((evnt.Start != default(DateTime))          ? "</br>" + Resources.Common.Start            + ": " + evnt.Start.ToString("g") : "")
+                            + ((evnt.End != default(DateTime))            ? "</br>" + Resources.Common.End              + ": " + evnt.End.ToString("g")   : "")
+                            + ((evnt.Flyer.IsNotNullOrEmpty())            ? "</br>" + Resources.Common.Flyer            + ": " + evnt.Flyer               : "")
+                            + ((evnt.Location.IsComplete)                 ? "</br>" + Resources.Common.Location         + ": " + evnt.Location.ToString() : "")
+                            + ((evnt.Phone.IsNotNullOrEmpty())            ? "</br>" + Resources.Common.Phone            + ": " + evnt.Phone               : "")
+                            + ((evnt.Url.IsNotNullOrEmpty())              ? "</br>" + Resources.Common.URL              + ": " + evnt.Url                 : "")
+                            + "</div>";
+                        if (evnt.Location.IsComplete)
+                        {
+		                    <text>{
+                        address: '@evnt.Location.ToString()', infowindow: new google.maps.InfoWindow({ content: "@Html.Raw(infoWindowContent)" }), marker: null
+                            , filters: { title:'@evnt.Title', eventID: '@evnt.CalendarEventTypeID', speakerID: '@evnt.SpeakerID', country: '@evnt.Location.Country' }
+                    },
+                        </text>
+                        }
+	                }
+                ];
+            // event listners
+            function registerEventListners() {
+                $("[data-action='calendar-search']").on("click", function () {
+                    var $this = $(this),
+                        filterOn = "title",
+                        filterValue = $(this).prev("input").val();
+
+                    if (filterValue == "") {
+                        helpers.clearSearch();
+                        return;
+                    } else {
+                        var newFilters = $.grep(mapFilters, function (idx) {
+                            if (idx.field == filterOn) {
+                                if (idx.operator != "contains") {
+                                    return true;
+                                }
+                            } else {
+                                return true;
+                            }
+                        });
+                        mapFilters = newFilters;
+                        mapFilters.push({ "field": filterOn, "operator": "contains", value: filterValue });
+                    }
+                    helpers.hideMarkers();
+                });
+                $("[data-filter]").on("click", function () {
+                    var $this = $(this),
+                        filterOn = $this.data("filter"),
+                        filterValue = $this.data("filter-value");
+
+                    if ($this.is("[disabled]")) {
+                        var newFilters = $.grep(mapFilters, function (idx) {
+                            if (idx.field == filterOn) {
+                                if (idx.value != filterValue) {
+                                    return true;
+                                }
+                            } else {
+                                return true;
+                            }
+                        });
+                        mapFilters = newFilters;
+                        $this.removeAttr("disabled");
+                    } else {
+                        var newFilters = $.grep(mapFilters, function (idx) {
+                            if (idx.field == filterOn) {
+                                if (idx.value != filterValue) {
+                                    return true;
+                                }
+                            } else {
+                                return true;
+                            }
+                        });
+                        mapFilters = newFilters;
+                        mapFilters.push({ "field": filterOn, operator:"neq",value: filterValue })
+                        $this.attr("disabled", true);
+                    }
+                    helpers.hideMarkers();
+                });
+            }
+
+            // actions
+            var actions = {
+
+
+            }
+
+            // helpers
+            var helpers = {
+                clearSearch: function () {
+                    var $this = $("[data-action='calendar-search'] .fa-times-circle"),
+                        filterOn = "title",
+                        newFilters = $.grep(mapFilters, function (idx) {
+                            if (idx.field == filterOn) {
+                                if (idx.operator != "contains") {
+                                    return true;
+                                }
+                            } else {
+                                return true;
+                            }
+                        });
+
+                    mapFilters = newFilters;
+                    $this.parent().prev("input").val("");
+                    helpers.hideMarkers()
+                },
+                initMap: function () {
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 5,
+                        center: { lat: -33.9, lng: 151.2 }
+                    });
+                    helpers.setMarkers();
+                },
+                setMarkers: function () {
+                    for (var i = 0; i < locations.length; i++) {
+                        var event = locations[i];
+                        helpers.geoCode(event);
+                    }
+                },
+                geoCode: function (event) {
+                    geocoder.geocode({ 'address': event.address }, function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            map.setCenter(results[0].geometry.location);
+                            event.marker = new google.maps.Marker({
+                                map: map,
+                                position: results[0].geometry.location
+                            });
+                            event.marker.addListener('click', function () {
+                                event.infowindow.open(map, event.marker)
+                            })
+                        } else {
+                            toastr.error("@Resources.Common.CouldntFindAddress" + status);
+                        }
+                    });
+                },
+                isHidden: function (location) {
+                    // if our any location filter value matches an existing filter, return false
+                    for (var i = 0; i < mapFilters.length; i++) {
+                        var mapFilter = mapFilters[i];
+                        switch (mapFilter.operator) {
+                            case "neq":
+                                if (location.filters[mapFilter.field] == mapFilter.value) { return true; }
+                                break;
+                            case "contains":
+                                if (location.filters[mapFilter.field].toUpperCase().indexOf(mapFilter.value.toUpperCase()) == -1) { return true; }
+                                break;
+                            default:
+                                // operator not supported
+                                continue;
+                        }
+                    }
+                    return false;
+                },
+                hideMarkers: function () {
+                    // show all markers
+                    helpers.setMapOnAll(locations,map);
+                    // get markers to hide
+                    var hideMapLocations = locations.filter(helpers.isHidden);
+                    // set map to null on all markers to hide
+                    helpers.setMapOnAll(hideMapLocations, null);
+                },
+                setMapOnAll: function (arr, newMap) {
+                    for (var i = 0; i < arr.length; i++) {
+                        if (arr[i].marker != null) {
+                            arr[i].marker.setMap(newMap);
+                        }
+                    }
+                }
+
+            }
+
+            // init
+            function init() {
+                registerEventListners();
+                helpers.initMap();
+            }
+            init();
+
+        });
+    </script>
+}

@@ -1,0 +1,7 @@
+﻿@model IEnumerable<Item>
+@foreach (var item in Model)
+{
+    <div class="col-md-4 item-row" data-itemcode="@item.ItemCode">
+        @Html.Partial("Partials/Items/Cards/SingleItem", item)        
+    </div>
+}

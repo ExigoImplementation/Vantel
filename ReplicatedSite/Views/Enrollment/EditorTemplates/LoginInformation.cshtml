@@ -1,0 +1,104 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid().ToString();
+}
+
+<div id="view-logininformation-@contextID">
+    <div class="row">
+        <div id="webalias-preview-container" class="ml-3">
+            <strong>@Resources.Common.YourWebsite:</strong>
+            <span>@GlobalSettings.Company.BaseReplicatedUrl/</span>
+            <span id="webalias-preview"></span>
+        </div>
+    </div>
+    <div class="space-10"></div>
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.LoginName, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.LoginName)
+            </div>
+        </div>
+        <div class="col-md-6">
+            <span><i class="fa-question-circle" data-toggle="popover" data-container="body" data-title="@Resources.Common.LoginNameRules" data-trigger="hover" data-placement="top" data-content="@Resources.Common.WebAliasRules.FormatWith(GlobalSettings.Company.BaseReplicatedUrl)" id="loginNameHelp"></i></span> @Resources.Common.NeedHelp? 
+        </div>
+    </div>
+    <div class="space-5"></div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.Password, new { @class = ""})
+                @Html.EditorFor(c => c.Customer.Password)
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="required" for="@Html.IdFor(c => c.Customer)_ConfirmPassword">@Resources.Common.ConfirmPassword</label>
+                <input class="form-control"
+                       data-val="true"
+                       data-val-equalto="@Resources.Common.PasswordsDontMatch"
+                       data-val-equalto-other="@Html.NameFor(c => c.Customer.Password)"
+                       data-val-required="@Common.Resources.Models.ConfirmPasswordRequired"
+                       id="@Html.IdFor(c => c.Customer)_ConfirmPassword"
+                       name="@(Html.NameFor(c => c.Customer)).ConfirmPassword"
+                       type="password"
+                       value="" />
+                <span class="field-validation-valid" data-valmsg-for="@(Html.NameFor(c => c.Customer)).ConfirmPassword" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+
+    require(["jquery", "bootstrap"], function ($) {
+
+        // Settings
+        var context          = "#view-logininformation-@contextID",
+            $context         = $(context),
+            $webaliasPreview = $("#webalias-preview"),
+            loginnameRegex   = "@GlobalSettings.RegularExpressions.LoginName.Replace("{3,}", "+")",
+            $webaliasTextBox = $("#@Html.IdFor(c => c.Customer.LoginName)");
+
+
+        // Event Handlers
+        function registerEventHandlers() {
+            $webaliasTextBox.on({
+                keyup: function () {
+                    actions.updateWebaliasPreview($(this).val());
+                },
+                blur: function (e) {
+                    setTimeout(function () {
+                        var hasError = $(".field-validation-error[data-valmsg-for='Customer.LoginName']").length > 0;
+
+                        if (hasError == false && $(e.target).val() !== '') {
+                            $(".field-validation-valid[data-valmsg-for='Customer.LoginName']").html($(e.target).val() + " is available!");
+                        }
+                    }, 2000);
+                }
+            });
+        }
+
+
+        // Actions
+        var actions = {
+            updateWebaliasPreview: function (webalias) {
+                $webaliasPreview.html(webalias);
+            }
+        };
+
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+
+            $("#loginNameHelp").popover();
+        }
+        init();
+
+    });
+    </script>
+}

@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = Resources.Common.JoinTheAutoOrder;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.YourAutoOrders , UrlPath = Url.Action("AutoOrderList", "AutoOrders") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-about-autoorder">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            @Html.Raw(Resources.Common.Replicated_AutoOrder_NoAutoOrderFound.FormatWith(Url.Action("ManageAutoOrder")))
+        </div>
+    </div>
+</div>
+

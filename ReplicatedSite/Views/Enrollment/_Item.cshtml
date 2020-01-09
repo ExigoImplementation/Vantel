@@ -1,0 +1,42 @@
+﻿@model Item
+
+<div class="item-container" data-itemcode="@Model.ItemCode" data-itemtype="@Model.Type">
+
+    <input type="hidden" name="ItemCode" value="@Model.ItemCode" />
+    <input type="hidden" name="GroupMasterItemCode" value="@Model.GroupMasterItemCode" />
+    <input type="hidden" name="Type" value="@Model.Type" />
+    <input type="hidden" name="ID" value="@Model.ID" />
+
+    <div class="row" style="align-items: center;">
+        <div class="col-3 cart-product-thumbnail">
+            <a href="@Url.Action("itemdetail", "shopping", new { itemcode = Model.ItemCode })" target="_blank">
+                <img src="@Model.SmallImageUrl" class="img-responsive mx-auto" />
+            </a>
+        </div>
+        <div class="col-3 cart-product-name">
+            <strong>@Html.Raw(Model.ItemDescription)</strong>
+            <div class="space-5"></div>
+            <strong>@Resources.Common.BV: </strong><span>@Model.BV.ToString("N0")</span>
+        </div>
+        <div class="col-3 cart-product-name">
+            <strong>@Resources.Common.Price: </strong><span>@Model.Price.ToString("C")</span>
+        </div>
+        <div class="col-3 cart-product-quantity">
+
+            <div class="quantity-container quantity clearfix">
+                <input type="button" value="-" data-id="@Model.ItemID" class="decrementquantity" data-role="decrementquantity">
+                @Html.TextBoxFor(c => Model.Quantity, new
+                {
+                    type = "number",
+                    @class = "quantity-box qty allow-zero",
+                    data_role = "cart.updateitemquantity",
+                    data_id = Model.ItemID,
+                    data_type = Model.Type.ToString(),
+                    Value = Convert.ToInt32(Model.Quantity).ToString("0"),
+
+                })
+                <input type="button" value="+" data-id="@Model.ItemID" class="incrementquantity" data-role="incrementquantity">
+            </div>
+        </div>
+    </div>
+</div>

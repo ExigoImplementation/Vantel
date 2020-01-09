@@ -1,0 +1,208 @@
+﻿@model ResourceCategoryListViewModel
+@{
+    ViewBag.Title = Resources.Common.ManageCategories;
+
+    var currentCulture = System.Globalization.CultureInfo.GetCultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name);
+    var catID = Guid.Empty;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Description = Resources.Common.ResourceLibrary, UrlPath = Url.Action("ResourceList", "Resources")},
+            new BreadcrumbItem{ Description = Resources.Common.ManageResources, UrlPath = Url.Action("ManageResources", "Resources")},
+            new BreadcrumbItem{ Description = ViewBag.Title}
+        }
+    };
+}
+
+<div id="view-resource-categories">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col text-right">
+                    <a add-category class="btn btn-primary" href="#" data-toggle="modal">@Resources.Common.CreateNewCategory</a>
+                    <a class="btn btn-primary" href="@Url.Action("manageresources", "resources")">@Resources.Common.ManageResources</a>
+                </div>
+            </div>
+            <div class="space-20"></div>
+
+            <div class="row">
+                <div class="col-xl-3 mb-4">
+                    <h5 class="card-title mb-2">@Resources.Common.ToolTips</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><small>@Resources.Common.ClickingOnThe <span class="fa fa-times-circle"></span> @Resources.Common.WillPerDelete </small></li>
+                        <li class="list-group-item"><small>@Resources.Common.IfYouDelete</small></li>
+                        <li class="list-group-item"><small>@Resources.Common.WhenCreatingEditing</small></li>
+                        <li class="list-group-item"><small>@Resources.Common.IfAResource</small></li>
+                        <li class="list-group-item"><small>@Resources.Common.DragAndDropResources </small></li>
+                    </ul>
+                </div>
+
+                <div class="col-xl-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>@Resources.Common.ResourceCategories</h5>
+                            <div class="table-responsive table-resource">
+                                <table class="table table-hover table-bordered">
+                                    <thead class="table-active">
+                                        <tr>
+                                            <th><i class="fa fa-arrows"></i></th>
+                                            <th>@Resources.Common.Description</th>
+                                            <th>@Resources.Common.Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-sort-group="@CustomSortGroups.ResourceCategories"
+                                           data-parent-ID="0"
+                                           data-save-url="@Url.Action("SaveResourceCategorySort", "CustomSort")">
+                                        @foreach (var category in Model.ResourceCategories.Where(c => c.ParentID == Guid.Empty))
+                                        {
+                                            <tr data-sort-node="@category.CategoryID">
+                                                <td><i class="fa fa-bars sortable-handle"></i></td>
+                                                <td>
+                                                    @category.CategoryDescription
+                                                    @if (category.HasChildren)
+                                                    {
+                                                        <a edit-subcategories data-id="@category.CategoryID" title="View Subcategories">(@Resources.Common.ViewSubcategories)</a>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <a edit-category data-id="@category.CategoryID" data-parent="@Guid.Empty" title="@Resources.Common.Edit"><i class="fa-pencil-square"></i></a>
+                                                    <a delete-category data-id="@category.CategoryID" title="@Resources.Common.Delete"><i class="fa-times-circle"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <button class="btn btn-success float-right" data-sort-target="0">@Resources.Common.SaveSortOrder</button>
+                        </div>
+                    </div>
+
+                    <div class="subcategories-container">
+                        <!-- loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="category-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" id="modal-target">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    require(["jquery", "ajax", "jquery-ui", "toastr", "customsort"], function ($, ajax, jqueryui, toastr, customsort) {
+
+        var context = $("#view-resource-categories");
+
+        $(function () {
+            context.on('click', '[add-category]', function () {
+                getModal();
+            });
+
+            context.on('click', '[edit-category]', function () {
+                var categoryID = $(this).data("id");
+                var parentID = $(this).data("parent");
+                editCategory(categoryID, parentID);
+            });
+
+            context.on('click', '[delete-category]', function () {
+                var categoryID = $(this).data("id");
+                deleteCategory(categoryID);
+            });
+
+            context.on('click', '[edit-subcategories]', function () {
+                var parentCategoryID = $(this).data("id");
+                showSubcategories(parentCategoryID);
+            });
+        });
+
+        function getModal() {
+            var categoryID = "@catID";
+            var parentID = "@Guid.Empty.ToString()";
+            ajax.json({
+                url: '@Url.Action("getmodal","resources")',
+                data: { categoryID: categoryID, parentCategoryID: parentID },
+                success: function (response) {
+                    if (!response.success) {
+                        console.log(response.message);
+                        return;
+                    }
+                    var $html = $("#modal-target");
+                    $html.html(response.html);
+                    $("#category-modal").modal();
+
+                },
+                error: function (response) {
+                    console.log(response.message, "Error");
+                }
+            });
+        }
+
+        function editCategory(categoryID, parentID) {
+
+            ajax.json({
+                url: '@Url.Action("getModal","resources")',
+                data: { categoryID: categoryID, parentCategoryID: parentID },
+                success: function (response) {
+                    if (!response.success) {
+                        console.log(response.message);
+                        return;
+                    }
+                    var $html = $("#modal-target");
+                    $html.html(response.html);
+                    $("#category-modal").modal();
+
+                },
+                error: function (response) {
+                    console.log(response.message, "Error");
+                }
+            });
+        }
+
+        function deleteCategory(categoryID, parentID) {
+            ajax.json({
+                url: '@Url.Action("deletecategory", "resources")',
+                data: {categoryID : categoryID},
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    }
+                },
+                error: function (response) {
+                    console.log(response.message, "Error");
+                }
+            });
+        }
+
+        function showSubcategories(parentCategoryID) {
+            ajax.json({
+                url: '@Url.Action("loadCategories","resources")',
+                data: {
+                    parentCategoryID: parentCategoryID
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var $subContainer = $('.subcategories-container');
+                        $subContainer.html(response.html);
+
+                        customsort.init($subContainer.find("[data-sort-group]"));
+                    }
+                    else {
+                        toastr.alert("@Resources.Common.ProblemLoadingSubcategories");
+                    }
+                }
+            });
+        }
+    });
+</script>

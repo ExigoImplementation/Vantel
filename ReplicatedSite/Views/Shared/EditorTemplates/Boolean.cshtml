@@ -1,0 +1,8 @@
+﻿@model Boolean
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes();
+}
+
+@Html.EditorFor(c => c, "Checkbox")

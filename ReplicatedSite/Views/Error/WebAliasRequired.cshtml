@@ -1,0 +1,11 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    ViewBag.Title = Resources.Common.WebAliasRequired;
+    Layout = "~/Views/Shared/_ErrorLayout.cshtml";
+}
+
+<div id="view-error">
+    <div class="content-wrap">
+        @Html.Raw(Resources.Common.Replicated_Error_WebAliasRequired)
+    </div>
+</div>

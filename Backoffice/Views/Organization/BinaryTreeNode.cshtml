@@ -1,0 +1,36 @@
+﻿@model BinaryNestedTreeNode
+
+@if (Model.IsNullPosition)
+{
+    <div class="node null-node" >
+        <div class="node-body">
+            <span class="fa-minus-circle"></span>
+        </div>
+    </div>
+}
+else if (Model.IsOpenPosition)
+{
+    <div class="node open-node" >
+        <div class="node-body">
+            <span class="fa-plus-circle"></span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="node" data-id="@Model.CustomerID" data-treenode="popover">
+        <div class="node-body rank-@Model.CurrentRank.RankID">
+            <img src="@Url.Avatar(Model.CustomerID)" class="img-responsive" />
+            @((Model.ParentCustomerID != 0 || Model.CustomerID == 1) ? Model.CustomerID.ToString() : "NULL")
+            <div class="clearfix"></div>
+            @if (Model.IsPersonallyEnrolled)
+            {
+                <span class="fa-heart"></span>
+            }            
+            @if (Model.HasAutoOrder)
+            {
+                <span class="fa-repeat"></span>
+            }
+        </div>
+    </div>
+}

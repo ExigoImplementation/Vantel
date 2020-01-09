@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = Resources.Common.PrivacyPolicy;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div class="view-privacy-policy">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            @Html.Raw(Resources.Common.Replicated_PrivacyPolicy_Content)
+        </div>
+    </div>
+</div>

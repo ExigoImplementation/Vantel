@@ -1,0 +1,158 @@
+﻿@model CartViewModel
+@{
+    ViewBag.Title = Resources.Common.Cart;
+
+    var hasError = !Request.QueryString["message"].IsNullOrEmpty() || (ViewBag.PartyInvalid != null && ViewBag.PartyInvalid == true);
+    var partyInvalidMessage = hasError ? Resources.Common.PartyInvalidMessage : "";
+    var hasOpenParties = ViewBag.OpenParties != null;
+    List<Party> OpenParties = hasOpenParties ? ViewBag.OpenParties : new List<Party>();
+    var canChooseOpenParty = ViewBag.ActiveParty == null && hasOpenParties && OpenParties.Count() > 0;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+
+<div id="view-cart">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            @if (!Model.OrderItems.Any() && !Model.AutoOrderItems.Any())
+            {
+                <p>@Resources.Common.NoItemsInCart</p>
+            }
+            else
+            {
+                @* Party Info Bar *@
+                if (ViewBag.ActiveParty != null)
+                {
+                    Party ActiveParty = ViewBag.ActiveParty;
+
+                    @Html.DisplayFor(c => ActiveParty, "PartyDetailBar")
+                }
+                else if (canChooseOpenParty)
+                {
+                    <div class="party-link">@Resources.Common.Replicated_ShoppingController_PartyLinkText <a data-role="find-party-modal">@Resources.Common.ClickHere</a></div>
+
+                    @Html.Partial("Partials/_PartyHostModal", OpenParties)
+                }
+                @* End Party Info Bar*@
+
+                <div class="row">
+                    <div class="col text-right mb-3">
+                        <a href="@Url.Action("checkout", "shopping")" class="btn btn-primary">@Resources.Common.ProceedToCheckout</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        @{
+                            if (Model.OrderItems.Any())
+                            {
+                                @Html.Partial("Partials/Cart/PaneledCart", Model.OrderItems, new ViewDataDictionary {
+                                    { "Type", ShoppingCartItemType.Order }
+                                })
+                            }
+
+                            if (Model.AutoOrderItems.Any())
+                            {
+                                @Html.Partial("Partials/Cart/PaneledCart", Model.AutoOrderItems, new ViewDataDictionary {
+                                    { "Type", ShoppingCartItemType.AutoOrder }
+                                })
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+
+        require(["jquery", "pubsub", "ajax", "toastr", "extensions"], function ($, pubsub, ajax, toastr) {
+            // Parties
+            var hasError = @hasError.ToString().ToLower(),
+                partyErrorMessage = '@partyInvalidMessage';
+
+            // Parties
+            if (hasError && partyErrorMessage.length > 0) {
+                toastr.error(partyErrorMessage, 'Oops! Something went wrong.');
+            }
+
+            $('#cartCountContainer').not(':contains("(0)")').fadeIn();
+            $('#cartCountContainer:contains("(0)")').fadeOut();
+
+            $('body').on('cart.updateitemquantity', function (event, item) {
+                ajax.json({
+                    url: '@Url.Action("updateitemquantity")',
+                    data: {
+                        id: item.ID,
+                        quantity: item.Quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('body').trigger('cart.cartupdated', response);
+                        }
+                    }
+                });
+            });
+            $('body').on('cart.removeitemfromcart', function (event, id) {
+                ajax.json({
+                    url: '@Url.Action("removeitemfromcart")',
+                    data: {
+                        id: id
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            if (response.isCartEmpty) {
+                                window.location = '@Url.Action("itemlist")'
+                            }
+                            else {
+                                $('body').trigger('cart.itemremoved', id);
+                                $('body').trigger('cart.cartupdated', response);
+                            }
+                        }
+                    }
+                });
+            });
+
+            $('body').on('cart.cartupdated', function (event, data) {
+                var updatedItem = data.item,
+                    items = data.items;
+
+                if (updatedItem.Quantity == 0) {
+                    $('body').trigger('cart.itemremoved', updatedItem.ID);
+                }
+
+
+                var quantity = 0;
+                for (var i = 0, max = items.length; i < max; i++) {
+                    var item = items[i];
+                    quantity += item.Quantity;
+                }
+
+                // For Cart Preview
+                $('body').trigger('Shopping.UpdateCart');
+                var type = updatedItem.Type.toLowerCase()
+
+                $('[data-text="' + type + 'quantity"]').html(quantity.format("N0"));
+                $('[data-text="' + type +'subtotal"]').html(data.subtotal.format("C"));
+                $('#cartCountContainer').not(':contains("(0)")').fadeIn();
+                $('#cartCountContainer:contains("(0)")').fadeOut();
+            });
+
+        });
+
+    </script>
+}

@@ -1,0 +1,161 @@
+﻿@model Backoffice.Models.CommissionPayout.CommissionPayout
+@{
+    ViewBag.Title = Resources.Common.CommissionPayout;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "directdeposit"
+    };
+}
+
+<div id="view-accountoverview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-danger d-none" id="directdeposit-alert" role="alert">
+                        <h3 class="error-header">@Resources.Common.Sorry</h3>
+
+                        <p class="error-content">@Resources.Common.ProblemWithInformationText</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @using (Html.BeginForm("updatedirectdeposit", "account"))
+                            {
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row mb-1">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(c => c.BankName, Resources.Common.BankName, new { @class = "control-label" })
+                                                    @Html.TextBoxFor(c => c.BankName, htmlAttributes: new
+                                               {
+                                                   @class = "form-control",
+                                                   placeholder = Resources.Common.BankName,
+                                                   id = "bankNameList"
+                                               })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="NameOnAccount" class="control-label">@Resources.Common.NameOnAccount</label>
+                                                    @Html.TextBoxFor(c => c.NameOnAccount, htmlAttributes: new
+                                               {
+                                                   @class = "form-control",
+                                                   placeholder = Resources.Common.NameOnYourAccount
+                                               })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col-md-12">
+                                                <div class="form-group" id="account-number">
+                                                    <label for="AccountNumber" class="control-label">@Resources.Common.AccountNumberRules</label>
+                                                    @Html.TextBoxFor(c => c.AccountNumber, htmlAttributes: new
+                                               {
+                                                   @class = "form-control",
+                                                   placeholder = Resources.Common.YourAccountNumber
+                                               })
+
+                                                </div>
+
+                                                <div class="form-group" id="routing-number">
+                                                    <label for="RoutingNumber" class="control-label">@Resources.Common.RoutingNumber</label>
+                                                    @Html.TextBoxFor(c => c.RoutingNumber, htmlAttributes: new
+                                               {
+                                                   @class = "form-control",
+                                                   placeholder = Resources.Common.YourRoutingNumber
+                                               })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <a data-role="submitform" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</a>
+                                        <a href="@Url.Action("commissionpayout")" class="btn btn-light ml-3">@Resources.Common.Cancel</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    require(["jquery", "toastr"], function ($, toastr) {
+        $(function () {
+
+            // Restrict to 10 digits
+            $("#@Html.IdFor(c => c.AccountNumber)").on("keypress", function (event) {
+                var regex = new RegExp("^[0-9]+$");
+                var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                if (!regex.test(key)) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                if ($(this).val().length > 19) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+            // Restrict to 18 digits
+            $("#@Html.IdFor(c => c.RoutingNumber)").on("keypress", function (event) {
+                var regex = new RegExp("^[0-9]+$");
+                var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                if (!regex.test(key)) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                if ($(this).val().length > 17) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+
+            $("[data-role='submitform']").on("click", function () {
+                var isValid = true,
+                    accountNumber = $('#@Html.IdFor(c => c.AccountNumber)').val(),
+                    routingNumber = $('#@Html.IdFor(c => c.RoutingNumber)').val();
+
+
+                if (accountNumber.length < 10) {
+                    console.log("Algo anda mal #1");
+                    console.log("@Resources.Common.AccountNumberError");
+                    isValid = false;
+                    toastr.error("@Resources.Common.AccountNumberError");
+                    console.log(toastr);
+                }
+
+                if (routingNumber.length <= 1) {
+                    console.log("Algo anda mal #2");
+                    console.log("@Resources.Common.RoutingNumberError");
+                    isValid = false;
+                    toastr.error("@Resources.Common.RoutingNumberError");
+                }
+
+
+                if (isValid) {
+                    var $form = $(this).parents("form").first();
+                    $(this).buttonState("loading");
+                    $form.submit();
+                }
+            });
+
+
+        });
+    });
+</script>

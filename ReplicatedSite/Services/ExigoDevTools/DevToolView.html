@@ -1,0 +1,92 @@
+﻿<div class="dev-tool">
+    <label><strong>Exigo dev tools v0.2 @: rodrigor@exigo.com</strong></label>
+    <div class="text-area"></div>
+    <input type="search" class="form-control" />
+</div>
+
+
+<style>
+    .dev-tool {
+        position:fixed;
+        top:0;
+        left:0px;
+        width:500px;
+        max-width:500px;
+        z-index:999;
+        background-color:rgba(48, 48, 48, 0.52);
+        color:white;
+        display:none;
+    }
+
+    .dev-tool label {
+        color:white;
+        margin-left:10px;
+    }
+
+    .dev-tool input {
+        background-color: black;
+        color:rgb(76, 255, 0);
+    }
+
+        .dev-tool .text-area {
+            background-color: rgba(48, 48, 48, 0.00);
+            border: none;
+            color: rgb(76, 255, 0);
+            height: 400px;
+            overflow-y: scroll;
+            margin-left:10px;
+        }
+
+    .dev-tool .success{
+        color:greenyellow;
+    }
+
+    .dev-tool .failure{
+        color:red;
+    }
+
+    .dev-tool .input{
+        color:lightgrey;
+    }
+
+        .dev-tool p {
+            margin-bottom: 1px;
+            max-width: 450px;
+            word-wrap: break-word;
+            width: 450px;
+        }
+</style>
+
+<script>
+    require(['jquery', 'ajax', 'app'], function ($, ajax, app) {
+        $('.text-area').append('<p class="success">=: Welcome to Exigo dev tools<br>Input "help" to list the available methods for devtools</p>');
+        $('body').keydown(function (e) {
+            if (e.keyCode == 122) {
+                e.preventDefault();
+                if ($('.dev-tool:visible').length > 0)
+                    $('.dev-tool').slideUp();
+                else
+                    $('.dev-tool').slideDown();
+            }
+            if (e.keyCode == 13) {
+                if ($('.dev-tool input').val().length == 0)
+                    return;
+                $('.text-area').append('<p class="input">>: ' + $('.dev-tool input').val() + '</p>');
+                var value = $('.dev-tool input').val();
+                $('.dev-tool input').val('');
+                ajax.json({
+                    url: app.path("dev/DevToolsPostMethod"),
+                    data: { line: value },
+                    success: function (response) {
+                        if (response.success) {
+                            $('.text-area').append('<p class="success">=: ' + response.message + '</p>');
+                        }
+                        else {
+                            $('.text-area').append('<p class="failure">=: ' + response.message + '</p>');
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

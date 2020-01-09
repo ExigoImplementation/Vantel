@@ -1,0 +1,590 @@
+﻿@model Item
+@{
+    var contextID = Guid.NewGuid();
+    var currentMarket = GlobalUtilities.GetCurrentMarket(this.Context);
+    var currencyCode = currentMarket.Configuration.Orders.CurrencyCode;
+}
+
+<div id="view-product-@contextID">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="options">
+                @Html.HiddenFor(c => c.ItemCode)
+                @Html.HiddenFor(c => c.Type)
+                @Html.LabelFor(c => c.Quantity)
+                <br />
+                @Html.TextBoxFor(c => c.Quantity,
+                    htmlAttributes: new
+                    {
+                        type = "number",
+                        @class = "form-control input-sm",
+                        min = 1
+                    })
+                <div class="space-20"></div>
+                <button type="button" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoorder"><i class="fa-shopping-cart"></i> @Resources.Common.AddToCart</button>
+                @if (Model.AllowOnAutoOrder)
+                {
+                    <div class="text-divider">
+                        <h5>@Resources.Common.or</h5>
+                    </div>
+                    <button type="button" class="button nomargin fullwidth btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder"><i class="fa-refresh"></i> @Resources.Common.AddToAutoShip</button>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="dynamicKitModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Configure @Model.ItemDescription</h4>
+                </div>
+                <div class="modal-body">
+                    <!--Base Item (master)-->
+                    <div class="row margin-20">
+                        <div class="col-sm-12 ">
+                            @Html.Label(Model.ItemDescription)
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="row selected-products">
+                                <div class="row"
+                                     data-itemcode="@Model.ItemCode"
+                                     data-type="@Model.Type.ToString()"
+                                     data-id="@Model.ID"
+                                     data-quantity="1">
+                                    <div class="col-sm-1"><img class="img-responsive" src="@Model.TinyImageUrl" /></div>
+                                    <div class="col-sm-6 description">
+                                        @Model.ItemDescription
+                                        <a role="button"
+                                           data-toggle="popover"
+                                           data-trigger="hover"
+                                           title="@Model.ItemDescription"
+                                           data-content="@Model.ShortDetail1">
+                                            <span class="fa-info-circle" />
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <span class="price" data-base-price="@Model.Price">@Model.Price.ToString("c")</span>
+                                    </div>
+                                    <div class="col-sm-2 quantity">
+                                        @Html.TextBoxFor(c => c.Quantity,
+                                            htmlAttributes: new
+                                            {
+                                                type = "number",
+                                                @class = "form-control input-sm quantity master-quantity",
+                                                min = "1"
+                                            })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <!--Static Items (only one option per category)-->
+                    @foreach (var category in Model.DynamicKitCategories.Where(c => c.Items.Count == 1))
+                    {
+                        var item = category.Items.First();
+                        <div class="row margin-20 static-category"
+                             data-category-id="@category.DynamicKitCategoryID"
+                             data-base-quantity="@category.Quantity"
+                             data-max-quantity="@category.Quantity">
+                            <div class="col-sm-12">
+                                @Html.Label(category.DynamicKitCategoryDescription) <span>(@category.Quantity.ToString("N0") ea.)</span>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="row selected-products">
+                                    <div class="row static-item"
+                                         data-itemcode="@item.ItemCode"
+                                         data-base-quantity="@category.Quantity"
+                                         data-quantity="@category.Quantity.ToString("N0")">
+                                        <div class="col-sm-1"><img class="img-responsive" src="@item.TinyImageUrl" /></div>
+                                        <div class="col-sm-8 description">
+                                            @item.ItemDescription
+                                            <a role="button"
+                                               data-toggle="popover"
+                                               data-trigger="hover"
+                                               title="@item.ItemDescription"
+                                               data-content="@item.ShortDetail1">
+                                                <span class="fa-info-circle" />
+                                            </a>
+                                        </div>
+                                        <div class="col-sm-1 quantity">@category.Quantity.ToString("N0")</div>
+                                        <div class="col-sm-2 no-padding">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    }
+                    <!--Dynamic Items (multiple options per category)-->
+                    @foreach (var category in Model.DynamicKitCategories.Where(c => c.Items.Count > 1))
+                    {
+                        <div class="row margin-20"
+                             data-category-id="@category.DynamicKitCategoryID"
+                             data-base-quantity="@category.Quantity"
+                             data-max-quantity="@category.Quantity">
+                            <div class="col-sm-12">
+                                @Html.Label(category.DynamicKitCategoryDescription) <span>(@category.Quantity.ToString("N0") ea.)</span>
+                            </div>
+
+
+                            <!--Add item dialog-->
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-7 no-padding">
+                                        <select class="form-control input-sm category-item-select">
+                                            @foreach (var item in category.Items)
+                                            {
+                                                <option data-itemcode="@item.ItemCode"
+                                                        data-item-description="@item.ItemDescription"
+                                                        data-image-url="@item.TinyImageUrl"
+                                                        data-content="@item.ShortDetail1">
+                                                    @item.ItemDescription
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @Html.TextBoxFor(c => c.Quantity,
+                                            htmlAttributes: new
+                                            {
+                                                type = "number",
+                                                @class = "form-control input-sm quantity",
+                                                min = "1",
+                                                max = category.Quantity,
+                                                @Value = category.Quantity.ToString("N0")
+                                            })
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-success btn-sm" 
+                                                title="@Resources.Common.Add"
+                                                data-role="add-member" 
+                                                data-category-id="@category.DynamicKitCategoryID">
+                                            <span class="fa fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 space-5"></div>
+                            <!--Progress bar-->
+                            <div class="col-sm-12">
+                                <div class="progress no-margin">
+                                    <div class="progress-bar progress-bar-striped active"
+                                         role="progressbar"
+                                         aria-valuenow="0"
+                                         aria-valuemin="0"
+                                         aria-valuemax="@category.Quantity"
+                                         style="width:0%;min-width: 5em;max-width:160%">
+                                        <span data-role="current-quantity">0</span> of <span data-role="max-quantity">@category.Quantity.ToString("N0")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 space-5"></div>
+                            <!--Selected Products-->
+                            <div class="col-sm-12">
+                                <div class="row selected-products">
+                                    @*Dynamically populated*@
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary disabled" data-role="submit">
+                        <i class="fa-shopping-cart"></i>
+                        @Resources.Common.AddToCart
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        @Resources.Common.Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/x-handlebars-template" id="selected-item-template">
+    <div class="row" data-itemcode="{{ItemCode}}" data-quantity="{{Quantity}}" data-category-id="{{DynamicKitCategoryID}}" style="margin-bottom:5px;">
+        <div class="col-sm-1"><img class="img-responsive" src="{{ImageURL}}" /></div>
+        <div class="col-sm-8 description">
+            {{ItemDescription}}
+            <a role="button"
+               data-toggle="popover"
+               data-trigger="hover"
+               title="{{ItemDescription}}"
+               data-content="{{ShortDetail}}">
+                <span class="fa-info-circle" />
+            </a>
+        </div>
+        <div class="col-sm-1 quantity">{{Quantity}}</div>
+        <div class="col-sm-2 no-padding">
+
+            <button class="btn btn-danger btn-sm"
+                    title="@Resources.Common.Remove"
+                    data-role="update-member"
+                    data-itemcode="{{ItemCode}}"
+                    data-category-id="{{DynamicKitCategoryID}}"
+                    data-quantity="-1">
+                <span class="fa fa-minus" />
+            </button>
+            <button class="btn btn-success btn-sm"
+                    title="@Resources.Common.Add"
+                    data-role="update-member"
+                    data-itemcode="{{ItemCode}}"
+                    data-category-id="{{DynamicKitCategoryID}}"
+                    data-quantity="1">
+                <span class="fa fa-plus"></span>
+            </button>
+            <button class="btn btn-danger btn-xs"
+                    title="@Resources.Common.Delete"
+                    data-role="remove-member"
+                    data-itemcode="{{ItemCode}}"
+                    data-category-id="{{DynamicKitCategoryID}}">
+                <span class="fa fa-trash-o" />
+            </button>
+        </div>
+    </div>
+</script>
+
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+        require(["handlebars","ajax", "toastr"], function (Handlebars, ajax, toastr) {
+            // Settings
+            var context      = "#view-product-@contextID",
+                $context     = $(context),
+                cultureCode  = '@currentMarket.CultureCode',
+                currencyCode = '@currencyCode',
+                addToCartURL = '@Url.Action("AddItemToCart", "Shopping")';
+            class item {
+                constructor(itemcode, itemdescription, categoryid, quantity, imageurl, shortdetail) {
+                    this.ItemCode             = itemcode;
+                    this.ItemDescription      = itemdescription;
+                    this.DynamicKitCategoryID = categoryid;
+                    this.Quantity             = parseInt(quantity);
+                    this.ImageURL             = imageurl;
+                    this.ShortDetail          = shortdetail;
+                }
+            }
+
+            function registerEventListeners() {
+                // update kit totals when master qty changes
+                $context.on('change', '.master-quantity', function () {
+                    var $this = $(this),
+                        masterQty = formatHelpers.parseInt($this.val());
+                    // reset the input in case we updated the value
+                    $this.val(masterQty);
+                    // trigger other updates
+                    helpers.updateMasterQuantity(masterQty);
+                });
+
+                // allow enter key to trigger category item add
+                $('div[data-category-id] input.quantity').on('keypress', function (event) {
+                    var keyCode = !event.charCode ? event.which : event.charCode;
+                    // 13=Enter
+                    // if not pressing enter, stop
+                    if (keyCode != "13") { return; }
+                    console.log("enter pressed");
+                    // get the parent category
+                    var $category = $(this).closest('div[data-category-id]');
+                    // find the add button and click it
+                    $('.btn[data-role="add-member"]:not(.disabled)', $category).click();
+                });
+
+
+                // add category item
+                $context.on('click', '.btn[data-role="add-member"]:not(.disabled)', function () {
+                    var $this = $(this),
+                        categoryID = $this.data("category-id"),
+                        $category = $('[data-category-id="' + categoryID + '"]'),
+                        itemData = $('.category-item-select option:selected', $category).data(),
+                        quantity = formatHelpers.parseInt($('input.quantity', $category).val());
+
+                    var catItem = new item(
+                        itemData.itemcode,
+                        itemData.itemDescription,
+                        categoryID,
+                        quantity,
+                        itemData.imageUrl,
+                        itemData.content);
+                    helpers.updateSelection(catItem);
+
+                });
+
+                // increase/decrease existing item
+                $context.on('click', '.btn[data-role="update-member"]:not(.disabled)', function () {
+                    var $this = $(this),
+                        itemData = $this.data();
+
+                    var catItem = new item(itemData.itemcode, '', itemData.categoryId, itemData.quantity, '');
+                    helpers.updateSelection(catItem);
+                });
+
+                // remove existing item
+                $context.on('click', '.btn[data-role="remove-member"]:not(.disabled)', function () {
+                    var $this = $(this),
+                        itemData = $this.data();
+
+                    var catItem = new item(itemData.itemcode, '', itemData.categoryId, itemData.quantity, '');
+                    helpers.removeSelection(catItem);
+                });
+
+                // submit
+                $context.on('click', '[data-role="submit"]', function () {
+                    if ($(this).hasClass("disabled")) { return;}
+                    var items = helpers.getItems();
+                    actions.addToCart(items);
+                });
+            }
+
+            var actions = {
+                addToCart: function (masterItem) {
+                    ajax.json({
+                        url: addToCartURL,
+                        data: {
+                            item: masterItem
+                        },
+                        beforeSend: function(){
+
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success("added to cart")
+                            } else {
+                                toastr.warning(response.message);
+                            }
+                        },
+                        error: function (xhr, error) {
+
+                        },
+                        complete: function () {
+
+                        }
+                    })
+                }
+            }
+
+            var helpers = {
+                updateSelection: function (item) {
+                    var $category = $('div[data-category-id="' + item.DynamicKitCategoryID + '"]');
+                    // if no category, stop
+                    if ($category.length == 0) { return; }
+                    // get the matching items
+                    var $existingItem = $('.selected-products [data-itemcode="' + item.ItemCode + '"]:not(.btn)', $category),
+                        maxQuantity = helpers.getMaxQuantity(item.DynamicKitCategoryID),
+                        currentQuantity = helpers.getCurrentQuantity(item.DynamicKitCategoryID),
+                        remainingQuantity = maxQuantity - currentQuantity;
+
+                    if ($existingItem.length == 0 && item.Quantity > 0) {
+                        // if no items remaining to add, stop
+                        if (remainingQuantity == 0) { return; }
+                        // if quantity to add is greater than remaining quantity, set to remaining quantity
+                        if (item.Quantity > remainingQuantity) {
+                            item.Quantity = remainingQuantity;
+                        }
+                        // if no item, add a new line
+                        var source = $("#selected-item-template").html();
+                        var template = Handlebars.compile(source);
+                        var html = template(item);
+                        $('.selected-products', $category).append(html);
+                        helpers.initializeDataAttributes($category);
+                    } else {
+                        // if item exists, update it.
+                        var existingQty = $existingItem.data("quantity");
+                        // add current item's quantity to our total remaining.
+                        // we're setting a new qty so dont count the current item
+                        remainingQuantity += existingQty;
+
+
+                        var newQty = existingQty + item.Quantity;
+                        if (newQty <= 0 || remainingQuantity <= 0) {
+                            $existingItem.remove();
+                        } else {
+
+                            // if we have too many items, stop
+                            if (remainingQuantity == 0) { return; }
+                            if (newQty >= remainingQuantity) {
+                                newQty = remainingQuantity;
+                            }
+                            $('.quantity', $existingItem).html(newQty);
+                            $existingItem.data("quantity", newQty);
+                        }
+                    }
+                    helpers.updateCategory(item.DynamicKitCategoryID)
+                    helpers.updateSubmitButton();
+                },
+                removeSelection: function (item) {
+                    var $category = $('div[data-category-id="' + item.DynamicKitCategoryID + '"]');
+                    // if no category, stop
+                    if ($category.length == 0) { return; }
+                    // get the matching items
+                    var $existingItem = $('.selected-products [data-itemcode="' + item.ItemCode + '"]', $category);
+                    // if no item, stop
+                    if ($existingItem.length == 0) { return; }
+
+                    var existingQty = $existingItem.data("quantity");
+                    item.Quantity = 0 - existingQty;
+                    helpers.updateSelection(item);
+                },
+                updateCategory(categoryID) {
+                    // get the max quantity
+                    var maxQuantity = helpers.getMaxQuantity(categoryID);
+                    // get current selected quantity
+                    var quantity = helpers.getCurrentQuantity(categoryID);
+                    helpers.updateProgressBar(categoryID, quantity, maxQuantity);
+                    helpers.updateItemButtons(categoryID, quantity, maxQuantity);
+                },
+                updateProgressBar: function (categoryID, currentQuantity, maxQuantity) {
+                    var $category = $('div[data-category-id="' + categoryID + '"]');
+                    // if no category, stop
+                    if ($category.length == 0) { return; }
+
+                    // get the progress bar
+                    var $progressBar = $('.progress-bar', $category);
+                    // update screen reader values
+                    $progressBar.attr('aria-valuenow', currentQuantity);
+                    $progressBar.attr('aria-valuemax', maxQuantity);
+                    // update progress
+                    $progressBar.css('width', ((currentQuantity / maxQuantity) * 100) + "%");
+                    $('[data-role="current-quantity"]', $progressBar).html(currentQuantity);
+                    $('[data-role="max-quantity"]', $progressBar).html(maxQuantity);
+                    // update styles
+                    var hasMax = currentQuantity == maxQuantity;
+                    $progressBar.toggleClass("progress-bar-success", hasMax);
+                    $progressBar.toggleClass("progress-bar-striped active", !hasMax);
+                    // show error if too many items
+                    var exceedsMax = currentQuantity > maxQuantity;
+                    $progressBar.toggleClass("progress-bar-danger", exceedsMax);
+                },
+                updateItemButtons: function (categoryID, currentQuantity, maxQuantity) {
+                    var $category = $('div[data-category-id="' + categoryID + '"]');
+                    // if no category, stop
+                    if ($category.length == 0) { return; }
+
+                    var hasFullItems = currentQuantity >= maxQuantity;
+
+                    $('[data-role="add-member"]', $category).toggleClass("disabled", hasFullItems);
+                    $('[data-role="update-member"][data-quantity="1"]', $category).toggleClass("disabled", hasFullItems);
+                },
+                updateSubmitButton: function () {
+                    var $categories = $('div[data-category-id]');
+                    var hasCompleteKit = true;
+                    for (var i = 0; i < $categories.length; i++) {
+                        var $category = $($categories[i]),
+                            categoryID = $category.data('category-id'),
+                            currentQuantity = helpers.getCurrentQuantity(categoryID),
+                            maxQuantity = helpers.getMaxQuantity(categoryID);
+                        // if category does not match max items, stop (kit is incomplete)
+                        if (currentQuantity != maxQuantity) {
+                            hasCompleteKit = false;
+                            break;
+                        }
+                    }
+                    $('[data-role="submit"]', $context).toggleClass('disabled', !hasCompleteKit);
+
+                },
+                getCurrentQuantity: function (categoryID) {
+                    var $category = $('div[data-category-id="' + categoryID + '"]');
+                    // get the matching items
+                    var $existingItems = $('.selected-products div[data-itemcode]', $category),
+                        quantity = 0;
+                    for (var i = 0; i < $existingItems.length; i++) {
+                        quantity += $($existingItems[i]).data("quantity");
+                    }
+                    return quantity;
+                },
+                getMaxQuantity: function (categoryID) {
+                    var $category = $('div[data-category-id="' + categoryID + '"]'),
+                        maxQuantity = $category.data('max-quantity');
+                    return maxQuantity;
+                },
+                getItems: function () {
+                    var itemcode = $("#@Html.IdFor(c => c.ItemCode)").val(),
+                        quantity = $(".quantity.master-quantity").val();
+                    var master = {
+                        ItemCode: itemcode,
+                        Quantity: quantity
+                    };
+                    var children = [];
+                    $('div[data-category-id]').each(function () {
+                        $('.selected-products div[data-itemcode]', $(this)).each(function () {
+                            var itemCode = $(this).data('itemcode'),
+                                quantity = $(this).data('quantity'),
+                                categoryID = $(this).data('categoryId');
+                            children.push({
+                                ItemCode: itemCode,
+                                Quantity: quantity,
+                                CategoryID: categoryID
+                            });
+                        });
+                    });
+                    master.Children = children;
+                    return master;
+                },
+                updateMasterQuantity : function (masterQty){
+                    // update total kit price
+                    var $price = $('.price', $context),
+                        basePrice = $price.data('base-price'),
+                        newPrice = (basePrice * masterQty),
+                        formattedPrice = newPrice.toLocaleString(cultureCode, { style: 'currency', currency: currencyCode });
+
+                    $price.html(formattedPrice);
+
+                    
+                    helpers.updateSubmitButton();
+                },
+                initializeDataAttributes: function ($context) {
+                    var attributesToInitialize = [
+                        { name: 'max-quantity' , func: parseInt },
+                        { name: 'quantity'     , func: parseInt },
+                        { name: 'category-id'  , func: parseInt },
+                        { name: 'base-quantity', func: parseInt },
+                        { name: 'base-price'   , func: parseFloat }
+                    ]
+                    // for each attribute
+                    for (var i = 0; i < attributesToInitialize.length; i++) {
+                        var attribute = attributesToInitialize[i];
+                        // find any matching elements in specified context
+                        var elements = $('[data-' + attribute.name + ']', $context);
+                        // initialize values for each
+                        elements.each(function () {
+                            var $this = $(this),
+                                val = $this.data(attribute.name);
+                            // if no attribute, stop (this should not happen at this point)
+                            if (val === undefined) { return; }
+                            // process the attribute's value
+                            var newVal = attribute.func(val);
+                            // if not valid, stop
+                            if (isNaN(newVal)) { return; }
+                            // set data value
+                            $this.attr('data-' + attribute.name, newVal);
+                            // set dom value (no affect on other logic, just for readability)
+                            $this.data(attribute.name, newVal);
+                        });
+                    }
+                }
+            }
+            var formatHelpers = {
+                parseInt: function (value) {
+                    var newValue = parseInt(value);
+                    // ensure min val since change [min] attribute will still allow negative inputs
+                    // NaN check is to correct invalid integers
+                    if (isNaN(newValue) || newValue < 1) {
+                        newValue = 1;
+                    }
+                    return newValue;
+                }
+            }
+
+            // initialize
+            function init() {
+                registerEventListeners();
+                helpers.initializeDataAttributes($context);
+            }
+            init();
+        });
+    </script>
+}

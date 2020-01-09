@@ -1,0 +1,153 @@
+﻿
+/////////////////////Page Header///////////////////////////
+
+#page-title {
+    position: relative;
+    padding: 50px 0;
+    background-color: #F5F5F5;
+    border-bottom: 1px solid #EEE;
+
+    h1 {
+        padding: 0;
+        margin: 0;
+        line-height: 1;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #333;
+        font-size: 28px;
+        text-transform: uppercase;
+    }
+
+    span {
+        display: block;
+        margin-top: 10px;
+        font-weight: 300;
+        color: #777;
+        font-size: 18px;
+    }
+
+    .container {
+        position: relative;
+    }
+
+    .breadcrumb {
+        position: absolute;
+        width: auto;
+        top: 50%;
+        left: auto;
+        right: 15px;
+        margin: -10px 0 0 0;
+        background-color: transparent;
+        padding: 0;
+        font-size: 12px;
+
+        breadcrumb-item {
+            &:active {
+                color: #6c757d;
+            }
+
+            & + .breadcrumb-item {
+                padding-left: 0.5rem;
+            }
+        }
+
+        a {
+            color: #555;
+
+            &:hover {
+                color: #44C1E4;
+            }
+        }
+    }
+}
+
+/////////////////////Content///////////////////////////
+
+#content {
+    position: relative;
+    overflow: hidden;
+    background-color: #FFF;
+
+    p {
+        line-height: 1.8;
+    }
+
+    .container {
+        position: relative;
+    }
+}
+
+.content-wrap {
+    position: relative;
+    padding: 20px 0;
+}
+
+.grid-container {
+    position: relative;
+    overflow: hidden;
+}
+
+////////////////Buttons////////////////////////////
+
+.button {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    margin: 5px;
+    padding: 0 22px;
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+    background-color: #44C1E4;
+    color: #FFF;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.button:hover {
+    color: #FFF;
+    background-color: #3dadcc !important;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.button.button-3d {
+    border-radius: 3px;
+    border-bottom: 3px solid rgba(0,0,0,0.15);
+    -webkit-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+.button.button-3d:hover {
+    background-color: #44C1E4 !important;
+    opacity: 0.9;
+}
+
+.button.button-3d.button-light:hover,
+.button.button-reveal.button-light:hover {
+    text-shadow: none;
+    color: #333;
+}
+
+#toasts-container {
+    min-height: 200px;
+    position: fixed;
+    top: 120px;
+    right: 10px;
+    z-index: 9999999;
+}
+
+.card-metrics p.text-uppercase {
+    font-size: small;
+    color: #666;
+    font-weight: 600;
+
+    a {
+        text-decoration: none;
+    }
+}

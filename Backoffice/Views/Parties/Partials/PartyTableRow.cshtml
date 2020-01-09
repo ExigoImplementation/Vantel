@@ -1,0 +1,19 @@
+﻿@model Party
+<tr>
+    <td>
+        <div class="row">
+            <div class="col-md-3">
+                <img src="@Url.Avatar(Model.HostID, AvatarType.Small)" alt="" />
+            </div>
+            <div class="col-md-9">
+                @Model.HostName
+                <br />
+                # @Model.HostID
+            </div>
+        </div>
+    </td>
+    <td>@Model.Description</td>
+    <td>@Convert.ToDateTime(Model.StartDate).ToShortDateString()</td>
+    <td><a href="javascript:;" target="_blank">@Model.PartyUrl</a></td>
+    <td><a class="btn btn-primary" href="@Url.Action("summary", new { id = Model.PartyID })">@Resources.Common.Summary</a></td>
+</tr>

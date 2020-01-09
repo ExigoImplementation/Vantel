@@ -1,0 +1,165 @@
+﻿@model RankViewModel
+@{
+    ViewBag.Title = Resources.Common.RankAdvancement;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "commissions",
+        DefaultBreadcrumbLinkSitemapID = "page-rank"
+    };
+}
+
+<div id="view-rank-advancement">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-prepend">
+                                            <button id="gotopreviousrank" class="btn btn-primary" type="button"><i class="fa-chevron-left"></i></button>
+                                        </span>
+                                        <select id="rankchoice" class="form-control">
+                                            @foreach (var rank in Model.Ranks)
+                                            {
+                                                <option value="@rank.RankID" @((Model.NextRank.RankID == rank.RankID) ? "selected" : "")>
+                                                    @CommonResources.Ranks(rank.RankID, defaultDescription: rank.RankDescription)
+                                                </option>
+                                            }
+                                        </select>
+                                        <span class="input-group-append">
+                                            <button id="gotonextrank" class="btn btn-primary" type="button"><i class="fa-chevron-right"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="text-right ajax-loader">
+                                        <img src="@Url.Content("~/Content/images/loading/bar-sm.gif")" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="view-rank-advancement-detail">
+                        <div class="text-center">
+                            <span id="loader">
+                                <img src="@Url.Content("~/Content/images/loading/bar-sm.gif")" class="loader-object" /><br />
+                                <span class="loader-body"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "toastr"], function ($, ajax, toastr) {
+
+            // Settings
+            var context = "#view-rank-advancement",
+                $context = $(context),
+                settings = {
+                    rankid: $('#rankchoice', $context).val(),
+                    nextrankid: null,
+                    previousrankid: null,
+                    attempts: 5,
+                    attemptdelayedwarning: 3,
+                    attemptinterval: 3000
+                };
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('#gotonextrank', $context).on('click', function () {
+                    if (settings.nextrankid) {
+                        $('#rankchoice', $context).val(settings.nextrankid).triggerHandler('change');
+                    }
+                });
+                $('#gotopreviousrank', $context).on('click', function () {
+                    if (settings.previousrankid) {
+                        $('#rankchoice', $context).val(settings.previousrankid).triggerHandler('change');
+                    }
+                });
+                $('#rankchoice', $context).on('change', function () {
+                    settings.rankid = Number($(this).val());
+                    actions.getRankQualifications(settings.rankid);
+                });
+            }
+
+            // Actions
+            var actions = {
+                getRankQualifications: function (rankid, attempt) {
+                    rankid = rankid || settings.rankid;
+                    attempt = attempt || 1;
+
+                    if (attempt >= 1) {
+                        var text = "@Resources.Common.CalculatingPleaseWait";
+                        if (attempt >= settings.attemptdelayedwarning) {
+                            text += "<br /><small class='text-muted'>@Resources.Common.CalculationTakingLonger</small>";
+                        }
+                        $('#loader .loader-body').html(text);
+                    }
+                    if (attempt > settings.attempts) {
+                        var text = "@Resources.Common.RankAdvancementFailed";
+                        toastr.error(text);
+                        $('#view-rank-advancement-detail').html(text);
+                        return;
+                    }
+
+                    ajax.json({
+                        url: '@Url.Action("getrankqualifications")',
+                        data: {
+                            rankid: rankid
+                        },
+                        beforeSend: function () {
+                            $('.ajax-loader', $context).show();
+                        },
+                        success: function (response) {
+                            if (response.result.IsUnavailable) {
+                                attempt++;
+                                setTimeout(function () {
+                                    actions.getRankQualifications(rankid, attempt);
+                                }, settings.attemptinterval);
+                            } else if (response.result.ErrorMessage != null) {
+                                var text = "@Resources.Common.RankAdvancementFailed";
+                                toastr.error(text);
+                                $context.html(text);
+                            } else {
+
+                                settings.rankid = response.result.Rank.RankID;
+                                settings.nextrankid = (response.result.NextRank) ? response.result.NextRank.RankID : null;
+                                settings.previousrankid = (response.result.PreviousRank) ? response.result.PreviousRank.RankID : null;
+                                $('#view-rank-advancement-detail').html(response.html);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        },
+                        complete: function () {
+                            $('.ajax-loader', $context).fadeOut('fast');
+                        }
+                    });
+                }
+            };
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                actions.getRankQualifications();
+            }
+            init();
+
+        });
+    </script>
+}

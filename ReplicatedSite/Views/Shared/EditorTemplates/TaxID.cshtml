@@ -1,0 +1,26 @@
+﻿@model String
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    {
+        @class = "form-control",
+        role = "textbox"
+    });
+}
+
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text">
+            <i class="fa-question-circle" data-toggle="popover" data-container="body" data-title="@Resources.Common.WhyDoWeNeedThis" data-trigger="hover" data-placement="top" data-content="@Resources.Common.ProvideTaxID"></i>
+        </span>
+    </div>
+
+    @Html.TextBoxFor(c => c, htmlAttributes)
+</div>
+
+<script>
+    require(["jquery", "bootstrap"], function($) {
+        $("#@(Html.IdFor(c => c))").popover();
+    });
+</script>

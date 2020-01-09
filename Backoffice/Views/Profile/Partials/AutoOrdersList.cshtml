@@ -1,0 +1,33 @@
+﻿<div id="view-autoorderslist">    
+    <div class="grid"></div>
+</div>
+
+<script>
+    require(["kendogrids"], function (kendoGrid) {
+
+        var cultureCode = "@Identity.Current.Market.CultureCode";
+        kendo.culture(cultureCode);
+
+
+        kendoGrid.create("#view-autoorderslist .grid", {
+            url: '@Request.Url.AbsolutePath',
+            sort: { field: "NextRunDate", dir: "desc" },
+            columns: [
+                { field: "LastRunDate", title: "@Resources.Common.LastProcessDate", type: "date", format: "{0:d}", attributes: { "class": "text-right" } },
+                { field: "NextRunDate", title: "@Resources.Common.NextProcessDate", type: "date", format: "{0:d}", attributes: { "class": "text-right" } },
+                {
+                    field: "SubTotal", title: "@Resources.Common.Subtotal", type: "number", attributes: { "class": "text-right" },
+                    template: function (row) { return row.SubTotal.toLocaleString(row.CultureCode, { currency: row.CurrencyCode, style: 'currency' }); }
+                },
+                { field: "BusinessVolumeTotal", type: "number", title: "@Resources.Common.BV", format: "{0:N0} " + "@Resources.Common.BV", attributes: { "class": "text-right" } },
+                { field: "CommissionableVolumeTotal", type: "number", title: "@Resources.Common.CV", format: "{0:N0} " + "@Resources.Common.CV", attributes: { "class": "text-right" } }
+            ],
+            toolbar: ["excel"],
+            excel: {
+                allPages: true,
+                fileName: 'AutoOrderList.xlsx'
+            }
+            
+        });
+    });
+</script>

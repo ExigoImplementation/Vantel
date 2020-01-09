@@ -1,0 +1,106 @@
+﻿@model ContactViewModel
+@{
+    ViewBag.Title = Resources.Common.ContactUs;
+
+    var market = Utilities.GetCurrentMarket();
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+    <div id="view-contact-us">
+        @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+        <div class="content-wrap">
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <p><i class="fa-phone mr-2"></i> @Resources.Common.CompanyPhone</p>
+                                <p><i class="fa-envelope mr-2"></i> @Resources.Common.CompanyEmail</p>
+                                <div class="space-20"></div>
+
+                                @using (Html.BeginForm("About", "Home"))
+                                {
+                                    <div class="form-group">
+                                        
+                                        @Html.LabelFor(c => c.Name)
+                                        @Html.TextBoxFor(c => c.Name, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Phone)
+                                        @Html.TextBoxFor(c => c.Phone, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Email)
+                                        @Html.TextBoxFor(c => c.Email, new { @class = "form-control" })
+                                        <span class="text-danger">
+                                            @Html.ValidationMessageFor(c => c.Email)
+                                        </span>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Notes)
+                                        @Html.TextAreaFor(c => c.Notes, new { @class = "form-control"})
+                                    </div>
+
+                                    <a id="btn-submitform" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading">@Resources.Common.Submit</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "toastr", "mask"],
+            function ($, ajax, toastr) {
+
+                var submitUrl = '@Url.Action("ContactUs")';
+
+
+                function registerEventHandlers() {
+                    $('#btn-submitform').on('click', function () {
+                        actions.sendContactEmail();
+                    });
+                }
+                  var helpers = {
+                     applyMasks: function () {
+                        $('#Phone').mask('@market.PhoneMask'); 
+				    }
+                }
+                var actions = {
+                    sendContactEmail: function () {
+                        if ($('#btn-submitform').parents('form').valid()) {
+                            $('#btn-submitform').button('loading');
+                            var model = $('#btn-submitform').parents('form').first().serializeObject();
+                            ajax.json({
+                                url: submitUrl,
+                                data: { model: model },
+                                success: function (response) { 
+                                    if (response.success) {
+                                        toastr.success("@Resources.Common.EmailHasBeenSent");
+                                    }
+                                    $('#btn-submitform').button('reset');
+                                },
+                                error: function (xhr, error, data) {
+                                    console.log("@Resources.Common.ErrorLoadingItemList", xhr);
+                                    $('#btn-submitform').button('reset');
+                                }
+                            });
+                        }
+                    }
+
+                }
+
+                function _init() {
+                    registerEventHandlers();
+                    helpers.applyMasks();
+                }
+                _init();
+            });
+    </script>
+}

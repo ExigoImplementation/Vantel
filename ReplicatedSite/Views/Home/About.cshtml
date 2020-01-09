@@ -1,0 +1,14 @@
+﻿@model ContactViewModel
+@{
+    ViewBag.Title = Resources.Common.AboutUs;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+    <div id="view-about">
+        @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+        @Html.Raw(Resources.Common.Replicated_Home_AboutUs)
+    </div>

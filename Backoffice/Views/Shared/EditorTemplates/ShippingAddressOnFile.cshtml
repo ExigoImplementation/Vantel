@@ -1,0 +1,9 @@
+﻿@model ShippingAddress
+
+@Html.HiddenFor(c => c.FirstName)
+@Html.HiddenFor(c => c.LastName)
+@Html.HiddenFor(c => c.Company)
+@Html.HiddenFor(c => c.Phone)
+@Html.HiddenFor(c => c.Email)
+
+@Html.Partial("~/Views/Shared/EditorTemplates/AddressOnFile.cshtml", Model)

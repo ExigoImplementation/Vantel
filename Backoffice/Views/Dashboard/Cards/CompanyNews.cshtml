@@ -1,0 +1,48 @@
+﻿@model List<CompanyNewsItem>
+
+@if (Model != null)
+{
+    if (Model.Any())
+    {
+    <ul class="list-group">
+        @foreach (var news in Model.Distinct())
+        {
+            <li class="list-group-item">
+                <div class="row align-items-center d-flex">
+                    <div class="col-2 circle-icon small-circle">
+                        <a>
+                            <i class="fas fa-newspaper-o circle-blue"></i>
+                        </a>
+                    </div>
+                    <div class="col-10">
+                        <h5>
+                            @news.Description
+                        </h5>
+                        <small>@Format.SocialDate(news.CreatedDate)</small>
+                        <div class="row">
+                            <div class="col-12 text-truncate text-muted">
+                                @if (news.Content.IsNullOrEmpty())
+                                {
+                                    @Html.Raw(Resources.Common.BackOffice_Dashboard_NoContentAvailable)
+                                }
+                                else
+                                {
+                                    @Html.Raw(news.Content)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+    }
+    else
+    {
+        <p>@Resources.Common.NoNews</p>
+    }
+}
+else
+{
+    <p>@Resources.Common.ThisCardFailed</p>
+}

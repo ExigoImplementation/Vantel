@@ -1,0 +1,149 @@
+﻿<div class="associate-search">
+
+    <p><strong>@Resources.Common.SearchForYourReferrer</strong></p>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" id="search-field" />
+                <div class="input-group-append">
+                    <a class="btn btn-primary" data-role="search"><span class="fa-search"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="search-results-container" class="row" style="display: none;">
+        <div class="col-12">
+            <h5>@Resources.Common.SearchResults</h5>
+
+            <div id="search-results" style="overflow-y: auto; overflow-x: hidden; max-height: 400px;"></div>
+
+            <script id="search-results-template" data-target="#search-results" type="text/x-handlebars-template">
+                {{#each enrollers}}
+                <div class="row">
+                    <div class="col-sm-3">
+                        <img src="{{AvatarURL}}" class="img-responsive" />
+                    </div>
+                    <div class="col-sm-9">
+                        <span><span class="name">{{FullName}}</span>, @Resources.Common.ID# <span class="id">{{CustomerID}}</span></span><br />
+                        <span>{{MainCity}}, {{MainState}}</span><br />
+                        <a href="{{ReplicatedSiteUrl}}" data-url="{{ReplicatedSiteUrl}}" data-webalias="{{WebAlias}}">{{ReplicatedSiteUrl}}</a>
+                        <div class="space-10"></div>
+                        <a data-role="use-distributor" class="btn btn-primary">@Resources.Common.Choose</a>
+                    </div>
+                </div>
+                <div class="space-10">
+                    {{/each}}
+                </div>
+            </script>
+        </div>
+    </div>
+
+    <input type="hidden" id="enrollerID" name="EnrollerID" value="@Identity.Owner.CustomerID" />
+</div>
+
+
+<script>
+    require(["jquery", "ajax", "toastr", "handlebars", "pubsub"], function ($, ajax, toastr, Handlebars) {
+
+        // Settings
+        var context = ".associate-search",
+            $context = $(context);
+
+
+        // Event Handlers
+        function registerEventHandlers() {
+            $('#search-field').on("keypress", function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    $('[data-role="search"]').click();
+                }
+            });
+
+            $('[data-role="search"]', $context).on('click', function () {
+                var query = $('#search-field', $context).val();
+
+                if (query != "") {
+                    actions.search(query);
+                }
+                else {
+                    $('#search-field', $context).focus();
+                }
+            });
+
+            $('#search-results', $context).on("click", '[data-role="use-distributor"]', function () {
+                var $activeRow = $(this).parents('.row:first'),
+                    id = $('.id', $activeRow).html(),
+                    name = $('.name', $activeRow).html(),
+                    url = $("[data-url]", $activeRow).data("url"),
+                webalias = $("[data-webalias]", $activeRow).data("webalias");
+
+                var enroller = {
+                    CustomerID: id,
+                    FullName: name,
+                    Url: url,
+                    WebAlias: webalias
+                };
+
+                    $('#enrollerID').val(parseInt(enroller.CustomerID));
+
+                window.trigger("enrollment.showenrollerinfo", enroller);
+            });
+        }
+
+
+        // Actions
+        var actions = {
+            search: function (query) {
+                ajax.json({
+                    url: "@Url.Action("getdistributors", "enrollment")",
+                    data: { query: query },
+                    success: function (response) {
+                        if (response.success) {
+
+                            if (response.enrollers.length == 0) {
+                                toastr.error("@Resources.Common.SearchNoResults", "@Resources.Common.WereSorry");
+                                $("#search-field").val("");
+                                return;
+                            }
+
+
+                            var source = $("#search-results-template").html();
+                            var template = Handlebars.compile(source);
+                            var html = template(response);
+                            $("#search-results").html(html);
+
+                            $("#search-results-container").show();
+                        }
+                        else {
+                            console.log("@Resources.Common.Message", response.message);
+                            toastr.error("@Resources.Common.SearchNoResults", "@Resources.Common.WereSorry");
+                        }
+                    }
+                });
+            }
+        };
+
+
+        // Helpers
+        var helpers = {
+
+        };
+
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+
+        }
+        init();
+
+    });
+</script>
+
+<style>
+    .results-info {
+        padding-left: 30px;
+    }
+</style>

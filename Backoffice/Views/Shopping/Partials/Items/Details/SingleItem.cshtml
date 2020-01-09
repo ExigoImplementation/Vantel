@@ -1,0 +1,54 @@
+﻿@model Item
+
+<div data-itemcode="@Model.ItemCode" class="card border-left-0 border-right-0 item-row">
+    <div class="card-body">
+        <div class="options">
+
+            @Html.HiddenFor(c => c.ItemCode)
+            @Html.HiddenFor(c => c.ItemDescription)
+            @Html.HiddenFor(c => c.Type)
+            <div class="w-100 d-flex">
+                <div class="quantity clearfix options mb-4 mx-auto">
+                    <input type="button" value="-" class="minus">
+                    <input type="number" step="1" min="1" name="Quantity" value="1" title="Qty" class="qty" size="4" />
+                    <input type="button" value="+" class="plus">
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoorder"><i class="fa-shopping-cart"></i> @Resources.Common.AddToCart</button>
+            @if (Model.AllowOnAutoOrder)
+            {
+                <div class="text-divider margin-top--8px text-center">
+                    <h5>@Resources.Common.or</h5>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder"><i class="fa-refresh"></i> @Resources.Common.AddToAutoShip</button>
+            }
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+        require(["jquery", "pubsub"], function ($) {
+
+            $('.minus').on('click', function () {
+                var $item = $('input[name="Quantity"]', $(this).parent());
+
+                var quantity = parseInt($item.val()) - 1;
+                if (quantity > 0)
+                    $item.val(quantity);
+
+            });
+
+            $('.plus').on('click', function () {
+                var $item = $('input[name="Quantity"]', $(this).parent());
+
+                var quantity = parseInt($item.val()) + 1;
+                $item.val(quantity);
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,500 @@
+﻿@model CalendarViewModel
+@{
+    ViewBag.Title = Resources.Common.Calendar;
+    ViewBag.ParentOption = "events";
+    ViewBag.LinkOption = "calendar";
+    var defaultCountryCode = !Identity.Current.Country.IsNullOrEmpty() ? Identity.Current.Country : "US";
+    var defaultRegionCode = Html.Regions(defaultCountryCode).FirstOrDefault().Value ?? "AZ";
+        var pageHeader = new PageHeader
+        {
+            PageName = ViewBag.Title,
+            DefaultParentLinkSitemapID = "events",
+            DefaultBreadcrumbLinkSitemapID = "calendar"
+        };
+}
+
+<style>
+    @foreach (var type in Model.EventTypes)
+    {
+        <text> table[class^='k-scheduler-']:not(.k-scheduler-agenda).k-scheduler-layout .eventType-@type.CalendarEventTypeID { background-color: @type.Color; } .k-event-delete { display: none; } </text>
+
+    }
+    table[class^='k-scheduler-']:not(.k-scheduler-agenda).k-scheduler-layout .k-event-actions .k-event-delete { display: none; }
+    .k-event { background: none }
+    .k-sm-date-format { display: none; }
+</style>
+
+<section id="view-calendar">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <section class="row">
+                <aside class="col-12 col-md-4 col-lg-3 col-xl-3">
+                    <section class="search">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-input" placeholder="@Resources.Common.Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append"><span class="btn btn-primary search-button" id="basic-addon2"><span class="fa-search"></span></span></div>
+                        </div>
+                    </section>
+
+                    <hr />
+
+                    <section>
+                        <div>
+                            <h4>@Resources.Common.EventTypes</h4>
+                        </div>
+                        <ul class="legend">
+                            @foreach (var eventType in Model.EventTypes)
+                            {
+                                <li data-filter="calendarEventTypeID" data-filter-value="@eventType.CalendarEventTypeID">
+
+                                    <i class="fa fa-square" style="color: @eventType.Color;"></i> @eventType.CalendarEventTypeDescription
+                                </li>
+                            }
+                        </ul>
+                    </section>
+
+                    <hr />
+                    @if (Model.Speakers.Count() > 0)
+                    {
+                        <section>
+                            <div>
+                                <h4>@Resources.Common.Speakers</h4>
+                            </div>
+                            <ul class="legend">
+                                @foreach (var speaker in Model.Speakers)
+                                {
+                                    <li data-filter="speakersName" data-filter-value="@speaker">
+                                        <i class="fa fa-user"></i> @speaker
+                                    </li>
+                                }
+                            </ul>
+                        </section>
+
+                        <hr />
+                    }
+                    @*<section class="clearfix">
+                <div>
+                    <h4>
+                        @Resources.Common.TimeZone
+                    </h4>
+                </div>
+                <div class="col-md-12 no-padding">
+                    <div id="schedulerTimezone" name="schedulerTimezone" data-role="timezoneeditor"></div>
+                    <div class="col-md-2 no-padding">
+                        <button type="button" data-action="set-timezone" class="btn btn-primary">@Resources.Common.Go</button>
+                    </div>
+                </div>
+            </section>
+
+            <hr />*@
+
+                    <section>
+                        <a href="@Url.Action("Subscriptions","Events")" class="btn btn-primary">@Resources.Common.CalendarSubscriptions</a>
+                        <div class="space10 clearfix"></div>
+                    </section>
+                </aside>
+                <section class="col-12 col-md-8 col-lg-9 col-xl-9">
+                    <div data-widget="scheduler"></div>
+                    @*@Html.ContentBlock("29DD6787-256E-4C35-88D3-D3FFEB5FF954")*@
+                    <div id="help">
+                        <h2 class="text-center">@Resources.Common.HowToGuide</h2>
+                        <h4 class="text-center">@Resources.Common.CreatingViewingEvent</h4>
+                        <p class="text-center">@Resources.Common.InOrderToCreate</p>
+                        <h4 class="text-center">@Resources.Common.SearchingForEvent</h4>
+                        <p class="text-center">@Resources.Common.InOrderToSearch</p>
+                        <p class="text-center">@Resources.Common.AlsoIfYouNeed</p>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script id="editor" type="text/x-kendo-template">
+        @Html.Raw((Html.Partial("Partials/_Event", Model).ToHtmlString().Replace("&#", "&\\#")))
+
+    </script>
+
+    <script id="event" type="text/x-kendo-template">
+        <section class="eventType-#: calendarEventTypeID #">
+            #: title #
+        </section>
+    </script>
+    <script id="allDayEvent" type="text/x-kendo-template">
+        <section class="eventType-#: calendarEventTypeID #">
+            #: title #
+        </section>
+    </script>
+
+    <script>
+        var calendarOverview;
+        require(["jquery", "toastr", "kendogrids", "app", "kendo-timezones"], function($, toastr, kendogrids, app) {
+        waitSeconds: 200,
+            calendarOverview = (function () {
+                kendo.culture("@UICulture.Substring(0,2)");
+                @* Settings *@
+                var context = "#view-calendar",
+                    $context = $(context),
+                    getEventsUrl = "@Url.Action("GetEvents", "Events")",
+                    saveEventUrl = "@Url.Action("SaveEvent", "Events")",
+                    deleteEventUrl = "@Url.Action("DeleteEvent", "Events")",
+                    defaultCalendarId = "@Model.Calendars.Where(cal => cal.CustomerID == Identity.Current.CustomerID).FirstOrDefault().CalendarID",
+                    defaultEventTypeId = "@Model.EventTypes.FirstOrDefault().CalendarEventTypeID",
+                    defaultPrivacyTypeId = @Model.PrivacyTypes.FirstOrDefault().CalendarEventPrivacyTypeID,
+                    defaultCreatedDate = "@DateTime.Now.ToString("g")",
+                    defaultCreatedBy = "@Identity.Current.CustomerID",
+                    defaultCountryCode = "@defaultCountryCode",
+                    defaultRegionCode = "@defaultRegionCode",
+                    localTimeZone = "@GlobalUtilities.NetToIana(TimeZoneInfo.Local.Id)",
+                    permissions = "@GlobalUtilities.CalendarPermissions(Identity.Current.CustomerTypeID)",
+                    recurringEvent = '@Identity.Current.CustomerID' != '@GlobalSettings.Company.CorporateCalendarAccountID' ? "occurrence" : "dialog";
+
+                @* Event Handlers *@
+                function registerEventHandlers() {
+
+                    $("body").on('change', '#calendar-event-country', function () {
+                        var $this = $(this),
+                            country = $this.val(),
+                            $region = $("#location_State");                            
+
+                        $.ajax({
+                            url: app.path("app/getregions/" + country),
+                            type: 'GET',
+                            cache: true,
+                            success: function (response) {
+                                if (response.success) {
+                                    var html = '',
+                                        regions = response.regions;                                                                       
+
+                                    for (var i = 0; i < response.regions.length; i++) {
+                                        var region = regions[i];
+                                        html += '<option value="{0}">{1}</option>'.format(
+                                            region.RegionCode,
+                                            region.RegionName);
+                                    }
+
+                                    // Populate the regions
+                                    $region.html(html);                                    
+                                }
+                            }
+                        });
+                    });
+
+
+                    $("[data-action='set-timezone']").on("click", function() {
+                        var scheduleContext = "[data-widget='scheduler']",
+                            timeZone = $("#schedulerTimezone").data("kendoTimezoneEditor").value(),
+                            scheduler = $(scheduleContext).data("kendoScheduler"),
+                            currentView = scheduler["_selectedViewName"],
+                            options = scheduler.options;
+
+                        scheduler.destroy();
+                        options.timezone = timeZone;
+                        $(scheduleContext).empty().kendoScheduler(options);
+                        $(scheduleContext).data("kendoScheduler").view(currentView);
+                    });
+
+                    $(".k-event-delete").on("click", function(){
+
+                        console.log('test');
+                        e.preventdefault();
+                    });
+
+                    $("[data-filter]").on("click", function() {
+                        var $this = $(this),
+                            filterOn = $this.data("filter"),
+                            filterValue = $this.data("filter-value"),
+                            scheduler = $("[data-widget='scheduler']").data("kendoScheduler");
+
+                        if ($this.is("[disabled]")) {
+                            var filters = $.grep(scheduler.dataSource.filter().filters, function(idx) {
+                                if (idx.field == filterOn) {
+                                    if (idx.value != filterValue) {
+                                        return true;
+                                    }
+                                } else {
+                                    return true;
+                                }
+                            });
+                            scheduler.dataSource.filter().filters = filters;
+                            $this.removeAttr("disabled");
+                        } else {
+                            var filters = $.grep(scheduler.dataSource.filter().filters, function(idx) {
+                                if (idx.field == filterOn) {
+                                    if (idx.value != filterValue) {
+                                        return true;
+                                    }
+                                } else {
+                                    return true;
+                                }
+                            });
+                            scheduler.dataSource.filter().filters = filters;
+                            scheduler.dataSource.filter().filters.push({ "field": filterOn, "operator": "neq", value: filterValue });
+                            $this.attr("disabled", true);
+                        }
+
+                        scheduler.dataSource.read();
+                    });
+
+                    $context.on("click", ".search-button", function() {
+                        var $this = $(this),
+                            scheduler = $("[data-widget='scheduler']").data("kendoScheduler"),
+                            filterOn = "title",
+                            filterValue = $(".search-input").val();
+
+                        if (filterValue == "") {
+                            helpers.clearSearch();
+                            return;
+                        } else {
+                            var filters = $.grep(scheduler.dataSource.filter().filters, function(idx) {
+                                if (idx.field == filterOn) {
+                                    if (idx.operator != "contains") {
+                                        return true;
+                                    }
+                                } else {
+                                    return true;
+                                }
+                            });
+                            scheduler.dataSource.filter().filters = filters;
+                            scheduler.dataSource.filter().filters.push({ "field": filterOn, "operator": "contains", value: filterValue });
+                            scheduler.dataSource.read();
+                        }
+                    });
+
+                    $(".search").on("keyup", function(e) {
+                        if (e.keyCode == 13) {
+                            $(".search-button").click();
+                        }
+                    });
+                };
+
+
+                @* Helpers *@
+                var helpers = {
+
+                    clearSearch: function() {
+                        var $this = $(".search-button .fa-times-circle"),
+                            scheduler = $("[data-widget='scheduler']").data("kendoScheduler"),
+                            filterOn = "title",
+                            filters = $.grep(scheduler.dataSource.filter().filters, function(idx) {
+                                if (idx.field == filterOn) {
+                                    if (idx.operator != "contains") {
+                                        return true;
+                                    }
+                                } else {
+                                    return true;
+                                }
+                            });
+
+                        scheduler.dataSource.filter().filters = filters;
+                        $this.parent().prev("input").val("");
+                        scheduler.dataSource.read();
+                    },
+                    serializeProperties: function(obj) {
+                        for (var prop in obj) {
+                            var slicePoint = prop.indexOf("_");
+
+                            if (slicePoint != -1) {
+                                var propName = prop.substring(0, slicePoint);
+                                var newProp = {};
+
+                                for (var idx in obj) {
+                                    if (idx.indexOf(propName) != -1) {
+                                        newProp[idx.substring(slicePoint + 1, idx.length)] = obj[idx];
+                                        delete obj[idx];
+                                    }
+                                }
+
+                                obj[propName] = newProp;
+                            }
+
+                            if (prop.indexOf("multiTagger") != -1) {
+                                var tags = "";
+                                for (var idx in obj[prop]) {
+                                    var val = obj[prop][idx]["text"];
+                                    if (val != undefined) {
+                                        tags += obj[prop][idx]["text"] + ", ";
+                                    }
+                                }
+                                tags = tags.substring(0, tags.lastIndexOf(","));
+
+                                obj["Tags"] = tags.split(", ");
+                                delete obj[prop];
+                            }
+                        }
+
+                        return obj;
+                    },
+                    initializeScheduler: function() {
+                        $(context).find("[data-widget='scheduler']").kendoScheduler({
+                            data: function(e) {
+
+                                e == undefined ? null : recurringEvent = e.event.createdBy != '@Identity.Current.CustomerID' ? "dialog" : "occurrence";
+                                console.log(" " + recurringEvent);
+
+                            },
+
+                            date: kendo.toString(new Date(), "d"),
+                            timezone: localTimeZone,
+                            views: ["month", "workWeek", "week", "day", "agenda"],
+                            eventTemplate: $("#event").html(),
+                            allDayEventTemplate: $("#allDayEvent").html(),
+                            editable: {
+                                editRecurringMode: recurringEvent,
+                                template: $("#editor").html(),
+                                create: permissions,
+                                destroy: true,
+                                move: false,
+                                resize: false,
+                                update: true
+                            },
+                            edit: calendar_edit,
+
+                            dataSource: {
+                                batch: true,
+                                transport: {
+                                    create: {
+                                        url: saveEventUrl,
+                                        type: "POST",
+                                        contentType: 'application/json',
+                                        dataType: 'json',
+                                        complete: function(data) {
+                                            var response = JSON.parse(data.responseText);
+                                            if (response.success == false) {
+                                                toastr.error(response.message);
+                                            }
+                                            else{
+                                                location.reload();
+                                            }
+                                        }
+                                    },
+                                    read: {
+                                        url: getEventsUrl,
+                                        dataType: "json"
+                                    },
+                                    update: {
+                                        url: saveEventUrl,
+                                        type: "POST",
+                                        contentType: 'application/json',
+                                        dataType: 'json',
+                                        complete: function(data) {
+                                            var response = JSON.parse(data.responseText);
+                                            if (response.success == false) {
+                                                toastr.error(response.message);
+                                            }
+                                        }
+                                    },
+                                    destroy:{
+                                        url: deleteEventUrl,
+                                        type: "POST",
+                                        contentType: 'application/json',
+                                        dataType: 'json',
+
+                                    },
+                                    parameterMap: function(options, operation) {
+                                        switch (operation) {
+                                            case "create":
+                                            case "update":
+                                                return kendo.stringify(helpers.serializeProperties(options.models[options.models.length - 1]));
+                                            case "destroy":
+                                                return kendo.stringify({ "calendarEventID": options.models[options.models.length - 1]["ID"] });
+                                            case "read":
+                                            default:
+                                                break;
+                                        }
+                                    }
+
+                                },
+                                schema: {
+                                    parse: function(response) {
+                                        return response.data;
+                                    },
+                                    model: {
+                                        id: "taskId",
+                                        fields: {
+                                            taskId: { from: "ID", type: "string" },
+                                            title: { from: "Title", defaultValue: "@Resources.Common.NoTitle" },
+                                            description: { from: "Description" },
+                                            start: { from: "Start", type: "date" },
+                                            end: { from: "End", type: "date" },
+                                            startTimezone: { from: "StartTimezone", type: "string" },
+                                            endTimezone: { from: "EndTimezone", type: "string" },
+                                            recurrenceId: { from: "RecurrenceID" },
+                                            recurrenceRule: { from: "RecurrenceRule" },
+                                            recurrenceException: { from: "RecurrenceException" },
+                                            isAllDay: { from: "IsAllDay", type: "boolean" },
+                                            calendarID: { from: "CalendarID", defaultValue: defaultCalendarId },
+                                            calendarEventTypeID: { from: "CalendarEventTypeID", type: "string", defaultValue: defaultEventTypeId },
+                                            calendarEventPrivacyTypeID: { from: "CalendarEventPrivacyTypeID", type: "number", defaultValue: defaultPrivacyTypeId },
+                                            createdBy: { from: "CreatedBy", type: "number", defaultValue: defaultCreatedBy },
+                                            createdDate: { from: "CreatedDate", type: "date", defaultValue: defaultCreatedDate },
+                                            tags: { from: "Tags", type: "string" },
+                                            location_Address1: { from: "Location_Address1" },
+                                            location_Address2: { from: "Location_Address2" },
+                                            location_City: { from: "Location_City" },
+                                            location_State: { from: "Location_State", defaultValue: defaultRegionCode },
+                                            location_Zip: { from: "Location_Zip" },
+                                            location_Country: { from: "Location_Country", defaultValue: defaultCountryCode },
+                                            speakersName: { from: "SpeakersName" },
+                                            phone: { from: "Phone" },
+                                            flyer: { from: "Flyer" },
+                                            cost: { from: "Cost" },
+                                            conferenceNumber: { from: "ConferenceNumber" },
+                                            conferencePIN: { from: "ConferencePIN" },
+                                            url: { from: "Url" }
+                                        }
+                                    }
+                                },
+                                filter: {
+                                    logic: "and",
+                                    filters: [
+                                    ]
+                                }
+                            }
+                        });
+
+                        kendo.timezone.zones_titles = $.grep(kendo.timezone.zones_titles,function(zone){
+                            return zone.name.indexOf("US") != -1;
+                        });
+                        //kendo.ui.TimezoneEditor.fn.init($("#schedulerTimezone"), { "optionLabel": "@Resources.Common.Current" + ": " + localTimeZone });
+                    }
+
+                };
+                function calendar_edit(e) {
+                    e.event.set("isAllDay", false);
+
+                    if('@Identity.Current.CustomerID' != '@GlobalSettings.Company.CorporateCalendarAccountID'){
+                        e.container.find("[for=recurrenceRule]").parent().hide();
+                        e.container.find("[data-container-for=recurrenceRule]").hide();
+                    }
+                    if(e.event.createdBy != '@Identity.Current.CustomerID'){
+                        var buttonsContainer = e.container.find(".k-edit-buttons");
+                        var updateButton = buttonsContainer.find(".k-scheduler-update");
+                        var deleteButton = buttonsContainer.find(".k-scheduler-delete");
+                        var cancelButton = buttonsContainer.find(".k-scheduler-cancel");
+
+                        cancelButton.text("Close");
+                        updateButton.remove();
+                        deleteButton.remove();
+                        e.container.find("#non-editable").show();
+                    }else{
+                        e.container.find("#editable").show();
+                    }
+
+                }
+
+                @* Initialization *@
+                function init() {
+                    registerEventHandlers();
+                    helpers.initializeScheduler();
+                };
+
+                init();
+            })();
+        });
+    </script>
+}

@@ -1,0 +1,254 @@
+﻿@model ResourceListViewModel
+@{
+    ViewBag.Title = Resources.Common.ResourceLibrary;
+
+    var currentLanguage = Identity.Current.Language.LanguageDescription;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div id="view-resource-list">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+
+            @if (Identity.Current.CustomerID == 1)
+            {
+                <div class="row">
+                    <div class="col text-right">
+                        <a class="btn btn-primary" href="@Url.Action("ManageResources", "Resources")">@Resources.Common.ManageResources</a>
+                    </div>
+                </div>
+                <div class="space-20"></div>
+            }
+
+            <div class="row">
+                <div class="col-xl-3">
+                    @Html.Partial("Partials/_ResourceFilters", Model)
+                </div>
+                <div class="col-xl-9" id="resourcelist-target">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    require(["jquery", "ajax", "jquery-ui", "select2"], function ($, ajax, jqueryui, select2) {
+
+        var context = $("#view-resource-list"),
+            $context = $(context),
+            sortCategoryByDatUrl = '@Url.Action("SortCategoryByDate","Resources")';
+
+        var oldID = @Model.CategoryID,
+            FilteredCategory = "",
+            FilteredMedia = [],
+            FilteredMarket = "",
+            FilteredLanguage = "",
+            keywords = [],
+            isFiltered = false;
+
+        function registerEventHandlers(){
+
+            $context.on("click", "[date-sort]", function () {
+                var $this = $(this),
+                    isAscending = $this.hasClass("asc"),
+                    isDescending = $this.hasClass("desc"),
+                    categoryId = $(this).parents('.category-detail').first().data("id"),
+                    sortType = "";
+
+                if(isAscending)
+                {
+                    $this.removeClass("asc");
+                    $this.addClass("desc");
+                    sortType = "desc";
+                }
+                else if(isDescending)
+                {
+                    $this.removeClass("desc");
+                }
+                else {
+                    $this.addClass("asc");
+                    sortType = "asc";
+                }
+
+                actions.sortCategoryByDate(categoryId, sortType);
+            });
+
+            $context.on("click","[data-role='searchKeyword']", function () {
+                keywords = $("#Tags").val()
+                if(keywords !== "undefined" || keywords.length() > 0){
+                    getResourceList();
+                }
+            });
+
+            $context.on("click","#clearKeywords", function () {
+                keywords = [];
+                $("#Tags").val("").trigger('change');
+                $("#clearKeywords").hide();
+                getResourceList();
+            });
+
+            $context.on("click", "#category-list li span", function () {
+                $(this).find('i').toggleClass('fa-plus-square-o fa-minus-square-o')
+            });
+
+            $("[data-role='categoryFilter']").on("click", function () {
+                FilteredCategory = JSON.stringify($(this).attr('id'));
+                getResourceList();
+                $("#category-list").find("li").each(function(){ $(this).removeClass("highlight")})
+                $(this).parent().addClass("highlight");
+                $("#showallcategories").show();
+            });
+
+            $("#showallcategories").on("click", function () {
+                FilteredCategory = "";
+                getResourceList();
+                $("#category-list").find("li").each(function(){ $(this).removeClass("highlight")})
+                $("#showallcategories").hide();
+
+            });
+
+            $("#marketFilter").on("change", function () {
+                FilteredMedia = [];
+                var listitems = $(this).find('li');
+                $.each(listitems, function ()
+                {
+                    var y = $(this).find('input[type=checkbox]');
+                    if($(y).is(":checked"))
+                    {
+                        FilteredMedia.push($(y).val());
+                    }
+                })
+                if(FilteredMedia.length > 0){
+                    $("#applyFilter").show();
+                }
+                else{
+                    $("#applyFilter").hide();
+                }
+                console.log(isFiltered);
+                console.log(FilteredMedia);
+                if(isFiltered && FilteredMedia.length <= 0){
+                    $("#clearFilter").show()
+                }
+                else{
+                    $("#clearFilter").hide()
+                }
+            });
+
+            $("#applyFilter").on("click", function () {
+                getResourceList();
+            });
+
+            $("#clearFilter").on("click", function () {
+                isFiltered = false;
+                getResourceList();
+                $(this).hide()
+            });
+
+            $("#Country").on("change", function () {
+                FilteredMarket = $(this).val();
+                getResourceList();
+            });
+
+            $("#Language").on("change", function () {
+                FilteredLanguage = $(this).val();
+                getResourceList();
+            });
+
+        }
+        var actions = {
+            createSelectList: function(){
+                $("#Tags").select2({
+                    value:"",
+                    tags: true,
+                    multiple:true,
+                    placeholder: '@Resources.Common.SelectAKeyword',
+
+                })
+            },
+            sortCategoryByDate: function(categoryId, sortType){
+                var categories = '@Html.Raw(Json.Encode(Model.ResourceCategories))';
+                var filter = {
+                    MediaFilter: FilteredMedia,
+                    Categories: categories,
+                    MarketFilter: FilteredMarket,
+                    CategoryFilter: FilteredCategory,
+                    LanguageFilter: FilteredLanguage,
+                    LanguageFilter: FilteredLanguage,
+                    KeyWord: keywords
+                };
+
+                ajax.json({
+                    url: sortCategoryByDatUrl,
+                    data: {
+                        categoryID: categoryId,
+                        sortType: sortType,
+                        filter: filter
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            var $categoryTableBody = $(".category-detail[data-id='"+ categoryId +"'] tbody");
+
+                            console.log("$categoryTableBody.length: ", $categoryTableBody.length);
+
+                            $categoryTableBody.html(response.html);
+                        }
+                    },
+                    error: function (response) {
+                        //console.log(response.message, "@Resources.Common.Error");
+                    }
+                });
+            }
+        }
+
+        function getResourceList() {
+            var categories = '@Html.Raw(Json.Encode(Model.ResourceCategories))';
+            var filter = {
+                MediaFilter: FilteredMedia,
+                Categories: categories,
+                MarketFilter: FilteredMarket,
+                CategoryFilter: FilteredCategory,
+                LanguageFilter: FilteredLanguage,
+                LanguageFilter: FilteredLanguage,
+                KeyWord: keywords
+            };
+
+
+            ajax.json({
+                url: '@Url.Action("getresourcelist", "resources")',
+                data: { filter: filter },
+                success: function (response) {
+                    if (!response.success) {
+                        console.log(response.message);
+                        return;
+                    }
+                    isFiltered = response.isFiltered;
+                    var $html = $("#resourcelist-target");
+                    $html.html(response.html);
+                    if(keywords != ""){
+                        $("#clearKeywords").show();
+                    }
+
+                },
+                error: function (response) {
+                    console.log(response.message, "@Resources.Common.Error");
+                }
+            });
+        }
+
+        function init() {
+            registerEventHandlers()
+            actions.createSelectList();
+
+            $('#Country').trigger('change');
+        }
+
+        $(init);@*Methd called when the form is called*@
+    });
+</script>

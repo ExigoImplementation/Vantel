@@ -1,0 +1,173 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid();
+}
+
+<div id="view-personalinformation-@contextID">
+
+    <div class="row ">
+        <div class="col-12 col-md-8">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.FirstName, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.FirstName)
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.MiddleName, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.MiddleName)
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.LastName, new { @class = ""})
+                @Html.EditorFor(c => c.Customer.LastName)
+            </div>
+        </div>
+    </div>
+
+    <div class="space-5"></div>
+    <div class="row ">
+        <div class="col-12">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.BirthDate, new { @class = "" })
+                <div class="row ">
+                    <div class="col-md-12 col-lg-4">
+                        <div class="form-group">
+                            @Html.DropDownList("Customer.BirthDate.Month", 
+                           Html.Months(defaultMonth: Model.Customer.BirthDate.Month), 
+                           new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-4">
+                        <div class="form-group">
+                            @Html.DropDownList("Customer.BirthDate.Day", 
+                           Html.Days(defaultDay: Model.Customer.BirthDate.Day), 
+                           new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-4">
+                        <div class="form-group">
+                            @Html.DropDownList("Customer.BirthDate.Year", 
+                           Html.BirthYears(defaultYear: Model.Customer.BirthDate.Year), 
+                           new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="space-5"></div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.Company, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.Company)
+            </div>
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col-md-6 col-lg-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.PrimaryPhone, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.PrimaryPhone)
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.SecondaryPhone, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.SecondaryPhone)
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.MobilePhone, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.MobilePhone)
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.Fax, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.Fax)
+            </div>
+        </div>
+    </div>
+    <div class="space-5"></div>   
+    <div class="row ">
+        <div class="col-md-12 col-lg-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.TaxID, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.TaxID)
+            </div>
+        </div>
+    </div>
+    <div class="space-5"></div>
+    
+    <div class="row ">
+        <div class="col-12">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Customer.LanguageID, new { @class = "" })
+                @Html.EditorFor(c => c.Customer.LanguageID)
+            </div>
+        </div>
+    </div>
+    <div class="space-5"></div>
+
+    <div class="row ">
+        <div class="col-md-12 col-lg-6">
+            <div class="form-group">
+              @Html.LabelFor(c => c.Customer.Email, new { @class = "" })
+              @Html.EditorFor(c => c.Customer.Email)
+            </div>
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div class="form-group">  
+                <div class="custom-control custom-checkbox">
+                    @Html.CheckBoxFor(c => c.Customer.IsOptedIn,
+                    htmlAttributes: new { @class = "custom-control-input" })
+                    @Html.LabelFor(c => c.Customer.IsOptedIn,@Resources.Common.IWouldLikeToRecieveEmails , htmlAttributes: new { @class = "custom-control-label" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@using (Html.BeginPartialScript())
+{
+
+    <script>
+        require(["jquery", "bootstrap"], function ($) {
+
+            // Settings
+            var context = "#view-personalinformation-@contextID",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('[data-toggle="popover"]', $context).popover();
+            }
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}

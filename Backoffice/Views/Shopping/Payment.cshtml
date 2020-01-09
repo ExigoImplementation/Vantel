@@ -1,0 +1,389 @@
+﻿@model PaymentMethodsViewModel
+@{
+    ViewBag.Title = Resources.Common.Payment;
+    var market = GlobalUtilities.GetCurrentMarket(this.Context);
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var availablePaymentMethods = market.AvailablePaymentTypes;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Cart, UrlPath = Url.Action("Cart", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.ShippingAddress, UrlPath = Url.Action("Shipping", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-orderpayment">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            @* Party Info Bar *@
+            @if (ViewBag.ActiveParty != null)
+            {
+                @Html.Partial("Partials/_PartyOrderMessage", Model)
+            }
+            @* End Party Info Bar*@
+            @if (Model.PaymentMethods.Count() > 0)
+            {
+                <h3>@Resources.Common.SelectPaymentMethod</h3>
+                <hr />
+
+                <div class="row justify-content-center pb-5">
+                    @foreach (var method in Model.PaymentMethods)
+                    {
+                        if (method is CreditCard)
+                        {
+                            var card = method as CreditCard;
+                            <div class="col-xl-4 col-lg-6 col-md-12">
+                                <div class="card mb-2 border-right-0 border-left-0">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@card.Type</h5>
+                                        <div class="row">
+                                            <div class="col-lg-8 col-md-12">
+                                                <div>@Resources.Common.CardEndingIn @card.CardNumber</div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-12">
+                                                <div class="@((card.IsExpired) ? "text-danger" : "")">
+                                                    @card.ExpirationDate.ToString("M/yyyy")
+                                                    @if (card.IsExpired)
+                                                    {
+                                                        <text><br />@Resources.Common.Expired</text>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="space-5"></div>
+                                                @card.NameOnCard
+                                            </div>
+                                        </div>
+                                        <div class="space-10"></div>
+                                        <div>
+                                            @using (Ajax.BeginForm("UseCreditCardOnFile", new AjaxOptions()
+                                            {
+                                                OnBegin = "paymentoverview.onBegin",
+                                                OnSuccess = "paymentoverview.onSuccess"
+                                            }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="Type" value="@card.Type" />
+
+                                                if (Identity.Current.Market.CVVRequired)
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                            @Html.TextBoxFor(c => c.ExistingCardCVV,
+                                                              htmlAttributes: new
+                                                              {
+                                                                  @class = "form-control",
+                                                                  style = "max-width: 100px;"
+                                                              })
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <button type="submit" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading">
+                                                                @Resources.Common.PayWithThisCard
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <button type="submit" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading">
+                                                        @Resources.Common.PayWithThisCard
+                                                    </button>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <h3>@Resources.Common.MorePaymentOptions</h3>
+            }
+            else
+            {
+                <h3>@Resources.Common.SelectPaymentMethod</h3>
+            }
+            <hr />
+            @foreach (var paymentMethod in availablePaymentMethods)
+            {
+                if (paymentMethod.CanBeParsedAs<CreditCard>())
+                {
+                    <div class="row">
+                        <div class="col-lg-9 mt-2 mb-5 my-sm-3">
+                            @*<h4>@Resources.Common.CreditDebitCards</h4>*@
+                            <p><a data-toggle="#newcardcontainer" class="btn btn-outline-primary btn-lg btn-block "><i class="fa-plus"></i> @Resources.Common.AddCard</a></p>
+                            <div id="newcardcontainer" class="" style="display: none;">
+                                @{ var NewCard = new CreditCard(); }
+                                @using (Ajax.BeginForm("UseCreditCard", controller, new AjaxOptions()
+                                {
+                                    OnBegin = "paymentoverview.onBegin",
+                                    OnSuccess = "paymentoverview.onSuccess"
+                                }, new { novalidate = "novalidate" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    <div class="card card-body mb-3 border-right-0 border-0">
+                                        <div class="row margin-5">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(c => NewCard.NameOnCard)
+                                                    @Html.TextBoxFor(c => NewCard.NameOnCard,
+                                                    htmlAttributes: new
+                                                    {
+                                                        @class = "form-control",
+                                                        placeholder = Resources.Common.NameOnCard
+                                                    })
+                                                    @Html.ValidationMessageFor(c => NewCard.NameOnCard, String.Empty,
+                                                     new
+                                                     {
+                                                         @style = "color:red; font-size:small;"
+                                                     })
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="@Html.IdFor(x => NewCard.CardNumber)">@Resources.Common.CardNumber: </label>
+                                                    <div id="cc-wrapper"></div>
+                                                    @Html.ValidationMessageFor(x => NewCard.CardNumber, "", new { @class = "text-danger" })
+                                                    @Html.HiddenFor(m => NewCard.Token, new { @class = "creditcard-token" })
+                                                    @Html.HiddenFor(m => NewCard.Display, new { @class = "creditcard-display" })
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-8">
+                                                <div class="form-group">
+                                                    <label for="inputEmail3" class="control-label">@Resources.Common.ExpirationDate</label>
+                                                    <div class="row margin-5">
+                                                        <div class="col-md-8 mb-4 mb-md-0">
+                                                            @Html.DropDownList("NewCard.ExpirationMonth", Html.Months(), new
+                                                       {
+                                                           @class = "form-control"
+                                                       })
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            @Html.DropDownList("NewCard.ExpirationYear", Html.ExpirationYears(), new
+                                                       {
+                                                           @class = "form-control"
+                                                       })
+                                                            @Html.ValidationMessageFor(c => NewCard.IsExpired)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="@Html.IdFor(x=> NewCard.CVV)">@Resources.Common.CVV: </label>
+                                                    @Html.TextBoxFor(x => NewCard.CVV, "", new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(x => NewCard.CVV, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="custom-control custom-checkbox billingsameasshipping">
+                                                <input type="checkbox" class="custom-control-input" name="BillingSameAsShipping" id="BillingSameAsShipping" value="true" checked /> 
+                                                <label class="custom-control-label" for="BillingSameAsShipping"> @Resources.Common.BillingAddressSameAsShipping</label>
+                                                <input type="hidden" value="false" name="BillingSameAsShipping" />
+                                            
+                                        </div>
+                                        @Html.EditorFor(c => NewCard.BillingAddress)
+                                    </div>
+
+                                    <a id="btnNewCardSubmit" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.PayWithThisCard</a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="row">
+                                @if (Resources.Common.Logo_VISA != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_VISA" />
+                                    </div>
+                                }
+                                @if (Resources.Common.Logo_Mastercard != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_Mastercard" />
+                                    </div>
+                                }
+                                @if (Resources.Common.Logo_Discover != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_Discover" />
+                                    </div>
+                                }
+                                @if (Resources.Common.Logo_JCB != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_JCB" />
+                                    </div>
+                                }
+                                @if (Resources.Common.Logo_Diners != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_Diners" />
+                                    </div>
+                                }
+                                @if (Resources.Common.Logo_AmericanExpress != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_AmericanExpress" />
+                                    </div>
+                                }
+                                @if (Resources.Common.Logo_UnionPay != "")
+                                {
+                                    <div class="col-3">
+                                        <img src="@Resources.Common.Logo_UnionPay" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <style>
+        #cc-wrapper {
+            max-height: 40px;
+        }
+    </style>
+
+    <script src="@Url.Action("TokenEx", "App")"></script>
+    <script>
+        var paymentoverview;
+
+        require(["jquery", "toastr", "pubsub", "forms", "bootstrap"], function ($, toastr) {
+            paymentoverview = (function () {
+
+                // Settings
+                var context = "#view-orderpayment",
+                    $context = $(context);
+
+                // Iframe width fix
+                var windowWidth = $(window).width();
+                var ccFieldWidth = "90%";
+                if (windowWidth < 330) {
+                    ccFieldWidth = "90%";
+                } else if (windowWidth < 576) {
+                    ccFieldWidth = "90%";
+                } else if (windowWidth < 767) {
+                    ccFieldWidth = "80%";
+                } else if (windowWidth < 1095) {
+                    ccFieldWidth = "80%";
+                }
+
+                var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                    styles: {
+                    base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;font-weight: 400;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !default;",
+                    focus: "color: #495057;background-color: #fff;border-color: #80bdff;outline:none;box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);",
+                        error: "@Resources.Common.CardIsInvalid"
+                    },
+                    placeholder: "Credit Card"
+                });
+
+                // Event Handlers
+                function registerEventHandlers() {
+                    $('[data-toggle]', $context).on('click', function () {
+                        var $this = $(this);
+                        var $target = $($(this).data('toggle'));
+                        $target.slideToggle('fast');
+
+                        $this.slideUp('fast');
+                    });
+
+                    $('input:checkbox[name="BillingSameAsShipping"]').on('change', function () {
+                        var $this = $(this),
+                            $target = $this.parents('.billingsameasshipping').siblings('.view-address'),
+                            checked = $this.is(':checked');
+
+                        if (checked) {
+                            $target.slideUp('fast');
+                        }
+                        else {
+                            $target.slideDown('fast');
+                        }
+                    });
+
+                    $('input:checkbox[name="BillingSameAsShipping"]').each(function () {
+                        $(this).triggerHandler('change');
+                    });
+
+                    $('#btnNewCardSubmit').on('click', function () {
+                        var $this = $(this);
+                        var $form = $this.parents("form").first();
+                        $this.buttonState("loading");
+
+                        var cardNumber = $("#NewCard_CardNumber").val();
+
+                        // Get Credit Card Token here
+                        tokenizer.tokenize({
+                            success: function (data) {
+                                console.log('tokenized success', data);
+                                var token = data.token;
+                                $(".creditcard-token").val(token);
+                                $(".creditcard-display").val(token.substr(token.length - 4, 4))
+                                $form.submit();
+                            },
+                            error: function (data) {
+                                console.log("get cc token failed", data);
+                                toastr.error(data);
+                                $this.buttonState("reset");
+                                return;
+                            }
+                        });
+
+
+                        if (!$form.valid()) {
+                            $this.buttonState("reset");
+                        }
+                    });
+                }
+
+
+                // Actions
+                var actions = {
+                    onBegin: function () {
+                        $("[type='submit']").loadingButtons();
+                        toastr.clear();
+                    },
+                    onSuccess: function (response) {
+                        if (response.success) {
+                            window.location = '@Url.Action("checkout")';
+
+                        } else {
+                            toastr.error(response.message, "@Resources.Common.InvalidPaymentType");
+                            $("[type='submit']").resetButtons();
+                        }
+                        $('#btnNewCardSubmit').buttonState('reset');
+                    }
+                };
+
+                // Initialization
+                function init() {
+                    registerEventHandlers();
+                }
+                init();
+
+                return {
+                    onSuccess: actions.onSuccess,
+                    onBegin: actions.onBegin
+                }
+
+            })();
+        });
+    </script>
+}

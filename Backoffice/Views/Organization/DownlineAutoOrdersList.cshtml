@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = Resources.Common.DownlineAutoOrders;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "downlineautoorders"
+    };
+}
+
+<div id="view-downlineautoorders">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["kendogrids"], function (kendoGrid) {
+
+            var cultureCode = "@Identity.Current.Market.CultureCode";
+            kendo.culture(cultureCode);
+
+
+            kendoGrid.create("#grid", {
+                columns: [
+                    { field: "CustomerID", width: 35, title: " ", type: "string", template: "<a data-profile='modal' data-id='#:CustomerID#' data-token='#:CustomerIDToken#' style='cursor: pointer;'><img src='/Content/images/contactcard.png' /></a>", sortable: false, filterable: false },
+                    { field: "CustomerID", title: "@Resources.Common.ID", type: "string", width: 100 },
+                    { field: "FirstName", title: "@Resources.Common.FirstName", type: "string", width: 150 },
+                    { field: "LastName", title: "@Resources.Common.LastName", type: "string", width: 150 },
+                    {
+                        field: "Total", title: "@Resources.Common.Total", width: 120, type: "number", attributes: { "class": "text-right" },
+                        template: function (row) { return row.Total.toLocaleString(row.CultureCode, { currency: row.CurrencyCode, style: 'currency' }); }
+                    },
+                    { field: "BusinessVolumeTotal", type: "number", title: "@Resources.Common.BV", width: 100, template: "#:BusinessVolumeTotal# " + "@Resources.Common.BV", attributes: { "class": "text-right" } },
+                    { field: "NextRunDate", title: "@Resources.Common.NextProcessDate", width: 150, type: "date", format: "{0:d}", attributes: { "class": "text-right" } }
+                ],
+                toolbar: ["excel"],
+                excel: {
+                    allPages: true,
+                    fileName: 'AutoOrderList.xlsx'
+                }
+            });
+        });
+    </script>
+}

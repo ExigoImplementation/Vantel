@@ -1,0 +1,14 @@
+@model ShippingAddress
+
+<div class="view-shippingaddress">
+    @Model.FirstName @Model.LastName<br />
+    @Html.Partial("~/Views/Shared/DisplayTemplates/Address.cshtml", Model)
+    @if (!Model.Phone.IsNullOrEmpty())
+    {
+        <i class="fa-phone"></i> @Model.Phone<br />
+    }
+    @if (!Model.Email.IsNullOrEmpty())
+    {
+        <i class="fa-envelope"></i> @Model.Email<br />
+    }
+</div> 

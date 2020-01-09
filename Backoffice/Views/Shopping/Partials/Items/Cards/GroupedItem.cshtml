@@ -1,0 +1,38 @@
+﻿@model Item
+@{
+    var contextID = Guid.NewGuid();
+}
+
+<div data-widget="product" id="view-product-@contextID">
+    <h4>@Model.ItemDescription</h4>
+    @Model.Price.ToString("C")
+    <input type="number" name="Quantity" value="@Model.Quantity.ToString("N0")" />
+
+    <div>
+        @Model.GroupMembersDescription
+        <select name="ItemCode">
+            @foreach (var member in Model.GroupMembers)
+            {
+                <option value="@member.ItemCode">@member.MemberDescription</option>
+            }
+        </select>
+    </div>
+
+    <button type="button" class="btn btn-primary" data-role="item.addtoorder" data-itemcode="@Model.ItemCode">@Resources.Common.AddItemToCart</button>
+    @if (Model.AllowOnAutoOrder)
+    {
+        <button type="button" class="cart-btn autoorder-cart-btn btn-info" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder" data-itemcode="@Model.ItemCode"><i class="fa-refresh"></i> @Resources.Common.AutoOrder</button>
+    }
+
+    <input type="hidden" name="GroupMasterItemCode" value="@Model.ItemCode" />
+</div>
+
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+        require(["products"], function (product) {
+            product.bind('#view-product-@contextID');
+        });
+    </script>
+}

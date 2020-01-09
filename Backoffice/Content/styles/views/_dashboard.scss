@@ -1,0 +1,292 @@
+﻿#view-dashboard {
+    .col-12 {
+        #member-info {
+            .section {
+                flex: 25%;
+            }
+        }
+    }
+
+    #card-member-info {
+        img.rounded-circle {
+            max-width: 86px;
+        }
+    }
+
+    #member-info {
+        .section {
+            flex-direction: column;
+            line-height: 18px;
+            color: #666;
+
+            &.fs-14 {
+                font-size: 14px;
+            }
+
+            &.text-muted {
+                font-size: 0.9em;
+            }
+
+            &.fs-12 {
+                font-size: 12px;
+                line-height: 16px;
+            }
+
+            &.fs-10 {
+                font-size: 10px;
+            }
+        }
+    }
+
+
+
+    a.card-link {
+        font-size: 0.85em;
+    }
+
+    .card {
+        .card-header {
+            background-color: $tertiary-color;
+
+            .card-title {
+                font-size: 16px;
+                text-transform: uppercase;
+                color: $white !important;
+            }
+        }
+
+        .card-body {
+
+            &.h-1 {
+                height: 130px;
+            }
+
+            &.h-2 {
+                height: 187px;
+            }
+
+            &.h-3 {
+                height: 285px;
+                overflow: auto;
+            }
+
+            &.h-4 {
+                height: 210px;
+            }
+
+            &.h-5 {
+                height: 60px;
+            }
+        }
+
+        .card-footer {
+            &.h-4 {
+                height: 290px;
+                overflow-y: auto;
+            }
+        }
+
+        .list-group {
+            margin-bottom: 0;
+
+            .list-group-item {
+                border-width: 1px 0;
+
+                &:first-child {
+                    border-top: 0;
+                }
+
+                &:last-child {
+                    border-bottom: 0;
+                }
+
+                h5 {
+                    text-transform: uppercase;
+                    font-size: 1em;
+                    margin-bottom: -3px;
+                    line-height: 1em;
+                }
+
+                small {
+                    font-size: 0.8em;
+                    color: #999;
+                    text-transform: uppercase;
+                }
+            }
+        }
+    }
+
+    .card-metrics {
+        .card-metric {
+            margin-bottom: 5px;
+
+            dt {
+                font-size: 15px;
+                font-weight: normal;
+                color: #333;
+            }
+
+            dd {
+                font-size: 15px;
+                font-weight: normal;
+            }
+        }
+
+        .card-metric-sm {
+            margin-bottom: 5px;
+
+            dt {
+                font-size: 13px;
+                color: #999;
+            }
+
+            dd {
+                font-size: 13px;
+                color: #999;
+            }
+        }
+
+        .card-metric-lg {
+            text-align: center;
+
+            dt {
+                font-size: 17px;
+                font-weight: normal;
+                color: #999;
+            }
+
+            dd {
+                font-size: 64px;
+                line-height: 64px;
+                font-weight: normal;
+                letter-spacing: -2px;
+            }
+        }
+
+        .title {
+            color: #666
+        }
+    }
+
+    #dashboard-carousel {
+        h2 {
+            color: $white;
+        }
+
+        .img-full {
+            display: block;
+        }
+
+        .img-mobile {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .img-full {
+                display: none;
+            }
+
+            .img-mobile {
+                display: block;
+            }
+        }
+    }
+
+    #card-company-news, #card-recent-activity {
+        padding: 0;
+
+        .list-group {
+
+            .list-group-item {
+                &:last-child {
+                    border-bottom: 1px solid rgba(0,0,0,.125);
+                }
+
+                div.text-truncate {
+                    max-width: 100%;
+                    font-size: .9em;
+                }
+            }
+
+            small {
+                text-transform: capitalize;
+                font-size: .7em;
+            }
+        }
+    }
+
+    #card-recent-activity {
+        .list-group {
+
+            .date-format {
+                line-height: .9em;
+            }
+
+            small {
+                font-size: .75em;
+                line-height: .8em;
+            }
+
+            .text-dark {
+                font-size: .8em;
+            }
+        }
+    }
+}
+
+
+#card-business-snapshot {
+    color: white;
+
+    .description {
+        display: block;
+        margin-top: 4px;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .wrapper {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        grid-template-rows: repeat(3,95px);
+        grid-gap: 5px;
+        text-align: center;
+        padding: 5px;
+
+        .volume-item {
+            background-color: $tertiary-color;
+            padding: 5px;
+            height: 100%;
+            transition: transform 0.2s linear;
+            cursor: pointer;
+            overflow-x: auto;
+            padding-top: 16px;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+
+            .rank-value {
+                font-size: 22px;
+                line-height: 1.1;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+.rank-description {
+    cursor:pointer;
+
+    @media (max-width:768px) {
+        font-size: 75%
+    }
+
+    @media (max-width:375px) {
+        font-size: 65%
+    }
+}
+
+.color-gray {
+    color: #999
+}

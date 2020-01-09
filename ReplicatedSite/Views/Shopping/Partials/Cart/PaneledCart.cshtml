@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Item>
+@{
+    var contextID = Guid.NewGuid();
+    // Used when we are on the review step and we do not want to allow a user to edit quantities and remove items. Instead, there will be a link to the cart page.
+    var hideControls = (ViewData["HideControls"] != null && ViewData["HideControls"].CanBeParsedAs<bool>()) ? (bool)ViewData["HideControls"] : false;
+    var cartType = (ViewData["Type"] != null && ViewData["Type"].CanBeParsedAs<ShoppingCartItemType>()) ? (ShoppingCartItemType)ViewData["Type"] : ShoppingCartItemType.Order;
+}
+
+<div data-widget="paneledcart" id="view-paneledcart-@contextID" class="view-paneledcart">
+    @if (Model.Count() > 0)
+    {
+        <h3>
+            @if (!hideControls)
+            {
+                switch (cartType)
+                {
+                    case ShoppingCartItemType.AutoOrder:
+                        @Resources.Common.AutoOrder
+                        break;
+                    case ShoppingCartItemType.Order:
+                        @Resources.Common.Order
+                        break;
+                    default:
+                        @Resources.Common.Order
+                        break;
+                }
+            }
+        </h3>
+        @Html.Partial("Partials/Cart/Cart", Model)
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="float-right">@Resources.Common.Subtotal (<span class="cart-items-count" data-text="@cartType.ToString().ToLower()quantity">@String.Format("{0:N0}", Model.Sum(i => i.Quantity))</span> @Resources.Common.Items): <strong><span data-text="@cartType.ToString().ToLower()subtotal">@Model.Sum(c => c.Quantity * c.Price).ToString("C")</span></strong></div>
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>@Resources.Common.NoItemsInCart</p>
+    }
+</div>
+
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+        require(["jquery", "shopping", "pubsub", "extensions"], function ($) {
+
+            // Settings
+            var context = "#view-paneledcart-@contextID",
+                $context = $(context),
+                cartType = "@cartType";
+
+
+            $('body').on('cart.cartupdated', function (event, data) {
+                var updatedItem = data.item;
+                var items = data.items;
+
+                if (updatedItem.Type !== cartType)
+                    return;
+                var quantity = 0;
+                for (var i = 0, max = items.length; i < max; i++) {
+                    var item = items[i];
+
+                    quantity += item.Quantity;
+                }
+                if (quantity == 0) {
+                    $context.remove();
+                    if (data.isCartEmpty)
+                        window.location = '@Url.Action("itemlist")';
+                }
+                else {
+                    $('[data-text="quantity"]', $context).html(quantity.format("N0"));
+                    $('[data-text="subtotal"]', $context).html(data.subtotal.format("C"));
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,22 @@
+﻿@model List<CustomerWallItem>
+
+<div id="view-activity">
+    @if (Model.Any())
+    {
+        foreach (var activity in Model)
+        {
+            <span>@activity.Text</span><br />
+
+            <div class="text-muted text-sm">
+                <ul class="list-unstyled list-inline no-margin">
+                    <li><i class="fa-calendar"></i> @Format.SocialDate(activity.EntryDate)</li>
+                </ul>
+            </div>
+            <div class="space-20"></div>
+        }
+    }
+    else
+    {
+        <p>@Resources.Common.NoRecentActivity</p>
+    }
+</div>

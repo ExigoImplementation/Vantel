@@ -1,0 +1,12 @@
+.ordersummary {
+    hr {
+        margin: 0;
+    }
+
+    .items-container {
+        min-height: 140px;
+        @media(min-width: 768px){
+            border-left: 1px dotted #ddd;
+        }
+    }
+}

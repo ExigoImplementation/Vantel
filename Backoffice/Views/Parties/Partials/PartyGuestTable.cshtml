@@ -1,0 +1,61 @@
+﻿@model PartySummaryViewModel
+@{
+    var isHostess = Identity.Current.IsHostess();
+    var tableControlColSpan = isHostess ? 2 : 3;
+
+    var canCloseParty = Model.Orders.Any(c => c.CustomerID == Model.Party.HostID) && Model.Party.CustomerID == Identity.Current.CustomerID;
+}
+
+
+<table class="table table-bordered table-teal">
+    <tr>
+        <th>@Resources.Common.Name</th>
+        <th>@Resources.Common.Email</th>
+        <th>@Resources.Common.Invite</th>
+        <th>RSVP</th>
+        <th>@Resources.Common.HasAttended</th>
+        <th colspan="@tableControlColSpan">&nbsp;</th>
+    </tr>
+    <tbody>
+        @foreach (var guest in Model.Guests)
+        {
+            var invitedLabel = guest.HasSentInvite ? Resources.Common.Yes : Resources.Common.No;
+            var tooltip = guest.HasSentInvite ? "" : Resources.Common.ThisGuestNotInvitedYet;
+            var rsvpLabel = guest.HasRSVPd ? Resources.Common.Yes : Resources.Common.No;
+            if (!guest.AllowEmail)
+            {
+                invitedLabel = "N/A";
+                tooltip = Resources.Common.ThisGuestNotAllowEmailInvitations
+            }
+
+            <tr data-guestrow="@guest.GuestID">
+                <td>@guest.FullName</td>
+                <td>@guest.Email</td>
+                <td title="@tooltip">@invitedLabel</td>
+                <td>@rsvpLabel</td>
+                <td>
+                    @if (guest.HasAttendedParty)
+                    {
+                        <text>@Resources.Common.Yes</text>
+                    }
+                    else if (!isHostess && !canCloseParty)
+                    {
+                        <a data-role="set-guest-attendance" data-guestid="@guest.GuestID">@Resources.Common.Attended</a>
+                    }
+                    else
+                    {
+                        <text>N</text>
+                    }
+                </td>
+
+                @if (!isHostess && !canCloseParty)
+                {
+                    <td><a href="@Url.Action("startpartyorder", "shopping", new { partyID = Model.Party.PartyID, guestID = guest.GuestID })">@Resources.Common.CreateOrder</a></td>
+                }
+                <td><a href="@Url.Action("editguest", "parties", new { partyID = Model.Party.PartyID, guestID = guest.GuestID })">@Resources.Common.Edit</a></td>
+                <td><a data-role="delete-guest" data-guestid="@guest.GuestID">@Resources.Common.Delete</a></td>
+            </tr>
+        }
+    </tbody>
+
+</table>

@@ -1,0 +1,34 @@
+﻿@model ShippingAddress
+@{
+    var contextID = Guid.NewGuid().ToString();
+}
+
+<div id="view-shippingaddress-@contextID">
+    <div class="row margin-5">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.FirstName, new { @class = "" })
+                @Html.EditorFor(c => c.FirstName)
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.LastName, new { @class = "" })
+                @Html.EditorFor(c => c.LastName)
+            </div>
+        </div>
+    </div>
+
+    @Html.Partial("~/Views/Shared/EditorTemplates/Address.cshtml", Model)
+
+    <div class="space-20"></div>
+
+    <div class="form-group">
+        @Html.LabelFor(c => c.Email, new { @class = "" })
+        @Html.EditorFor(c => c.Email)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.Phone, new { @class = "" })
+        @Html.EditorFor(c => c.Phone)
+    </div>
+</div>

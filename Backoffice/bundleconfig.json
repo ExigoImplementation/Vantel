@@ -1,0 +1,170 @@
+[
+  {
+    "outputFileName": "Content/scripts/modules/addresses.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/addresses.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/ajax.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/ajax.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/app.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/app.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/browser.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/browser.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/calendars.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/calendars.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/console.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/console.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/containers.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/containers.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/cookies.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/cookies.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/customsort.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/customsort.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/debug.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/debug.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/encryptions.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/encryptions.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/exigoweb.kendogrids.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/exigoweb.kendogrids.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/extensions.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/extensions.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/forms.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/forms.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/guids.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/guids.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/idletimeout.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/idletimeout.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/kendogrids.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/kendogrids.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/passwords.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/passwords.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/popups.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/popups.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/profiles.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/profiles.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/pubsub.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/pubsub.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/shopping.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/shopping.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/trees.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/trees.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/urls.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/urls.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/modules/widgets.min.js",
+    "inputFiles": [
+      "Content/scripts/modules/widgets.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/vendor/jquery.unobtrusive-ajax.min.js",
+    "inputFiles": [
+      "Content/scripts/vendor/jquery.unobtrusive-ajax.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/scripts/vendor/jquery.validate.unobtrusive.custom.min.js",
+    "inputFiles": [
+      "Content/scripts/vendor/jquery.validate.unobtrusive.custom.js"
+    ]
+  },
+  {
+    "outputFileName": "Scripts/exigopayments-1.0.0.min.js",
+    "inputFiles": [
+      "Scripts/exigopayments-1.0.0.js"
+    ]
+  }
+]

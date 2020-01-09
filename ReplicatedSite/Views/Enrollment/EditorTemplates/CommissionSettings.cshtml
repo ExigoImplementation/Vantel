@@ -1,0 +1,124 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid().ToString();
+}
+
+
+
+<div id="view-commissionsettings-@contextID">
+    <div class="row margin-5">
+        <div class="col-sm-8">
+            <div class="form-group">
+                @Html.LabelFor(m => m.Customer.PayableToName, Resources.Common.CommissionsPayableToText, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa-question-circle" data-toggle="popover" data-container="body" data-title="@Resources.Common.Suggestions" data-trigger="hover" data-placement="top" data-content="@Resources.Common.EnrollmentCommissionSettingsHint"></i></span>
+                    @Html.TextBoxFor(m => m.Customer.PayableToName, new { @class = "form-control" })
+                </div>
+                @Html.ValidationMessageFor(c => c.Customer.PayableToName)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                @Html.EditorFor(c => c.Customer.TaxID)
+            </div>
+        </div>
+    </div>
+
+    <div class="row margin-5">
+        <div class="col-xs-12">
+            <div class="form-group">
+                @Html.LabelFor(m => m.Customer.PayableTypeID, Resources.Common.HowWouldYouLikeToReceiveCommissions, new { @class = "control-label" })
+
+                @{
+                    var availablePayableTypes = new List<Common.Api.ExigoWebService.PayableType>()
+                    {
+                        Common.Api.ExigoWebService.PayableType.Check,
+                        Common.Api.ExigoWebService.PayableType.PaymentCard,
+                        Common.Api.ExigoWebService.PayableType.DirectDeposit,
+                        Common.Api.ExigoWebService.PayableType.BankWire
+                    };
+                }
+
+                @foreach (var payableType in availablePayableTypes)
+                {
+                    var payableTypeID = ExigoDAL.GetPayableTypeID(payableType);
+
+                    <div class="radio">
+                        <label for="@(Html.IdFor(c => c.Customer.PayableTypeID))_@payableTypeID">
+                            @Html.RadioButtonFor(c => c.Customer.PayableTypeID, payableTypeID, new
+                            {
+                                id = Html.IdFor(c => c.Customer.PayableTypeID) + "_" + payableTypeID
+                            })
+                            @payableType.ToString()
+                        </label>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+    <div data-bind="@Html.NameFor(c => c.Customer.PayableTypeID)" data-key="@ExigoDAL.GetPayableTypeID(Common.Api.ExigoWebService.PayableType.Check)" class="hidden">
+    </div>
+
+
+    <div data-bind="@Html.NameFor(c => c.Customer.PayableTypeID)" data-key="@ExigoDAL.GetPayableTypeID(Common.Api.ExigoWebService.PayableType.PaymentCard)" class="hidden">
+    </div>
+
+
+    <div data-bind="@Html.NameFor(c => c.Customer.PayableTypeID)" data-key="@ExigoDAL.GetPayableTypeID(Common.Api.ExigoWebService.PayableType.DirectDeposit)" class="hidden">
+        
+        @Html.EditorFor(c => c.DirectDeposit, "BankAccount")
+
+    </div>
+
+</div>
+
+
+
+@using (Html.BeginPartialScript())
+{
+
+    <script>
+        require(["jquery", "bootstrap", "extensions"], function ($) {
+
+            // Settings
+            var context = "#view-commissionsettings-@contextID",
+                    $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('[data-toggle="popover"]', $context).popover();
+
+
+
+                // Handle the PayableType fields
+                var payableTypeIDName = '@Html.NameFor(c => c.Customer.PayableTypeID)';
+
+                // Auto-check the first option if applicable
+                if ($('[name="{0}"]:checked'.format(payableTypeIDName), $context).length == 0) {
+                    $('[name="{0}"]:first'.format(payableTypeIDName), $context).prop('checked', true);
+                }
+
+                // Toggle the respective fieldset on change
+                $('[name="{0}"]'.format(payableTypeIDName), $context).on('change', function () {
+                    var name = $(this).attr('name'),
+                        value = $('[name="{0}"]:checked'.format(name), $context).val();
+
+                    $('[data-bind="{0}"]'.format(name), $context).addClass('hidden')
+                        .filter('[data-key="{0}"]'.format(value), $context).removeClass('hidden');
+                }).filter(':checked').triggerHandler('change');
+            }
+
+
+            // Initialization
+            function init() {
+                //registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}

@@ -1,0 +1,51 @@
+﻿@helper Currency(decimal amount, string currencycode)
+{
+    <text>@Common.GlobalUtilities.FormatCurrency(amount, currencycode)</text>
+}
+
+@helper SocialDate(DateTime date)
+{
+    <text>
+        @Common.GlobalUtilities.GetFormattedTimeDifference(
+        // convert order date from exigo time, to utc
+        TimeZoneInfo.ConvertTimeToUtc(date, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")),
+        // convert server time from to utc time
+        TimeZoneInfo.ConvertTimeToUtc(DateTime.Now, TimeZoneInfo.Local))
+    </text>
+}
+
+@helper FlatAddress(ExigoService.Address address)
+{
+    <text>
+        @address.AddressDisplay, @address.City, @address.State @address.Zip, @address.Country
+    </text>
+}
+
+@helper Address(ExigoService.Address address)
+{
+    <text>
+        @address.AddressDisplay<br />@address.City, @address.State @address.Zip, @address.Country
+    </text>
+}
+
+@helper Email(string email)
+{
+    <text><a href="mailto:@email">@email</a></text>
+}
+
+@helper Phone(string phone)
+{
+    <text><a href="tel:@phone">@phone</a></text>
+}
+
+@helper Boolean(bool value)
+{
+    if (value)
+    {
+        <span class="text-success"><i class="fa-check"></i></span>
+    }
+    else
+    {
+        <span class="text-danger"><i class="fa-times"></i></span>
+    }
+}

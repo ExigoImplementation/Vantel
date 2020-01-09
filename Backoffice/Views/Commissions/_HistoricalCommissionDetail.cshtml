@@ -1,0 +1,98 @@
+﻿@model CommissionDetailViewModel
+@{
+    var contextID = Guid.NewGuid().ToString();
+    var commission = (HistoricalCommission)Model.Commissions.First();
+    var currencyCode = commission.CurrencyCode;
+}
+<div id="view-commissiondetail-@contextID">
+    <div class="card">
+        <div class="card-body">
+            <h4>@commission.Period.PeriodDescription @Resources.Common.Commissions</h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="metric metric-sm">
+                        <div class="metric-body text-info">@Format.Currency(commission.Total, currencyCode)</div>
+                        <div class="metric-title">
+                            @Resources.Common.QualifiedAs: <strong>@CommonResources.Ranks(commission.PaidRank.RankID, defaultDescription: commission.PaidRank.RankDescription)</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="dl-metric">
+                                <dt>@Resources.Common.PreviousBalance</dt>
+                                <dd>@Format.Currency(commission.PreviousBalance, currencyCode)</dd>
+                                <dt>@Resources.Common.Earnings</dt>
+                                <dd>@Format.Currency(commission.Earnings, currencyCode)</dd>
+                                <dt>@Resources.Common.Fee</dt>
+                                <dd>@Format.Currency(commission.Fee, currencyCode)</dd>
+                                <hr class="no-margin" />
+                                <dt>@Resources.Common.Total</dt>
+                                <dd>@Format.Currency(commission.Total, currencyCode)</dd>
+                                <hr class="no-margin" />
+                                <dt>@Resources.Common.BalanceForwarded</dt>
+                                <dd>@Format.Currency(commission.BalanceForward, currencyCode)</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="dl-metric">
+                                <dt>@CommonResources.Volumes(1)</dt>
+                                <dd>@Format.Boolean(commission.Volumes.Volume1 == 1)</dd>
+                                <dt>@CommonResources.Volumes(2)</dt>
+                                <dd>@commission.Volumes.Volume2.ToString("N0")</dd>
+                                <dt>@CommonResources.Volumes(3)</dt>
+                                <dd>@commission.Volumes.Volume3.ToString("N0")</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bonuses -->
+        <div class="panel-body no-padding">
+            <div class="grid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    require(["kendogrids"], function (kendoGrid) {
+
+        // Settings
+        var context = "#view-commissiondetail-@contextID";
+        var cultureCode = "@GlobalUtilities.GetCultureCodeFormatBasedOnCurrency(currencyCode, Identity.Current.Country)";
+        kendo.culture(cultureCode);
+
+
+        kendoGrid.create(context + " .grid", {
+            url: '@Url.Action("GetHistoricalBonusDetails", new { runid = ViewContext.RouteData.Values["runid"] })',
+            pageable: false,
+            columns: [
+                { field: "BonusID", title: "@Resources.Common.BonusID", type: "number", hidden: true },
+                { field: "BonusDescription", title: "@Resources.Common.Bonus", type: "string", hidden: true },
+                { field: "FromCustomerID", title: "@Resources.Common.From" + " " + "@Resources.Common.ID" + "#", type: "number", width: 80 },
+                { field: "FromCustomerName", title: "@Resources.Common.From", type: "string", width: 150 },
+                { field: "Level", title: "@Resources.Common.Level", type: "number", template: kendoGrid.templates.level("Level"), width: 120 },
+                { field: "PaidLevel", title: "@Resources.Common.PaidLevel", type: "number", template: kendoGrid.templates.level("PaidLevel"), width: 120 },
+                { field: "SourceAmount", title: "@Resources.Common.Source", format: "{0:C}", attributes: { "class": "text-right" }, width: 120 },
+                { field: "Percentage", title: "%", type: "number", format: "{0}%", attributes: { "class": "text-right" }, width: 120 },
+                { field: "CommissionAmount", title: "@Resources.Common.Earned", type: "number", format: "{0:C}", attributes: { "class": "text-right" }, width: 120, aggregates: ["sum"], groupFooterTemplate: "#= kendo.toString(sum, 'C') #" }
+            ],
+            dataSource: {
+                group: {
+                    field: "BonusDescription",
+                    aggregates: [
+                        { field: "CommissionAmount", aggregate: "sum" }
+                    ]
+                }
+            },
+            toolbar: ["excel"],
+            excel: {
+                allPages: true,
+                fileName: 'HistoricalCommissions.xlsx'
+            }
+        });
+    });
+</script>

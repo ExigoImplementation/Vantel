@@ -1,0 +1,397 @@
+﻿@model ResourceListViewModel
+@{
+    ViewBag.Title = Resources.Common.ResourceItems;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Description = Resources.Common.ResourceLibrary, UrlPath = Url.Action("ResourceList", "Resources")},
+            new BreadcrumbItem{ Description = Resources.Common.ManageResources, UrlPath = Url.Action("ManageResources", "Resources")},
+            new BreadcrumbItem{ Description = ViewBag.Title}
+        }
+    };
+}
+
+<script src="http://kendo.cdn.telerik.com/2016.1.226/js/kendo.ui.core.min.js"></script>
+<div id="view-resource-items">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col-xl-9 order-2 order-xl-1">
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.Title)" class="col-sm-2 col-form-label">@Resources.Common.Name</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(r => r.Title, new { @class = "form-control", @value = Model.Resource.Title })
+                            <span class="title-required text-danger" style="display: none;">@Resources.Common.Required</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <span class="col-sm-2 col-form-label">@Resources.Common.Category</span>
+                        <div class="col-sm-8">
+                            <div class="form-control category-list" id="categories">
+                                <div class="row">
+                                    @foreach (var category in Model.ResourceCategories.Where(rc => rc.ParentID == Guid.Empty))
+                                    {
+                                        var currentCategory = string.Empty;
+                                        <div class="col-sm-6">
+                                            @if (Model.IsEdit)
+                                            {
+                                                currentCategory = Model.Resource.ResourceCategoryItems.Where(v => v.CategoryID == category.CategoryID).FirstOrDefault() != null ? "checked" : "";
+                                            }
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="@category.CategoryDescription" name="@category.CategoryDescription" value="@category.CategoryID" @currentCategory><input type="hidden" value="false">
+                                                <label class="custom-control-label" for="@category.CategoryDescription">@category.CategoryDescription</label>
+                                            </div>
+
+                                            @foreach (var childcategory in Model.ResourceCategories.Where(rc => rc.ParentID == category.CategoryID))
+                                            {
+                                                var currentChild = string.Empty;
+                                                if (Model.IsEdit)
+                                                {
+                                                    currentChild = Model.Resource.ResourceCategoryItems.Where(v => v.CategoryID == childcategory.CategoryID).FirstOrDefault() != null ? "checked" : "";
+                                                }
+                                                <div class="custom-control custom-checkbox ml-4">
+                                                    <input type="checkbox" class="custom-control-input" id="@childcategory.CategoryDescription" name="@childcategory.CategoryDescription" value="@childcategory.CategoryID" @currentChild><input type="hidden" value="false">
+                                                    <label class="custom-control-label" for="@childcategory.CategoryDescription">@childcategory.CategoryDescription</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <span class="categories-required text-danger" style="display: none;">@Resources.Common.PleaseChooseCategory</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.Url)" class="col-sm-2 col-form-label">@Resources.Common.URL</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(r => r.Url, new { @class = "form-control", @value = Model.Resource.Url })
+                            <span class="url-required text-danger" style="display: none;">@Resources.Common.Required</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.UrlThumbnail)" class="col-sm-2 col-form-label">@Resources.Common.Thumbnail @Resources.Common.URL</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(r => r.UrlThumbnail, new { @class = "form-control", @value = Model.Resource.UrlThumbnail })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.TypeID)" class="col-sm-2 col-form-label">@Resources.Common.FileType</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(r => r.TypeID, new SelectList(Model.ResourceTypes, "TypeID", "TypeDescription", Model.Resource.TypeID), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.Status)" class="col-sm-2 col-form-label">@Resources.Common.Status</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(r => r.Status, new SelectList(Model.Statuses, "StatusID", "StatusDescription", Model.Resource.StatusID), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.PostDate)" class="col-sm-2 col-form-label">@Resources.Common.PublishOnDate</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(r => r.PostDate, new { @class = "form-control", @value = Model.Resource.PostDate })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <span class="col-sm-2 col-form-label">@Resources.Common.Market</span>
+                        <div class="col-sm-8">
+                            <div class="form-control market-list" id="market-languages">
+                                <div class="row">
+                                    @foreach (var market in Model.CountryAvailability)
+                                    {
+                                        var marketName = market.Description;
+                                        var checking = Model.Resource.ResourceAvailabilities == null ? "" : Model.Resource.ResourceAvailabilities.Where(c => c.Market == marketName).FirstOrDefault() != null ? "checked" : "";
+                                        <div class="col-sm-6">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="@marketName" name="@marketName" value="@market.CookieValue" @checking><input type="hidden" value="false">
+                                                <label class="custom-control-label" for="@marketName">@marketName</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <span class="marketLanguages-required text-danger" style="display: none;">@Resources.Common.PleaseChooseCategory</span>
+                        </div>
+                    </div>
+
+                    @if (!Model.IsEdit)
+                    {
+                        <div class="form-group row">
+                            <label for="@Html.IdFor(r => r.Language)" class="col-sm-2 col-form-label">@Resources.Common.Language</label>
+                            <div class="col-sm-6">
+                                @Html.DropDownListFor(r => r.Language, new SelectList(Model.Languages, "LanguageID", "LanguageDescription"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(r => r.Language, new { @value = Model.Resource.Language })
+                    }
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.Tags)" class="col-sm-2 col-form-label">@Resources.Common.Keywords</label>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(r => r.Tags, new MultiSelectList(Model.Tags, "Name", "Name"), new { @class = "form-control", multiple = "multiple" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="@Html.IdFor(r => r.ItemDescription)" class="col-sm-2 col-form-label">@Resources.Common.Description</label>
+                        <div class="col-sm-8">
+                            @Html.TextAreaFor(r => r.ItemDescription, new { @class = "form-control", @value = Model.Resource.ItemDescription })
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 col-sm-10 text-right">
+                            <a class="btn btn-primary mr-3" href="@Url.Action("manageresources", "resources")">@Resources.Common.Cancel</a>
+
+                            @if (!Model.IsEdit)
+                            {
+                                <button class="btn btn-primary" data-role="createResource" data-loading-text="@Resources.Common.Loading">@Resources.Common.Create</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" data-role="editResource" data-loading-text="@Resources.Common.Saving">@Resources.Common.Save</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 order-1 order-xl-1 mb-4">
+                    <h5 class="card-title mb-2">@Resources.Common.ToolTips</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><small>@Resources.Common.ToolTip1</small></li>
+                        <li class="list-group-item"><small>@Resources.Common.ToolTip2</small></li>
+                        <li class="list-group-item"><small>@Resources.Common.ToolTip3</small></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    require(["jquery", "ajax", "jquery-ui", "kendo", "select2"], function ($, ajax, jqueryui, kendo, select2) {
+
+        // Settings
+        var context = "#view-resource-items",
+            $context = $(context),
+            isEdit = @Model.IsEdit.ToString().ToLowerInvariant(),
+            categoryids = [],
+            markets = [],
+            createResource = {};
+
+        // Event Handlers
+        function registerEventHandlers() {
+
+            $('#PostDate').kendoDateTimePicker({
+                timeFormat: "HH:mm",
+                format: "MM/dd/yyyy HH:mm",
+                parseFormats: ["MM/dd/yyyy hh:mmtt", "MM/dd/yyyy HH:mm", "MM/dd/yyyy", "HH:mm"],
+                min: new Date($.now())
+
+            });
+
+            $context.on("click","[data-role='createResource']", function () {
+                categoryids = [];
+                markets = [];
+                actions.createResourceObject();
+                if(actions.validate(createResource)){
+                    //console.log(createResource)
+                    $(this).buttonState("loading");
+                    actions.Createresource(createResource);
+                }
+
+            });
+
+            $context.on("change", $("#Title"), function(){
+                if($("#Title").val() != ""){
+                    $("#Title").css("border-color","#ccc")
+                    $(".title-required").css("display", "none");
+                }
+            });
+
+            $context.on("change", $("#categories"), function(){
+                if($("#categories").find("input:checked").length > 0){
+                    $("#categories").css("border-color","#ccc")
+                    $(".categories-required").css("display", "none");
+                }
+            });
+
+            $context.on("change", $("#Url"), function(){
+                if($("#Url").val() != ""){
+                    $("#Url").css("border-color","#ccc")
+                    $(".url-required").css("display", "none");
+                }
+            });
+
+            $context.on("change", $("#market-languages"), function(){
+                if($("#market-languages").find("input:checked").length > 0){
+                    $("#market-languages").css("border-color","#ccc")
+                    $(".marketLanguages-required").css("display", "none");
+                }
+            });
+
+            $context.on("click","[data-role='editResource']", function () {
+                categoryids = [];
+                markets = []
+                actions.createResourceObject();
+                console.log(createResource);
+                if(actions.validate(createResource)){
+                    $(this).buttonState("loading");
+                    actions.editResource(createResource);
+                }
+            });
+
+            $(document).ready(function(){
+                actions.createSelectList();
+            });
+
+        }
+
+        // Helpers
+        var helpers = {
+            buttonStatusReset: function () {
+                $(context).find("[data-loading-text]").each(function () {
+                    $(this).buttonState("reset");
+                });
+            }
+        };
+
+        // Actions
+        var actions = {
+
+            createResourceObject: function(){
+
+                $("#categories").find("input:checked").each(function () { categoryids.push($(this).attr('value')); });
+
+                $("#market-languages").find("input:checked").each(function () { markets.push($(this).attr('value')); });
+
+                createResource = {
+                    Title: $("#Title").val(),
+                    CategoryID: categoryids,
+                    Url: $("#Url").val(),
+                    UrlThumbnail: $("#UrlThumbnail").val(),
+                    TypeID: $("#TypeID").val(),
+                    StatusID: $("#Status").val(),
+                    PostDate: $('#PostDate').val(),
+                    Keywords: $("#Tags").val(),
+                    Language: $('#Language').val(),
+                    Markets: markets,
+                    ItemDescription: $("textarea#itemDescription").val(),
+                }
+                return createResource;
+            },
+
+            Createresource: function(createResource) {
+
+                ajax.json({
+                    url: '@Url.Action("createresource","resources")',
+                    data: { res: createResource },
+                    success: function (response) {
+                        helpers.buttonStatusReset();
+
+                        if (!response.success) {
+                            console.log(response.message);
+                            return;
+                        }
+                        window.location = '@Url.Action("ManageResources", "resources")'
+
+
+                    },
+                    error: function (response) {
+                        helpers.buttonStatusReset();
+                        console.log(response.message, "@Resources.Common.Error");
+                    }
+                });
+            },
+
+            editResource: function(createResource) {
+
+                ajax.json({
+                    url: '@Url.Action("editresource","resources")',
+                    data: { res: createResource, editID : "@Model.Resource.ItemID" },
+                    success: function (response) {
+                        helpers.buttonStatusReset();
+
+                        if (!response.success) {
+                            console.log(response.message);
+                            return;
+                        }
+                        window.location = '@Url.Action("ManageResources", "resources")'
+
+
+                    },
+                    error: function (response) {
+                        helpers.buttonStatusReset();
+                        console.log(response.message, "@Resources.Common.Error");
+                    }
+                });
+            },
+
+            createSelectList: function(){
+                $("#Tags").select2({
+                    value:"",
+                    tags: true,
+                    multiple:true,
+                    placeholder: '@Resources.Common.SelectAKeyword',
+
+                });
+                if(isEdit){
+
+                    var taggs = ["@Html.Raw(String.Join("\",\"", Model.CurrentTags.ToArray()))"];
+
+                    $("#Tags").val(taggs).trigger('change');
+
+                }
+
+            },
+
+            validate: function(){
+                if($("#Title").val() == ""){
+                    $("#Title").css("border-color","red").focus();
+                    $(".title-required").css("display", "");
+                    return false;
+                }
+                if(categoryids.length == 0){
+                    $("#categories").css("border-color","red").focus();
+                    $(".categories-required").css("display", "");
+                    return false;
+                }
+                if($("#Url").val() == ""){
+                    $("#Url").css("border-color","red").focus();
+                    $(".url-required").css("display", "");
+                    return false;
+                }
+                if(markets.length == 0){
+                    $("#market-languages").css("border-color","red").focus();
+                    $(".marketLanguages-required").css("display", "");
+                    return false;
+                }
+
+                return true;
+            }
+
+        };
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+
+        }
+        init();
+
+    });
+</script>

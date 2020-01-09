@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = Resources.Common.PersonallyEnrolledTeam;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "personallyenrolled"
+    };
+}
+
+<div id="view-personally-enrolledlist">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+
+        require(["kendogrids","jquery"], function (kendoGrid,$) {
+
+            var cultureCode = "@Identity.Current.Market.CultureCode";
+            kendo.culture(cultureCode);
+
+            kendoGrid.create("#grid", {
+                sort: { field: "Email", dir: "desc" },
+                columns: [
+                     { field: "CustomerID", width: 35, title: " ", type: "string", template: "<a data-profile='modal' data-id='#:CustomerID#' data-token='#:CustomerIDToken#' style='cursor: pointer;'><img src='/Content/images/contactcard.png' /></a>", sortable: false, filterable: false },
+                    { field: "CustomerID", title: "@Resources.Common.ID", type: "string", width: 75 },
+                    { field: "FirstName", title: "@Resources.Common.FirstName", type: "string", width: 125 },
+                    { field: "LastName", title: "@Resources.Common.LastName", type: "string", width: 125 },
+                    { field: "Email", title: "@Resources.Common.Email", template: "<a href='mailto:#:Email#'>#:Email#</a>" },
+                    { field: "Phone", title: "@Resources.Common.Phone" },
+                    { field: "CreatedDate", title: "@Resources.Common.StartDate", type: "date", format: "{0:d}", attributes: { "class": "text-right" } }
+                ],
+                toolbar: ["excel"],
+                excel: {
+                    allPages: true,
+                    fileName: 'PersonallyEnrolledList.xlsx'
+                }
+            });
+        });
+
+    </script>
+
+
+}

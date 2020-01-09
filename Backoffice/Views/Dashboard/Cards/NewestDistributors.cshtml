@@ -1,0 +1,44 @@
+﻿@model List<Customer>
+
+@if (Model.Count() > 0)
+{
+    <ul class="list-group">
+        @foreach (var teamMember in Model)
+        {
+            <li class="list-group-item media">
+                <div class="media-body">
+                    <div class="row">
+                        <div class="col-2 align-self-center px-2">
+                            <a href="@Url.Action("index", "profile", new { token = Security.Encrypt(teamMember.CustomerID, Identity.Current.CustomerID) })" data-profile="popover modal" data-id="@teamMember.CustomerID" data-token="@Security.Encrypt(teamMember.CustomerID, Identity.Current.CustomerID)" data-placement="top">
+                                <img src="@Url.Avatar(teamMember.CustomerID, AvatarType.Small, true)" class="w-100 round-avatar" />
+                            </a>
+                        </div>
+                        <div class="col-7">
+                            <small class="text-dark font-weight-bold">
+                                @(teamMember.FullName.Length > 15 ? teamMember.FullName.ToString().Substring(0, 15) + "..." : teamMember.FullName)
+                            </small>
+                            <br />
+                            <span class="text-muted small">
+                                @Resources.Common.Joined @teamMember.CreatedDate.ToString("MMMM dd, yyyy")
+                            </span>
+                        </div>
+                        <div class="col-1 align-self-center">
+                            <a href="tel:@teamMember.PrimaryPhone">
+                                <i class="fa fa-phone color-gray"></i>
+                            </a>
+                        </div>
+                        <div class="col-1 align-self-center">
+                            <a href="mailto:@teamMember.Email">
+                                <i class="fa fa-envelope color-gray"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>@Resources.Common.NoRecentEnrollments</p>
+}

@@ -1,0 +1,79 @@
+﻿@model List<Item>
+@{
+    ViewBag.Title = Resources.Common.Home;
+}
+
+<div class="clearfix">
+    @Html.Raw(Resources.Common.Replicated_Home_BannerSection1)
+</div>
+
+<div id="Home-View">
+    <section id="content">
+        <div class="content-wrap">
+
+            <div class="container clearfix">
+                    @Html.Raw(Resources.Common.Replicated_Home_Section1)             
+            </div>
+
+            <div class="container clearfix">
+                <div id="itemList" class="row clearfix">
+                    @Html.Partial("~/Views/Shopping/Partials/Items/_ShoppingItemList.cshtml", new ShoppingItemListViewModel
+                    {
+                        Items = Model.Take(4).ToList(),
+                        Xs_Column_Qty = 1,
+                        //Sm_Column_Qty = 1,
+                        Md_Column_Qty = 2,
+                        Lg_Column_Qty = 4,
+                    })
+                </div>
+            </div>
+
+            <div class="clearfix  margin-bottom--30px">
+                @Html.Raw(Resources.Common.Replicated_Home_Section2.FormatWith(Url.Action("itemlist", "shopping")))
+            </div>
+
+            <div id="section-about" class="page-section padding-top--0px container clearfix">
+                @Html.Raw(Resources.Common.Replicated_Home_Section3)
+            </div>
+
+            <div class="clearfix margin-bottom--30px">
+                @Html.Raw(Resources.Common.Replicated_Home_Section4.FormatWith(Url.Action("index", "enrollment")))
+            </div>
+
+            <div class="container clearfix padding-top--30px">
+                @Html.Raw(Resources.Common.Replicated_Home_Section5)
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+
+
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "shopping"], function ($, ajax, shopping) {
+
+            // Actions
+            var actions = {
+
+            };
+
+            // Event Handlers
+            function registerEventHandlers() {
+
+            }
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+                $("div.product").each(function () {
+                    shopping.bind(this);
+                });
+            }
+            init();
+        });
+    </script>
+}

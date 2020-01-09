@@ -1,0 +1,43 @@
+﻿@model Party
+
+<div class="modal fade" id="cancel-party-modal" data-backdrop="true" data-remote="false" tabindex="-1" role="dialog" aria-labelledby="cancel-party-modalLabel" aria-describedby="Heading" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="cancel-party-modalLabel">Are You Sure You Want to Cancel Party #@Model.PartyID.ToString()?</h4>
+            </div>
+            <div class="modal-body">
+
+                <h4>Party Details</h4>
+
+                <div class="container-fluid">
+                    <div class="row bottom-border">
+                        <div class="col-md-12">
+                            <h5>Host</h5>
+                            <p>@Model.HostDisplayName</p>
+                        </div>
+                    </div>
+                    <div class="row bottom-border">
+                        <div class="col-md-12">
+                            <h5>Date</h5>
+                            <p>@Model.StartDate.ToString()</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                @using (Ajax.BeginForm("CloseParty", new AjaxOptions { OnSuccess = "closeparty.success", OnFailure = "closeparty.failure" }))
+                {
+                    <input type="hidden" name="partyid" value="@Model.PartyID" />
+
+                    <button class="btn btn-danger" type="submit">Cancel Party</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = Resources.Common.UpcomingPromotions;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "upcomingpromotions"
+    };
+}
+
+<div id="view-upcomming-promotions">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["kendogrids"], function (kendoGrid) {
+
+            var cultureCode = "@Identity.Current.Market.CultureCode";
+            kendo.culture(cultureCode);
+
+
+            kendoGrid.create("#grid", {
+            columns: [
+                { field: "CustomerID", width: 35, title: " ", type: "string", template: "<a data-profile='modal' data-id='#:CustomerID#' data-token='#:CustomerIDToken#' style='cursor: pointer;'><img src='/Content/images/contactcard.png' /></a>", sortable: false, filterable: false },
+                    { field: "CustomerID", title: "@Resources.Common.ID", type: "string", width: 100 },
+                    { field: "FirstName", title: "@Resources.Common.FirstName", type: "string", width: 175 },
+                    { field: "LastName", title: "@Resources.Common.LastName", type: "string", width: 175 },
+                    { field: "NextRankDescription", title: "@Resources.Common.NextRank", width: 120 },
+                    { field: "RankScore", title: "% " + "@Resources.Common.Complete", type: "number", width: 120, format: "{0:D}%", attributes: { "class": "text-right" } }
+                ],
+                toolbar: ["excel"],
+                excel: {
+                    allPages: true,
+                    fileName: 'UpCommingPromotionList.xlsx'
+                }
+            });
+        });
+    </script>
+}

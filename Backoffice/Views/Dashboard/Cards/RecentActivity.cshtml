@@ -1,0 +1,48 @@
+﻿@model List<CustomerWallItem>
+
+@if (Model != null)
+{
+    if (Model.Count > 0)
+    {
+        <ul class="list-group">
+            @foreach (var activity in Model)
+            {
+                <li class="list-group-item p-0 py-1">
+                    <div class="row d-flex w-100 mt-2 mx-0">
+                        <div class="col-2 d-flex align-items-center p-2">
+                            <img class="rounded-circle" src="@Url.Avatar(int.Parse(activity.Field2))" />
+                        </div>
+                        <div class="col-9 px-1">
+                            <div class="row mt-2">
+                                <div class="col-12 text-truncate text-dark font-weight-bold">
+                                    @activity.Text
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 date-format">
+                                    <small>@Format.SocialDate(activity.EntryDate)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1 d-flex align-items-center px-0">
+                            <a data-profile='modal' data-id='@activity.Field2' data-token='@activity.CustomerIDToken' href="#">
+
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="text-center">
+            <p>@Resources.Common.NoActivity</p>
+        </div>
+    }
+}
+else
+{
+    <p>@Resources.Common.CardFailedToLoad</p>
+}

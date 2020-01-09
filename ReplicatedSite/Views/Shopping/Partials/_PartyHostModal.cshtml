@@ -1,0 +1,81 @@
+﻿@model List<Party>
+    @{var contextID = Guid.NewGuid().ToString(); }
+
+    <div class="modal fade modal-enroller" id="partyHostSearchModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">@Resources.Common.Close</span></button>
+                    <h3 class="modal-title partyhost-search">@Resources.Common.ConnectWithAParty</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-body">
+                    <div id="party-search-results">
+                        <h4 id="results-header">
+                            <span><strong>@Model.Count</strong> @Resources.Common.OpenParties</span>
+                        </h4>
+                        @foreach (var party in Model)
+                        {
+                            <div class="results-row">
+                                <div class="row">
+                                    <div class="col-8 results-info">
+                                        <span class="result-label">@Resources.Common.Hostess:</span> <span class="name">@party.HostName</span><br />
+                                        <span class="result-label">@Resources.Common.Party:</span><span class="name">
+                                            @party.Description - @Convert.ToDateTime(party.StartDate).ToShortDateString() 
+                                            @if (party.Address != null && party.Address.IsComplete)
+                                            {
+                                                <text> - @party.Address.City, @party.Address.State @party.Address.Zip</text>
+                                            }
+                                        </span><br />
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <a data-role="use-party" data-partyid="@party.PartyID" class="btn btn-primary">@Resources.Common.Connect</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        require(["jquery", "ajax", "toastr", "bootstrap", "pubsub"], function ($, ajax, toastr) {
+            // Settings
+            var choosePartyUrl = "@Url.Action("choosepartyid")";
+            
+            // Event Handlers
+            function registerEventHandlers() {
+                // show party modal
+                $('[data-role="find-party-modal"]').on("click", function () {
+                    $("#partyHostSearchModal").modal("show");
+                });
+
+                $('[data-role="use-party"]').on("click", function () {
+
+                    var partyID = $(this).data("partyid");
+
+                    ajax.json({
+                        url: choosePartyUrl,
+                        data: { partyID: partyID },
+                        success: function (response) {
+                            //console.log(response);
+
+                            if (response.success) {
+                                window.location = window.location;
+                            } else {
+                                console.log("choose party failed", response);
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>

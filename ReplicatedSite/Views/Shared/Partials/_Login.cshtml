@@ -1,0 +1,149 @@
+﻿@model LoginViewModel
+@{
+    var hasReturnURL = (Request["ReturnUrl"] != null) ? true : false;
+    var returnUrl = "";
+    if (hasReturnURL)
+    {
+        returnUrl = Request["ReturnUrl"];
+    }
+    var createAccountUrl = (hasReturnURL) ? Url.Action("register", "account", new { ReturnUrl = returnUrl }) : Url.Action("register", "account");
+}
+
+<div id="login-preview">
+    <div class="container-fluid">
+        <div class="login-content">
+            <div class="login-title">
+                <i class="fa fa-unlock-alt"></i> @Resources.Common.Global_LoginToYourAccount
+            </div>
+
+            <div class="login-body">
+                <form role="form" id="login-form">
+                    <div class="form-group">
+                        @Html.LabelFor(c => c.LoginName)
+                        @Html.EditorFor(c => c.LoginName)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(c => c.LoginPassword)
+                        @Html.EditorFor(c => c.LoginPassword)
+                    </div>
+                    <button type="button" id="loginbutton" data-loading-text="@Resources.Common.Loading" class="btn btn-primary btn-block">@Resources.Common.SignIn</button>
+                </form>
+            </div>
+
+            <div class="login-title mt-3">
+                <a href="@createAccountUrl"><i class="fa fa-user"></i> @Resources.Common.Replicated_Login_NewAccount</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+        require(["jquery", "ajax", "cookies", "urls", "toastr", "forms"], function ($, ajax, cookies, url, toastr, forms) {
+
+            // Settings
+            var context = '#login-preview',
+                $context = $(context),
+                cookiename = '@(GlobalSettings.Globalization.CookieKey)LoginName',
+                landingUrl = '@Url.Action("index", "account")';
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+
+                // Login Form
+                $('#loginbutton', $context).on('click', function (event) {
+                    event.preventDefault();
+                    $(this).button("loading");
+                    actions.signin();
+                });
+                $('input', $context).on('keypress', function (event) {
+                    if (event.which == 13) {
+                        event.preventDefault();
+                        actions.signin();
+                    }
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                clearCookies: function () {
+                    cookies.clear(cookiename);
+                },
+                loadCookies: function () {
+                    var savedLoginName = cookies.get(cookiename);
+                    if (savedLoginName) $('#LoginName').val(savedLoginName);
+                },
+                saveCookies: function () {
+                    // Get the expiration date of the cookie
+                    var expires = new Date();
+                    expires.setDate(expires.getDate() + 365);
+
+                    // Set the cookies
+                    cookies.set(cookiename, $('#LoginName').val(), {
+                        expires: expires
+                    });
+                },
+                signin: function () {
+
+                    // Validate the form
+                    if (!$('#login-form').valid()) {
+                        $("#loginbutton").button("reset");
+                        return false;
+                    }
+
+
+                    // Submit the form
+                    ajax.json({
+                        url: "@Url.Action("login", "account")",
+                        data: $('#login-form').serializeObject(),
+                        beforeSend: function () {
+                            toastr.clear();
+                        },
+                        success: function (response) {
+
+                            if (!response.Status) {
+                                actions.throwError("@Resources.Common.LoginFailed", response.ErrorMessage);
+                                $("#loginbutton").button("reset");
+                            }
+                            else {
+                                // Save the cookies
+                                actions.saveCookies();
+
+                                // Redirect
+                                window.location = (response.RedirectUrl) ? response.RedirectUrl : decodeURIComponent(url.current.queryKey.ReturnUrl || landingUrl);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr);
+                            actions.throwError("@Resources.Common.LoginFailed", error);
+                            $("#loginbutton").button("reset");
+                        }
+                    });
+                },
+                throwError: function (title, error) {
+                    toastr.error(error, title);
+                    $('#LoginPassword').focus();
+                    $("#loginbutton").button("reset");
+                }
+            };
+
+
+            // Initialization
+            function _init() {
+
+                // Register the event handlers
+                registerEventHandlers();
+
+                // Load the saved cookies into the form
+                actions.loadCookies();
+
+                // Focus on the right field
+                if ($('#LoginName').val() == '') $('#LoginName').focus();
+                else $('#LoginPassword').focus();
+            }
+            _init();
+
+        });
+</script>

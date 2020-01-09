@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Common.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Common_Api_ExigoAdminWebService_ExigoApiAdmin" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://api.exigo.com/admin/1.0/exigoapiadmin.asmx</Value>
+    </Setting>
+    <Setting Name="Common_Api_ExigoWebService_ExigoApi" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://api.exigo.com/3.0/ExigoApi.asmx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

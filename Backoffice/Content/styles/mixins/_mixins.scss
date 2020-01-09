@@ -1,0 +1,300 @@
+// Disable text highlighting
+@mixin disable-highlighting() {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+
+// Handle overflowing text
+@mixin text-overflow() {
+	overflow: hidden; 
+	-o-text-overflow: ellipsis;
+	text-overflow: ellipsis; 
+	white-space: nowrap;
+}
+
+
+// Transitions
+@mixin transition($transition...) {
+    -webkit-transition: $transition;
+    -moz-transition: $transition;
+    -o-transition: $transition;
+    transition: $transition;
+}
+
+@mixin transform($transform...) {
+    -webkit-transform: $transform;
+    -moz-transform: $transform;
+    -o-transform: $transform;
+    transform: $transform;
+}
+
+// Border Radius
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    border-radius: $radius;
+}
+
+
+// Border Radius
+@mixin border-top-left-radius($radius) {
+    -webkit-border-top-left-radius: $radius;
+    -moz-border-radius-topleft: $radius;
+    border-top-left-radius: $radius;
+}
+@mixin border-top-right-radius($radius) {
+    -webkit-border-top-right-radius: $radius;
+    -moz-border-radius-topright: $radius;
+    border-top-right-radius: $radius;
+}
+@mixin border-bottom-right-radius($radius) {
+    -webkit-border-bottom-right-radius: $radius;
+    -moz-border-radius-bottomright: $radius;
+    border-bottom-right-radius: $radius;
+}
+@mixin border-bottom-left-radius($radius) {
+    -webkit-border-bottom-left-radius: $radius;
+    -moz-border-radius-bottomleft: $radius;
+    border-bottom-left-radius: $radius;
+}
+@mixin border-top-radius($radius) {
+    @include border-top-right-radius($radius);
+    @include border-top-left-radius($radius);
+}
+@mixin border-right-radius($radius) {
+    @include border-top-right-radius($radius);
+    @include border-bottom-right-radius($radius);
+}
+@mixin border-bottom-radius($radius) {
+    @include border-bottom-right-radius($radius);
+    @include border-bottom-left-radius($radius);
+}
+@mixin border-left-radius($radius) {
+    @include border-top-left-radius($radius);
+    @include border-bottom-left-radius($radius);
+}
+
+
+//Gradients
+@mixin gradient-vertical($startColor: #555, $endColor: #333) {
+  background-color: mix($startColor, $endColor, 60%);
+  background-image: -moz-linear-gradient(top, $startColor, $endColor); // FF 3.6+
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from($startColor), to($endColor)); // Safari 4+, Chrome 2+
+  background-image: -webkit-linear-gradient(top, $startColor, $endColor); // Safari 5.1+, Chrome 10+
+  background-image: -o-linear-gradient(top, $startColor, $endColor); // Opera 11.10
+  background-image: linear-gradient(to bottom, $startColor, $endColor); // Standard, IE10
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($startColor)}', endColorstr='#{ie-hex-str($endColor)}', GradientType=0); // IE9 and down
+}
+
+
+// Animations
+@mixin animation($animation...) {
+   -moz-animation: $animation;
+    -webkit-animation: $animation;
+    -o-animation: $animation;
+    -ms-animation: $animation;
+    -khtml-animation: $animation;
+    animation: $animation;
+}
+
+
+// Drop shadows
+@mixin box-shadow($shadow...) {
+    -webkit-box-shadow: $shadow;
+    -moz-box-shadow: $shadow;
+    box-shadow: $shadow;
+}
+
+
+//  Opacity
+@mixin opacity($opacity) {
+  opacity: $opacity / 100;
+  filter: alpha(opacity=$opacity);
+}
+@mixin grayscale($gray) {
+  -webkit-filter: grayscale($gray);
+     -moz-filter: grayscale($gray);
+       -o-filter: grayscale($gray);
+      -ms-filter: grayscale($gray);
+          filter: grayscale($gray); 
+}
+
+
+// Fonts
+@mixin embedded-font($name, $eot, $woff, $ttf, $svg)
+{
+    @font-face {
+        font-family: "#{$name}";
+        src: url(data:font/opentype;base64,#{$eot});
+        src: url(data:font/opentype;base64,#{$eot}) format('embedded-opentype'),
+             url(data:application/x-font-woff;base64,#{$woff}) format('woff'),
+             url(data:font/ttf;base64,#{$ttf}) format('truetype'),
+             url(data:image/svg+xml;base64,#{$svg}) format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+}
+
+
+// Bootstrap 3 Buttons
+@mixin button($name, $color, $textColor: #ffffff, $btn-3d-height: 4px) {
+	.btn-#{$name} { color: $textColor; background-color: $color; border-color: $color;
+		&:hover, &:focus, &:active, &.active { color: $textColor; background-color: darken($color, 5); border-color: darken($color, 5); }
+		&.btn-3d { box-shadow:0 0 0 1px $color inset, 0 0 0 2px rgba(255,255,255,0.15) inset, 0 $btn-3d-height 0 0 darken($color, 5), 0 $btn-3d-height 1px rgba(0,0,0,0.5);
+			&:active { box-shadow: none; }
+		}
+	}
+	.open .dropdown-toggle.btn-#{$name} { color: $textColor; background-color: darken($color, 5); border-color: darken($color, 5); }
+	.btn-#{$name}:active, .btn-#{$name}.active, .open .dropdown-toggle.btn-#{$name} { background-image: none; }
+	.btn-#{$name}.disabled,
+	.btn-#{$name}[disabled],
+	fieldset[disabled] .btn-#{$name},
+	.btn-#{$name}.disabled:hover,
+	.btn-#{$name}[disabled]:hover,
+	fieldset[disabled] .btn-#{$name}:hover,
+	.btn-#{$name}.disabled:focus,
+	.btn-#{$name}[disabled]:focus,
+	fieldset[disabled] .btn-#{$name}:focus,
+	.btn-#{$name}.disabled:active,
+	.btn-v[disabled]:active,
+	fieldset[disabled] .btn-#{$name}:active,
+	.btn-#{$name}.disabled.active,
+	.btn-#{$name}[disabled].active,
+	fieldset[disabled] .btn-#{$name}.active {
+		background-color: $color;
+		border-color: $color;
+	}
+}
+
+
+// Grid Scaffolding
+@mixin grid($columns: 24) {
+    .row-#{$columns}:before,
+	.row-#{$columns}:after { display: table; content: " "; }
+    .row-#{$columns}:after { clear: both; }
+    .row-#{$columns}:before,
+	.row-#{$columns}:after { display: table; content: " "; }
+    .row-#{$columns}:after { clear: both; }
+
+	.form-group-#{$columns}:before,
+	.form-group-#{$columns}:after { display: table; content: " "; }
+    .form-group-#{$columns}:after { clear: both; }
+    .form-group-#{$columns}:before,
+	.form-group-#{$columns}:after { display: table; content: " "; }
+    .form-group-#{$columns}:after { clear: both; }
+
+    @media (min-width: 768px) {
+        .row-#{$columns},
+		.form-group-#{$columns} { margin-right: -15px; margin-left: -15px; }
+	}
+    .row-#{$columns} .row-#{$columns},
+	.form-group-#{$columns} .form-group-#{$columns} { margin-right: -15px; margin-left: -15px; }
+
+
+	@for $i from 1 through $columns {
+		.row-#{$columns} > .col-xs-#{$i},
+		.row-#{$columns} > .col-sm-#{$i},
+		.row-#{$columns} > .col-md-#{$i},
+		.row-#{$columns} > .col-lg-#{$i},
+		.form-group-#{$columns} > .col-xs-#{$i},
+		.form-group-#{$columns} > .col-sm-#{$i},
+		.form-group-#{$columns} > .col-md-#{$i},
+		.form-group-#{$columns} > .col-lg-#{$i} { 
+			position: relative;
+			min-height: 1px;
+			padding-right: 0;
+			padding-left: 0;
+		}
+	}
+
+	.row-#{$columns}.row-padded > [class^="col-"],
+	.row-#{$columns}.row-padded > [class*=" col-"],
+	.form-group-#{$columns}.form-group-padded > [class^="col-"],
+	.form-group-#{$columns}.form-group-padded > [class*=" col-"] { padding-left: 15px; padding-right: 15px; }
+
+	// General styles
+	@for $i from 1 through ($columns - 1) {
+		.row-#{$columns} > .col-xs-#{$i},
+		.form-group-#{$columns} > .col-xs-#{$i} { float: left; }
+	}
+
+	@for $i from 1 through $columns {
+		.row-#{$columns} > .col-xs-#{$i},
+		.form-group-#{$columns} > .col-xs-#{$i} { width: (100% / $columns) * $i; }
+	}
+
+	// Media Queries
+    @media (min-width: 768px) {
+	    .container { max-width: 720px; }
+		@include grid-media-query(sm, $columns);
+	}
+
+    @media (min-width: 992px) {
+	    .container { max-width: 940px; }
+		@include grid-media-query(md, $columns);
+	}
+
+    @media (min-width: 1200px) {
+        .container { max-width: 1140px; }
+		@include grid-media-query(lg, $columns);
+	}  
+
+	// Alternative classes
+    .form-horizontal .form-group .row-#{$columns} { margin-right: -15px; margin-left: -15px; }
+}
+@mixin grid-media-query($name, $columns) {
+	@for $i from 1 through ($columns - 1) {
+		.row-#{$columns} > .col-#{$name}-#{$i},
+		.form-group-#{$columns} > .col-#{$name}-#{$i}, { 
+			float: left;
+		}
+	}
+	@for $i from 1 through $columns {
+		.row-#{$columns} > .col-#{$name}-#{$i},
+		.form-group-#{$columns} > .col-#{$name}-#{$i} { 
+			width: (100% / $columns) * $i;
+		}
+	}
+	@for $i from 1 through ($columns - 1) {
+		.row-#{$columns} > .col-#{$name}-push-#{$i},
+		.form-group-#{$columns} > .col-#{$name}-push-#{$i} { 
+			left: (100% / $columns) * $i;
+		}
+		.row-#{$columns} > .col-#{$name}-pull-#{$i},
+		.form-group-#{$columns} > .col-#{$name}-pull-#{$i} { 
+			right: (100% / $columns) * $i;
+		}
+		.row-#{$columns} > .col-#{$name}-offset-#{$i},
+		.form-group-#{$columns} > .col-#{$name}-offset-#{$i} { 
+			margin-left: (100% / $columns) * $i;
+		}
+	}
+}
+
+
+// Column Margins
+@mixin column-margin($margin) {
+	[class^='row'].margin-#{$margin}, 
+    [class*=' row'].margin-#{$margin}, 
+	[class^='form-group'].margin-#{$margin},
+    [class*=' form-group'].margin-#{$margin}  { 
+		margin-left: -#{$margin/2}px;
+		margin-right: -#{$margin/2}px;
+
+		> [class^='col-'],
+        > [class*=' col-'] {
+			padding-right: #{$margin/2}px;
+			padding-left: #{$margin/2}px;
+		}
+		[class^='row'], 
+		[class*=' row'],
+		[class^='form-group'], 
+		[class*=' form-group'] { margin-left: 0; margin-right: 0; } 
+	}
+}

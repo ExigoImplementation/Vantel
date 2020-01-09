@@ -1,0 +1,142 @@
+﻿@model CommissionDetailViewModel
+@{
+    ViewBag.Title = Resources.Common.Commissions;
+    var routeDataValues = ViewContext.RouteData.Values;
+    var runid = (routeDataValues["runid"] != null) ? Convert.ToInt32(routeDataValues["runid"]) : 0;
+    var firstNewPeriod = Model.CommissionPeriods.Where(c => !c.CanBeParsedAs<HistoricalCommission>()).OrderBy(c => c.Period.PeriodID).FirstOrDefault();
+    var PeriodID = Model.PeriodID;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "commissions",
+        DefaultBreadcrumbLinkSitemapID = "page-commissions"
+    };
+}
+<div id="view-commission-detail">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="input-group">
+                                <span class="input-group-prepend">
+                                    <button id="gotopreviousperiod" class="btn btn-primary" type="button"><i class="fa-chevron-left"></i></button>
+                                </span>
+                                <select id="periodchoice" class="form-control">
+                                    @foreach (var period in Model.CommissionPeriods.OrderByDescending(p => p.Period.PeriodID).Where(p => p.Period.PeriodTypeID == (int)PeriodTypes.Default))
+                                    {
+                                        dynamic typedPeriod;
+                                        var url = "";
+                                        var currentFlag = "";
+                                        var isSelected = false;
+                                        var selectedPeriod = "" + PeriodID;
+
+                                        if (period is HistoricalCommission)
+                                        {
+                                            typedPeriod = (HistoricalCommission)period;
+                                            url = Url.Action("CommissionDetail", new { runid = typedPeriod.CommissionRunID });
+                                            if (runid == typedPeriod.CommissionRunID) { isSelected = true; }
+                                            if (selectedPeriod == typedPeriod.Period.PeriodID.ToString()) { isSelected = true; }
+
+                                        }
+                                        else
+                                        {
+                                            typedPeriod = (RealTimeCommission)period;
+                                            url = Url.Action("CommissionDetail", new { periodid = typedPeriod.Period.PeriodID });
+
+                                            if (firstNewPeriod == null || period.Period.PeriodID != firstNewPeriod.Period.PeriodID)
+                                            {
+                                                currentFlag = Resources.Common.CurrentCommissions + " - ";
+                                            }
+                                            else
+                                            {
+                                                currentFlag = Resources.Common.CurrentCommissions + " - ";
+                                            }
+
+                                            if (selectedPeriod == typedPeriod.Period.PeriodID.ToString()) { isSelected = true; }
+                                        }
+
+                                        <option value="@url" @((isSelected) ? "selected" : "")>@currentFlag@period.Period.PeriodDescription (@period.Period.StartDate.ToShortDateString() - @period.Period.EndDate.ToShortDateString())</option>
+                                    }
+                                </select>
+                                <span class="input-group-append">
+                                    <button id="gotonextperiod" class="btn btn-primary" type="button"><i class="fa-chevron-right"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="view-commission-detail-report">
+                        <!--Injected with AJAX -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery"], function ($) {
+
+            // Settings
+            var context = "#view-commission-detail",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('#periodchoice', $context).on('change', function () {
+                    actions.getReport($(this).val());
+                });
+                $('#gotopreviousperiod', $context).on('click', function () {
+                    var index = $('#periodchoice', $context).prop("selectedIndex");
+                    if (index < $('#periodchoice option', $context).length - 1) {
+                        $('#periodchoice', $context).prop("selectedIndex", index + 1);
+                        actions.getReport($('#periodchoice', $context).val());
+                    }
+                });
+                $('#gotonextperiod', $context).on('click', function () {
+                    var index = $('#periodchoice', $context).prop("selectedIndex");
+                    if (index > 0) {
+                        $('#periodchoice', $context).prop("selectedIndex", index - 1);
+                        actions.getReport($('#periodchoice', $context).val());
+                    }
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                getReport: function (url) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        cache: false,
+                        success: function (response) {
+                            $('#view-commission-detail-report').html(response);
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                $('#periodchoice', $context).triggerHandler('change');
+            }
+            init();
+
+        });
+    </script>
+}

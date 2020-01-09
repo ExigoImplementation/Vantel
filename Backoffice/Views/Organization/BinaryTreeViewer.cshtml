@@ -1,0 +1,365 @@
+﻿@model TreeViewerViewModel
+    @{
+        ViewBag.Title = Resources.Common.BinaryTreeViewer;
+    }
+<div id="view-tree-viewer">
+    <div class="row">
+        <div class="col-md-9">
+            <!-- Customer Details -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@Resources.Common.CustomerDetails</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="customer-details-container">
+                        @Resources.Common.Loading
+                    </div>
+                </div>
+            </div>
+            <!-- Tree -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        @Resources.Common.BinaryTreeViewer
+                    </h3>
+                </div>
+                <div class="panel-body nav-buttons">
+                    <a class="btn btn-primary pull-left" data-role="uplevel">@Resources.Common.UpOneLevel</a>
+                    <a class="btn btn-primary pull-right" data-role="treetop">@Resources.Common.BackToTop</a>
+                    <a class="btn btn-primary fa-arrow-circle-down" title="@Resources.Common.BottomLeft" data-role="bottomleft"></a>
+                    <a class="btn btn-primary fa-arrow-circle-down" title="@Resources.Common.BottomRight" data-role="bottomright"></a>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <div id="view-binary-viewer" style="width: 100%; height: 415px; overflow: auto;">
+                        @Resources.Common.Loading
+                    </div>
+                </div>
+            </div>
+            <!-- Key -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@Resources.Common.Key</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row margin-10">
+                        <div class="col-md-4">
+                            <div class="row margin-10">
+                                <div class="col-md-2">
+                                    <span class="key-item icon fa-plus-circle"></span>
+                                </div>
+                                <div class="col-md-10">
+                                    @Resources.Common.OpenPosition
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row margin-10">
+                                <div class="col-md-2">
+                                    <span class="key-item icon fa-repeat"></span>
+                                </div>
+                                <div class="col-md-10">
+                                    @Resources.Common.HasAutoOrder
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row margin-10">
+                                <div class="col-md-2">
+                                    <span class="key-item icon fa-heart"></span>
+                                </div>
+                                <div class="col-md-10">
+                                    @Resources.Common.PersonallyEnrolled
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-40"></div>
+                    <div class="row">
+                        @foreach (var rank in Model.Ranks)
+                        {
+                            <div class="col-md-4">
+                                <div class="legend">
+                                    <div class="legend-item">
+                                        <div class="legend-object"><span class="key-item rank-@(rank.RankID)"></span></div>
+                                        <div class="legend-body">@CommonResources.Ranks(rank.RankID, defaultDescription: rank.RankDescription)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <!-- Search -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@Resources.Common.Search</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="search-field" placeholder="@Resources.Common.SearchByNameOrID">
+                        <a class="input-group-addon btn btn-primary" data-role="search"><span class="fa-search"></span></a>
+                    </div>
+                </div>
+                <div id="search-results-container">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>@Resources.Common.ID#</th>
+                                        <th>@Resources.Common.First</th>
+                                        <th>@Resources.Common.Last</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="search-results"></tbody>
+                            </table>
+                            <script id="search-results-template" data-target="#search-results" type="text/x-handlebars-template">
+                                {{#each results}}
+                                <tr data-id="{{CustomerID}}">
+                                    <td>{{CustomerID}}</td>
+                                    <td>{{FirstName}}</td>
+                                    <td>{{LastName}}</td>
+                                </tr>
+                                {{/each}}
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upline Viewer -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@Resources.Common.UplineViewer</h3>
+                </div>
+                <div id="upline-container">
+                    @Resources.Common.Loading
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "app", "handlebars", "jquery-scrollto", "trees"], function ($, ajax, app, Handlebars) {
+
+            // Settings
+            var context         = "#view-binary-viewer",
+                $context        = $(context),
+                mousemoveLocked = false,
+                topCustomerID   = @Model.TopCustomerID;
+
+            // State
+            var state = {
+                selectedCustomerId: 0
+            };
+
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('.jOrgChart').on('click', '.node-body', function () {
+                    actions.scrollToNode($(this));
+                });
+
+                // Tree top
+                $('[data-role="treetop"]').on('click', function () {
+                    actions.fetchTree();
+                });
+
+                // Up one level
+                $('[data-role="uplevel"]').on('click', function () {
+                    if (state.selectedCustomerId == topCustomerID) { return; }
+                    actions.upOneLevel(state.selectedCustomerId);
+                });
+
+                // Search and Upline row click
+                $('#view-tree-viewer').on('click', '[data-id]', function () {
+                    var id = $(this).data("id");
+
+                    actions.fetchTree(id);
+                });
+
+                $('[data-role="bottomleft"]').on('click', function () {
+                    actions.getBottomNode(state.selectedCustomerId,"left");
+                });
+
+                // bottom right
+                $('[data-role="bottomright"]').on('click', function () {
+                    actions.getBottomNode(state.selectedCustomerId,"right");
+                });
+
+                // Search when Enter is pressed
+                $('#search-field').on("keypress", function (e) {
+                    if (e.which == 13) {
+                        e.preventDefault();
+                        $('[data-role="search"]').click();
+                    }
+                });
+
+                // Search
+                $('[data-role="search"]').on('click', function () {
+                    var query = $('#search-field').val();
+
+                    if (query != "") {
+                        actions.search(query);
+                    }
+                    else {
+                        $('#search-field').focus();
+                    }
+                });
+
+                // Handle click for tree nodes
+                $context.on('click', '.node', function () {
+                    var $this = $(this),
+                        id = $this.data('id');
+
+
+                    if ($this.hasClass('null-node')) {
+                        console.log("null node");
+                        return;
+                    }
+                    else if ($this.hasClass('open-node')) {
+                        console.log("open node");
+                        return;
+                    }
+                    else {
+
+                        $this.find('.node-body').first().html('<div class="text-center"><img src="@Url.Content("~/Content/images/circle-white-24.gif")" style="position: relative; top: 18px;" /></div>');
+
+                        actions.fetchTree(id);
+                    }
+                });
+
+            }
+
+
+            // Actions
+            var actions = {
+                fetchTree: function (id) {
+                    var nodeId = id || 0;
+
+                    $.ajax({
+                        url: '@Url.Action("FetchBinaryTree", "organization", new { id = 0 })'.slice(0, -1) + nodeId,
+                        type: 'GET',
+                        cache: false,
+                        success: function (response) {
+
+                            $context.html(response.treehtml);
+                            $('#customer-details-container').html(response.customerdetailshtml);
+                            $('#upline-container').html(response.uplinehtml);
+                            actions.scrollToNode($('.jOrgChart .node:first'));
+                            state.selectedCustomerId = response.id;
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                },
+                search: function (query) {
+                    ajax.json({
+                        url: "@Url.Action("binarysearch", "organization")",
+                        data: { query: query },
+                        beforeSend: function () {
+                            var loadingimg = "<tr><td colspan='3'><div class='text-center'><img src=@Url.Content("~/Content/images/circle-24.gif") /></div></td></tr>";
+                            $("#search-results").html(loadingimg);
+                        },
+                        success: function (response) {
+                            if (response.success) {
+
+                                if (response.results.length == 0) {
+                                    $("#search-results-container").hide();
+                                    $("#search-field").val("");
+                                    app.throwError("@Resources.Common.SearchNoResults");
+                                    return;
+                                }
+
+                                var source = $("#search-results-template").html();
+                                var template = Handlebars.compile(source);
+                                var html = template(response);
+                                $("#search-results").html(html);
+
+                                if(!$("#search-results-container").is(":visible")){
+                                    $("#search-results-container").show();
+                                }
+                            }
+                            else {
+                                console.log("message", response.message);
+                                $("#search-results-container").hide();
+                                app.throwError("@Resources.Common.SearchNoResults");
+                            }
+                        }
+                    });
+                },
+                upOneLevel: function(id){
+                    var nodeId = id || 0;
+
+                    $.ajax({
+                        url: '@Url.Action("binaryuponelevel", "organization", new { id = 0 })'.slice(0, -1) + nodeId,
+                        type: 'GET',
+                        cache: false,
+                        success: function (response) {
+                            if (response.success) {
+                                actions.fetchTree(response.parentId);
+                            }
+                            else {
+                                console.log(response.message);
+                            }
+                        },
+                    });
+                },
+                scrollToNode: function ($element, lockMouseMove) {
+                    lockMouseMove = lockMouseMove || false;
+
+                    if (lockMouseMove) mousemoveLocked = true;
+
+                    if ($element.length == 0) return;
+
+                    $context.stop().scrollTo($element, 500, {
+                        offset: function () { return { top: 0, left: ($element.width() / 2) - ($context.width() / 2) }; },
+                        onAfter: function () {
+                            if (lockMouseMove) {
+                                setTimeout(function () {
+                                    mousemoveLocked = false;
+                                }, 1000);
+                            }
+                        }
+                    });
+                },
+                getBottomNode: function(id,direction)
+                {
+                    var nodeId = id || 0;
+
+                    $.ajax({
+                        url: '@Url.Action("BinaryBottomNode", "organization", new { id = 0 })'.slice(0, -1) + nodeId + "?direction=" + direction,
+                        type: 'GET',
+                        cache: false,
+                        success: function (response) {
+                            if (response.success) {
+                                console.log("id: ", response.customerID);
+                                actions.fetchTree(response.customerID);
+                            }
+                            else {
+                                console.log(response.message);
+                            }
+                        },
+                    });
+                }
+
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+                actions.fetchTree(topCustomerID);
+            }
+            init();
+
+        });
+    </script>
+}

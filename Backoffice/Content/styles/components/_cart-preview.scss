@@ -1,0 +1,31 @@
+﻿
+html:not([data-scroll='0']) {
+    #cart-preview {
+        top: 105px;
+        transition: top .4s ease,opacity .3s ease;
+    }
+}
+
+#cart-preview {
+    background-color: white;
+    width: 300px;
+    float: right;
+    display: none;
+    position: fixed;
+    top: 145px;
+    z-index: 99999;
+    right: 15px;
+    transition: top .4s ease,opacity .3s ease;
+
+    .top-cart-container {
+        background-color: #44C1E4;
+        padding-top: 3px;
+        width: 100%;
+
+        .cart-container {
+            border: 1px solid #EEEEEE;
+            background-color: white;
+        }
+    }
+}
+

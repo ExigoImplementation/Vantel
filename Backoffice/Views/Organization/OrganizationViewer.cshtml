@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = Resources.Common.Organization;
+    var nodes = (List<NestedTreeNode>)ViewBag.Nodes;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    @ViewBag.Title
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div id="treeview"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+
+        <div id="view-selectedprofile"></div>
+
+    </div>
+</div>
+
+
+
+
+@section scripts
+{
+    <script>
+        require(["jquery", "app", "ajax", "kendo"], function ($, app, ajax) {
+
+            // Set the data source
+            var dataSource = new kendo.data.HierarchicalDataSource({
+                transport: {
+                    read: {
+                        url: app.path("organization/gettreenodes"),
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        imageUrl: function () {
+                            // Determine which image URL to show.
+                            var value = this.CustomerID;
+                            var baseUrl = "@Url.Content("~/Content/images/country-flags/16/")";
+                            switch (value) {
+                                case 1: return baseUrl + "US.png";
+                                default: return baseUrl + "CA.png";
+                            }
+                        },
+                        id: "CustomerID",
+                        hasChildren: "HasChildren"
+                    }
+                }
+            });
+
+
+            // Initialize the tree
+            var treeViewInitialized = false;
+            $("#treeview").kendoTreeView({
+                dataSource: dataSource,
+                dataTextField: "CustomerID",
+                dataImageUrlField: "imageUrl()",
+                template: "#= item.CustomerID #",
+
+                // Events
+                dataBound: function () {
+                    ajax.html({
+                        url: '@Url.Action("index", "profile", new { id = "" })/',
+                        success: function (response) {
+                            if (!treeViewInitialized) {
+                                $('#view-selectedprofile').html(response);
+                                treeViewInitialized = true;
+                            }
+                        }
+                    });
+                },
+                select: function (event) {
+                    var customerID = $("#treeview").getKendoTreeView().dataItem(event.node).id;
+
+                    ajax.html({
+                        url: '@Url.Action("index", "profile", new { id = "" })/' + customerID,
+                        success: function (response) {
+                            $('#view-selectedprofile').html(response);
+                        }
+                    });
+                }
+            });
+
+        });
+
+
+    </script>
+}

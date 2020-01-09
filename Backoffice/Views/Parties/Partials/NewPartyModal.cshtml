@@ -1,0 +1,56 @@
+﻿@{
+    var party = new Party();
+    party.Address = new Address();
+    party.Address.Country = "US";
+    party.Address.State = "TX";
+    party.StartDate = DateTime.Now;
+}
+
+<div class="modal fade" id="new-party-modal" data-backdrop="true" data-remote="false" tabindex="-1" role="dialog" aria-labelledby="new-party-modalLabel" aria-describedby="Heading" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="new-party-modalLabel">@Resources.Common.CreateNewParty</h4>
+            </div>
+            <div class="modal-body">
+
+                <h4>Party Details</h4>
+                @using (Ajax.BeginForm("CreateNewParty", new AjaxOptions { OnSuccess = "createparty.success", OnFailure = "createparty.failure" }))
+                {
+                    <input type="hidden" name="party.CustomerID" value="@Identity.Current.CustomerID" />
+                    <input type="hidden" name="party.PartyType" value="1" />
+                    <input type="hidden" name="party.PartyStatusType" value="1" />
+                    
+                    
+                    <div class="form-group">
+                        <label for="txtHost">Choose Party Hostess</label>
+                        <select class="form-control" id="txtHostess" name="party.HostID">
+                            <option value="@Identity.Current.CustomerID" selected="selected">@Resources.Common.Me</option>
+                            <option value="@Identity.Current.CustomerID">Larry</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(c => party.Description)
+                        @Html.TextBoxFor(c => party.Description, new { @class = "form-control", placeholder = "Description" })
+                    </div>
+
+                    @Html.EditorFor(c => party.Address)
+
+                    <div class="form-group">
+                        @Html.LabelFor(c => party.StartDate)
+                        @Html.TextBoxFor(c => party.StartDate, new { @class = "form-control", data_bind = "start-date" })
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Common.Cancel</button>
+                <button type="button" id="btnCreateParty" class="btn btn-success">@Resources.Common.Create</button>
+            </div>
+        </div>
+    </div>
+</div>

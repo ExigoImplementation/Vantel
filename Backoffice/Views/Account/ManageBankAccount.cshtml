@@ -1,0 +1,132 @@
+﻿@model BankAccount
+@{
+    ViewBag.Title = Resources.Common.PaymentMethods;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div id="view-bankoverview" class="row">
+
+
+    <div class="col">
+        <div class="row">
+            <div class="col-md-9">
+                @using (Html.BeginForm("savebankaccount", "account"))
+                {
+
+                    @Html.HiddenFor(c => c.Type)
+
+                    if (Model.IsUsedInAutoOrders)
+                    {
+                        <div class="alert alert-info">
+                            <h4>@Resources.Common.EditingAutoOrderBankAccounts</h4>
+                            @Resources.Common.ChangesToAutoOrderBankAccounts.FormatWith(Model.AutoOrderIDs.Length)
+                        </div>
+                    }
+
+
+                    <div class="well">
+                        <div class="row margin-5">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(c => c.BankName, new { @class = "control-label" })
+                                    @Html.TextBoxFor(c => c.BankName, new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = Resources.Common.NameOfBank
+                                    })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-5">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(c => c.NameOnAccount, new { @class = "control-label" })
+                                    @Html.TextBoxFor(c => c.NameOnAccount, new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = Resources.Common.NameOnAccount
+                                    })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-5">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(c => c.AccountNumber, new { @class = "control-label" })
+                                    @Html.TextBoxFor(c => c.AccountNumber, new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = Resources.Common.AccountNumber
+                                    })
+                                    @if (Model.Type != BankAccountType.New)
+                                    {
+                                        <small class="help-block">@Resources.Common.ReEnterAccountNumber</small>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(c => c.RoutingNumber, new { @class = "control-label" })
+                                    @Html.TextBoxFor(c => c.RoutingNumber, new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = Resources.Common.RoutingNumber
+                                    })
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        @Html.EditorFor(c => Model.BillingAddress)
+
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                    <a href="@Url.Action("PaymentMethodList")" class="btn btn-link">@Resources.Common.Cancel</a>
+
+                    if (Model.Type != BankAccountType.New && !Model.IsUsedInAutoOrders)
+                    {
+                        <span class="pull-right">
+                            <a href="@Url.Action("DeleteBankAccount", new { type = Model.Type })" class="btn btn-default">@Resources.Common.Delete</a>
+                        </span>
+                    }
+
+                }
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <script>
+        require(["jquery", "forms", "bootstrap"], function ($) {
+
+            // Settings
+            var context = "#view-bankoverview",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $("[type='submit']", $context).loadingClickEvent();
+            }
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}

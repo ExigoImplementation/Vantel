@@ -1,0 +1,47 @@
+#view-accountoverview {
+    .card-body-edit {
+        background-color: #F7F7F7;
+    }
+}
+
+#view-login, #login-preview {
+    .login-content {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .login-title {
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+
+        a {
+            color: #212529;
+
+            &:hover {
+                color: #44c1e4;
+            }
+        }
+    }
+
+    .login-body {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+}
+
+#login-preview {
+    padding: 15px 0;
+    background-color: #fff;
+    width: 300px;
+    float: right;
+    display: none;
+    position: fixed;
+    top: 145px;
+    z-index: 99999;
+    right: 15px;
+    transition: top .4s ease,opacity .3s ease;
+    border: 1px solid #EEEEEE;
+    border-top: 3px solid #44c1e4;
+}

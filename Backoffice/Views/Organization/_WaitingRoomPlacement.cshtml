@@ -1,0 +1,33 @@
+﻿@model WaitingRoomListViewModel
+
+@if (Model.HasWaitingRoomCustomers)
+{
+    <div style="max-height: 300px; overflow-y: auto;">
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@Resources.Common.ID#</th>
+                        <th>@Resources.Common.FirstName</th>
+                        <th>@Resources.Common.LastName</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in Model.WaitingRoomCustomers)
+                    {
+                        <tr class="waitingroomnode" data-waitingroomid="@customer.CustomerID">
+                            <td>@customer.CustomerID</td>
+                            <td>@customer.FirstName</td>
+                            <td>@customer.LastName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <p>@Resources.Common.NoMembersToPlace.</p>
+}

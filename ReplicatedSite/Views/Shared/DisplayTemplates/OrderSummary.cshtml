@@ -1,0 +1,102 @@
+﻿@model Order
+
+<div class="ordersummary">
+    <div class="panel panel-default">
+        <div class="panel-body no-padding">
+            <div class="row margin-0">
+                <div class="col-sm-3 details-container">
+                    <div class="padded-container">
+                        <div class="text-lg">@Model.OrderDate.ToString("MMMM d, yyyy")</div>
+
+                        <p>
+                            @Resources.Common.Order <a href="@Url.Action("orderinvoice", "orders", new { token = Common.Services.Security.Encrypt(Model.OrderID, Identity.Customer.CustomerID) })">#@Model.OrderID</a>
+
+                            @*@if (Model.AutoOrderID != null)
+                            {
+                                <br />
+                                @:AutoOrder <a href="@Url.Action("autoorderdetail", "autoorder", new { token = Common.Services.Security.Encrypt(Model.AutoOrderID, Identity.Customer.CustomerID) })">#@Model.AutoOrderID</a>
+                            }*@
+                        </p>
+
+
+                        <dl class="dl">
+                            <dt>@Resources.Common.Total</dt>
+                            <dd><span class="text-danger">@Model.Total.ToString("C")</span></dd>
+
+                            @if (!Model.IsVirtualOrder)
+                            {
+                                <div class="space-10"></div>
+                                <dt>@Resources.Common.ShippingAddress</dt>
+                                <dd>
+                                    @Html.DisplayFor(c => Model.Recipient, "ShippingAddress")
+                                </dd>
+                            }
+                            
+                            @if (Model.HasTrackingNumbers)
+                            {
+                                <div class="space-10"></div>
+                                <dt>@Resources.Common.TrackYourOrder</dt>
+                                <dd>
+                                    @foreach (var trackingNumber in Model.TrackingNumbers)
+                                    {
+                                        <a href="javascript:;">@trackingNumber</a><br />
+                                    }
+                                </dd>
+                            }
+
+                        </dl>
+
+
+                        <ul class="list-unstyled">
+                            <li><a href="@Url.Action("orderinvoice", "orders", new { token = Common.Services.Security.Encrypt(Model.OrderID, Identity.Customer.CustomerID) })">@Resources.Common.ViewInvoice</a></li>
+                       
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="col-sm-9 items-container">
+                    <div class="padded-container">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="text-lg">
+                                    <span class="text-info">@Model.OrderStatusDescription</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                @if (Model.HasTrackingNumbers)
+                                {
+                                    <a href="javascript:;" class="btn btn-primary btn-block" title="@Model.TrackingNumbers.First()">@Resources.Common.TrackPackage</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="padded-container">
+                        @foreach (var detail in Model.Details)
+                        {
+                            <div class="item">
+                                <div class="row">
+                                    <div class="col-sm-2 col-xs-3">
+                                        <div class="productimage">
+                                            <a href="javascript:;"><img src="@GlobalUtilities.GetProductImagePath(detail.ImageUrl)" class="img-responsive" /></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <a href="javascript:;" class="block">@detail.ItemDescription</a>
+                                        <small class="text-sm text-muted">@Resources.Common.SKU: <a href="javascript:;">#@detail.ItemCode</a></small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.Details.Count() == 0)
+                        {
+                            <div class="text-muted">
+                                @Resources.Common.NoItemsPurchased
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

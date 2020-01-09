@@ -1,0 +1,14 @@
+﻿@model TreeNodePopoverViewModel
+
+
+<div class="view-treenode-popover">
+    <div class="row margin-10">
+        <div class="col-md-3">
+            <img src="@Url.Avatar(Model.Customer.CustomerID)" class="avatar avatar-sm img-fluid" />
+        </div>
+        <div class="col-md-9">
+            <strong>@Model.Customer.FullName</strong> <small class="text-muted">#@Model.Customer.CustomerID</small><br />
+            <small class="text-muted">@Model.Customer.HighestAchievedRank.RankDescription</small>
+        </div>
+    </div>
+</div>

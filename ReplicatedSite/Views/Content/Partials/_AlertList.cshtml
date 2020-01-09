@@ -1,0 +1,45 @@
+﻿@model Common.Models.ContentListModel
+@{
+    ViewBag.Title = Resources.Common.AlertList;
+
+    var filterContent = Model.ContentList.ToList();
+    var currentCulture = System.Globalization.CultureInfo.GetCultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name);
+    List<ContentItem> ContentItemsList = Model.ContentList;
+}
+
+<div class="well well-sm clearfix" id="alertList">
+    <div class="panel panel-default categoryDetail" @*data-id="@category.CategoryID"*@>
+        @*<div class="panel-heading">@category.CategoryDescription</div>*@
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr class="active">
+                        <th class="alertTitleHeader">@Resources.Common.Title</th>
+                        <th class="alertPublishDateHeader">@Resources.Common.PublishDate</th>
+                        <th class="alertActionsHeader">@Resources.Common.Actions</th>
+                    </tr>
+                </thead>
+                <tbody data-sort-group="@CustomSortGroups.ResourceItems"
+                    @if (@ContentItemsList != null)
+                    {
+                        foreach (var contentitem in ContentItemsList)
+                        {
+                            <tr>
+                                <td>@contentitem.ContentDescription</td>
+                                <td class="black-font">@contentitem.ValidFrom.ToString(currentCulture)</td>
+                                <td>
+                                    <a class="bigger-icon editAlert" data-id="@contentitem.ContentItemID"><i class="fa-pencil-square"></i></a>
+                                    <a class="bigger-icon deleteAlert" data-id="@contentitem.ContentItemID"><i class="fa-times-circle"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="6" class="black-font"><p>@Resources.Common.NoResourcesSaved</p></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

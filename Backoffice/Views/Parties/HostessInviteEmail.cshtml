@@ -1,0 +1,115 @@
+﻿@model HostessEmailModel
+@{
+    ViewBag.Title = Resources.Common.HostessInvite;
+
+    var eventStart = Convert.ToDateTime(Model.Party.EventStart);
+
+    var loginUrl = GlobalSettings.Company.BaseBackofficeUrl;    
+}
+
+
+<div id="hostess-invite-container" style="width:600px; margin:auto;">
+    <div align="center">
+        <table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="640" style="width:480.0pt; border-collapse:collapse">
+            <tbody>
+                <tr id="x_simple-content-row">
+                    <td width="640" style="width:480.0pt; background:white; padding:0in 0in 0in 0in">
+                        <table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="640" style="width:480.0pt; border-collapse:collapse">
+                            <tbody>
+                                <tr>
+                                    <td style="padding:0in 0in 0in 0in">
+                                        <table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="640" style="width:480.0pt; border-collapse:collapse">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="640" style="width:480.0pt; padding:0in 0in 0in 0in">
+                                                        <p class="x_article-title">Dear @Model.Party.HostFirstName,</p>
+                                                        <div style="margin-bottom:13.5pt">
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @Resources.Common.YourPartyIsScheduledFabulousExperience
+                                                                </span>
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <strong><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">@Resources.Common.YourPartyDate</span></strong>
+                                                                <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">@eventStart.ToShortDateString()</span>
+
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <strong><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">@Resources.Common.PartyTime:</span></strong> <span>@eventStart.ToShortTimeString()</span>
+
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <strong><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">@Resources.Common.PartyLocation:</span></strong>
+                                                                <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @if (Model.Party.Address.IsComplete)
+                                                                    {
+                                                                        @Html.DisplayFor(c => c.Party.Address)
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @String.Format(Resources.Common.BeginProcessInvitingAllGuestMesage, Resources.Common.CompanyName)&nbsp;
+                                                                </span>
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @Resources.Common.AccessPersonal&nbsp;
+                                                                    <strong><span style="font-family:&quot;Arial&quot;,sans-serif">@Resources.Common.PartyDashboard</span></strong>:
+                                                                </span>
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-left:.25in; text-indent:-.25in; line-height:16.5pt">
+                                                                <span style="font-size:10.0pt; font-family:Symbol; color:#515151">
+                                                                    <span style="">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span>
+                                                                </span><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @Resources.Common.Click
+                                                                    <a href="@Model.HostessLoginUrl" target="_blank">
+                                                                        <b><span style="color:black">@loginUrl</span></b>
+                                                                    </a> @Resources.Common.ToBegin.
+                                                                </span>
+                                                            </p>
+                                                            <p class="x_MsoNormal" style="margin-left:.25in; text-indent:-.25in; line-height:16.5pt">
+                                                                <span style="font-size:10.0pt; font-family:Symbol; color:#515151">
+                                                                    <span style="">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span>
+                                                                </span><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @Resources.Common.EnterYourEmailAddress:
+                                                                    <a href="mailto:@Model.Email" target="_blank">
+                                                                        <b>
+                                                                            <span style="color:black">@Model.Email</span>
+                                                                        </b>
+                                                                    </a>
+                                                                </span>
+                                                            </p>
+                                                            @if (!Model.Password.IsNullOrEmpty())
+                                                            {
+                                                                <p class="x_MsoNormal" style="margin-left:.25in; text-indent:-.25in; line-height:16.5pt">
+                                                                    <span style="font-size:10.0pt; font-family:Symbol; color:#515151">
+                                                                        <span style="">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span>
+                                                                    </span>
+                                                                    <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:black;font-weight: bold;">@Resources.Common.EnterPassword: @Model.Password</span>
+                                                                </p>
+                                                            }
+                                                            <p class="x_MsoNormal" style="margin-bottom:11.25pt; line-height:16.5pt">
+                                                                <span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif; color:#515151">
+                                                                    @String.Format(Resources.Common.HostessRewardsMessage, Resources.Common.CompanyName)
+                                                                    <a href="@Model.ReplicatedSiteHomePage" target="_blank"><b><span style="color:black">@Model.ReplicatedSiteHomePage</span></b></a><br>
+                                                                    @Resources.Common.Thanks!&nbsp;<br>
+                                                                    <br>
+                                                                    @Identity.Current.FullName
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

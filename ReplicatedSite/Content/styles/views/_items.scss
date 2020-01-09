@@ -1,0 +1,12 @@
+//@import "../mixins/_mixins.scss";
+.view-item {
+    a {
+        text-decoration: none;
+    }
+
+    .summary {
+        p {
+            margin: 10px 0;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+﻿@model int
+    @{
+        var contextID = Guid.NewGuid().ToString();
+    }
+
+    <div id="view-languages-@contextID">       
+        <label class="control-label">@Resources.Common.PreferredLanguage</label>
+        @Html.DropDownList(Resources.Common.Language, Html.Languages(), new { @class = "form-control" })        
+    </div>

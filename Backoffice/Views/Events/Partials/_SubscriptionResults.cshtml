@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Calendar>
+@{ 
+    Layout = "";
+}
+<header class="mb-3">
+    <h6>@Resources.Common.SearchResults</h6>
+</header>
+
+<section class="row">
+    @if (!Model.Any())
+    {
+        <header class="d-flex justify-content-around align-items-center w-100">
+            <p class="text-center text-muted">@Resources.Common.SearchNoResults</p>
+        </header>
+    }
+
+    @foreach (var calendar in Model)
+    {
+        <figure class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <img src="@calendar.Customer.AvatarUrl" class="img-responsive" alt="@calendar.Customer.FullName" />
+        </figure>
+        <section class="col-6 col-md-8 col-lg-9 col-xl-10">
+            <section class="row d-flex justify-content-around align-items-center">
+                <section class="col-8 col-md-8 col-lg-8 col-xl-8">
+                    <h6>@calendar.Customer.FullName <small>@Resources.Common.ID:@calendar.CustomerID</small></h6>
+                </section>
+                <section class="col-4 col-md-4 col-lg-4 col-xl-4">
+                    <button type="button" data-action="subscribe" data-calendar-id="@calendar.CalendarID" class="btn btn-primary">@Resources.Common.Subscribe</button>
+                </section>                
+            </section>
+        </section>
+
+        if (calendar != Model.LastOrDefault())
+        {
+            <hr class="clearfix" />
+        }
+    }
+
+</section>

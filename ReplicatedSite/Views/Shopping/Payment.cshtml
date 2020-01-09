@@ -1,0 +1,561 @@
+﻿@model PaymentMethodsViewModel
+@{
+    ViewBag.Title = Resources.Common.Payment;
+
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var availablePaymentMethods = GlobalUtilities.GetCurrentMarket(this.Context).AvailablePaymentTypes;
+
+    var hasError = !Request.QueryString["message"].IsNullOrEmpty() || (ViewBag.PartyInvalid != null && ViewBag.PartyInvalid == true);
+    var partyInvalidMessage = hasError ? Resources.Common.PartyInvalidMessage : "";
+    var hasOpenParties = ViewBag.OpenParties != null;
+    List<Party> OpenParties = hasOpenParties ? ViewBag.OpenParties : new List<Party>();
+    var canChooseOpenParty = ViewBag.ActiveParty == null && hasOpenParties && OpenParties.Count() > 0;
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Cart, UrlPath = Url.Action("Cart", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.ShippingAddress, UrlPath = Url.Action("Shipping", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<style>
+    #cc-wrapper {
+        height: 44px;
+    }
+</style>
+<div id="view-orderpayment">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 offset-md-2 col-10 offset-1">
+                    <div class="space-40"></div>
+                    @* Party Info Bar *@
+                    @if (ViewBag.ActiveParty != null)
+                    {
+                        Party ActiveParty = ViewBag.ActiveParty;
+
+                        @Html.DisplayFor(c => ActiveParty, "PartyDetailBar")
+                    }
+                    else if (canChooseOpenParty)
+                    {
+                <div class="party-link">@Resources.Common.Replicated_ShoppingController_PartyLinkText <a data-role="find-party-modal">@Resources.Common.ClickHere.ToLower()</a></div>
+
+                        @Html.Partial("Partials/_PartyHostModal", OpenParties)
+                    }
+                    @* End Party Info Bar*@
+                    @if (Model.PaymentMethods.Count() > 0)
+                    {
+                        <h3>@Resources.Common.SelectPaymentMethod</h3>
+                        <hr>
+                        <div class="row justify-content-center">
+                            @foreach (var method in Model.PaymentMethods)
+                            {
+                                if (method is CreditCard)
+                                {
+                                    var card = method as CreditCard;
+                                    <div class="col-xl-4 col-lg-6 col-md-12">
+                                        <div class="card margin-bottom--10px">
+                                            <div class="card-body">
+                                                <h5 class="card-title">@card.Type</h5>
+
+                                                <div class="row">
+                                                    <div class="col-lg-8 col-md-12">
+                                                        <div>@Resources.Common.CardEndingIn @card.CardNumber</div>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-12">
+                                                        <div class="@((card.IsExpired) ? "text-danger" : "")">
+                                                            @card.ExpirationDate.ToString("M/yyyy")
+                                                            @if (card.IsExpired)
+                                                            {
+                                                                <text><br />@Resources.Common.Expired</text>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <div class="space-5"></div>
+                                                        @card.NameOnCard
+                                                    </div>
+                                                </div>
+
+                                                <div class="space-10"></div>
+                                                <div>
+                                                    @using (Ajax.BeginForm("UseCreditCardOnFile", new AjaxOptions()
+                                                    {
+                                                        OnBegin = "paymentoverview.onBegin",
+                                                        OnSuccess = "paymentoverview.onSuccess"
+                                                    }))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="Type" value="@card.Type" />
+                                                        if (Identity.Customer.Market.CVVRequired)
+                                                        {
+                                                            <div class="row">
+                                                                <div class="col-4">
+                                                                    @Html.TextBoxFor(c => c.ExistingCardCVV,
+                                                                      htmlAttributes: new
+                                                                      {
+                                                                          @class = "form-control",
+                                                                          style = "max-width: 100px;"
+                                                                      })
+                                                                </div>
+                                                                <div class="col-8">
+                                                                    <button type="submit" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading">
+                                                                        @Resources.Common.PayWithThisCard
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="submit" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading">
+                                                                @Resources.Common.PayWithThisCard
+                                                            </button>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+
+                        <h3>@Resources.Common.MorePaymentOptions</h3>
+                    }
+                    else
+                    {
+                        <h3>@Resources.Common.SelectPaymentMethod</h3>
+                    }
+                    <hr />
+                    @foreach (var paymentMethod in availablePaymentMethods)
+                    {
+                        if (paymentMethod.CanBeParsedAs<CreditCard>())
+                        {
+                            <div class="row">
+                                <div class="col-lg-9 mb-3">
+                                    <h4>@Resources.Common.CreditDebitCards</h4>
+                                    <p><a data-toggle="#newcardcontainer" class="btn btn-link"><i class="fa-plus"></i> @Resources.Common.AddCard</a></p>
+                                    <div id="newcardcontainer" style="display: none;">
+                                        @{ var NewCard = new CreditCard(); }
+                                        @using (Ajax.BeginForm("UseCreditCard", controller, new AjaxOptions()
+                                        {
+                                            OnBegin = "paymentoverview.onBegin",
+                                            OnSuccess = "paymentoverview.onSuccess"
+                                        }, new { novalidate = "novalidate" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <div class="card bg-light card-body mb-3">
+                                                <div class="row margin-5">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(c => NewCard.NameOnCard)
+                                                            @Html.TextBoxFor(c => NewCard.NameOnCard,
+                                                            htmlAttributes: new
+                                                            {
+                                                                @class = "form-control"
+                                                            })
+                                                            @Html.ValidationMessageFor(c => NewCard.NameOnCard, String.Empty,
+                                                             new
+                                                             {
+                                                                 @style = "color:red; font-size:small;"
+                                                             })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(c => NewCard.CardNumber)
+                                                            <div id="cc-wrapper"></div>
+                                                            @Html.ValidationMessageFor(c => NewCard.CardNumber, String.Empty,
+                                                             new
+                                                             {
+                                                                 @style = "color:red; font-size:small;"
+                                                             })
+                                                            @* Token and Card Display fields, populated in javascript below *@
+                                                            @Html.HiddenFor(m => NewCard.Token, new { @class = "creditcard-token" })
+                                                            @Html.HiddenFor(m => NewCard.Display, new { @class = "creditcard-display" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-8">
+                                                        <div class="form-group">
+                                                            <label for="inputEmail3" class="control-label">@Resources.Common.ExpirationDate</label>
+                                                            <div class="row margin-5">
+                                                                <div class="col-md-8 margin-bottom--10px">
+                                                                    @Html.DropDownList("NewCard.ExpirationMonth", Html.Months(), new
+                                                               {
+                                                                   @class = "form-control"
+                                                               })
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    @Html.DropDownList("NewCard.ExpirationYear", Html.ExpirationYears(), new
+                                                               {
+                                                                   @class = "form-control"
+                                                               })
+                                                                    @Html.ValidationMessageFor(c => NewCard.IsExpired)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group">
+                                                            <label for="inputCVV" class="control-label">@Resources.Common.CVV</label>
+                                                            <div class="row margin-5">
+                                                                <div class="col-12">
+                                                                    @Html.TextBoxFor(c => NewCard.CVV, new { @class = "form-control", required = "required" })
+                                                                    @Html.ValidationMessageFor(c => NewCard.CVV)
+                                                                    <script></script>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="custom-control custom-checkbox billingsameasshipping">
+                                                        <input type="checkbox" class="custom-control-input" name="BillingSameAsShipping" id="BillingSameAsShipping" value="true" checked /> 
+                                                        <label class="custom-control-label" for="BillingSameAsShipping">@Resources.Common.BillingAddressSameAsShipping</label>
+                                                        <input type="hidden" value="false" name="BillingSameAsShipping" />
+                                                </div>
+                                                @Html.EditorFor(c => NewCard.BillingAddress)
+                                            </div>
+
+                                            <a id="btnNewCardSubmit" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.PayWithThisCard</a>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="row">
+                                        @if (Resources.Common.Logo_VISA != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_VISA" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_Mastercard != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_Mastercard" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_Discover != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_Discover" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_JCB != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_JCB" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_Diners != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_Diners" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_AmericanExpress != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_AmericanExpress" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_UnionPay != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_UnionPay" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                        }
+
+                        if (paymentMethod.CanBeParsedAs<BankAccount>())
+                        {
+                            <div class="row">
+                                <div class="col-lg-9 mb-3">
+                                    <h4>@Resources.Common.CheckingAccount</h4>
+                                    <p><a data-toggle="#newbankaccountcontainer" class="btn btn-link"><i class="fa-plus"></i> @Resources.Common.AddBankAccount</a></p>
+                                    <div id="newbankaccountcontainer" style="display: none;">
+                                        @{ var NewBankAccount = new BankAccount(); }
+                                        @using (Ajax.BeginForm("UseBankAccount", controller, new AjaxOptions()
+                                        {
+                                            OnBegin = "paymentoverview.onBegin",
+                                            OnSuccess = "paymentoverview.onSuccess"
+                                        }, new { novalidate = "novalidate" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <div class="card bg-light card-body mb-3">
+                                                <div class="row margin-5">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(c => NewBankAccount.NameOnAccount)
+                                                            @Html.TextBoxFor(c => NewBankAccount.NameOnAccount,
+                                                            htmlAttributes: new
+                                                            {
+                                                            @class = "form-control"
+                                                            })
+                                                            @Html.ValidationMessageFor(c => NewBankAccount.NameOnAccount, String.Empty,
+                                                            new
+                                                            {
+                                                                @style = "color:red; font-size:small;"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(c => NewBankAccount.BankName)
+                                                            @Html.TextBoxFor(c => NewBankAccount.BankName,
+                                                            htmlAttributes: new
+                                                            {
+                                                            @class = "form-control"
+                                                                 })
+                                                            @Html.ValidationMessageFor(c => NewBankAccount.BankName, String.Empty,
+                                                            new
+                                                            {
+                                                                @style = "color:red; font-size:small;"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(c => NewBankAccount.AccountNumber)
+                                                            @Html.TextBoxFor(c => NewBankAccount.AccountNumber,
+                                                            htmlAttributes: new
+                                                            {
+                                                            @class = "form-control"
+                                                            })
+                                                            @Html.ValidationMessageFor(c => NewBankAccount.AccountNumber, String.Empty,
+                                                            new
+                                                            {
+                                                                @style = "color:red; font-size:small;"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(c => NewBankAccount.RoutingNumber)
+                                                            @Html.TextBoxFor(c => NewBankAccount.RoutingNumber,
+                                                            htmlAttributes: new
+                                                            {
+                                                            @class = "form-control"
+                                                            })
+                                                            @Html.ValidationMessageFor(c => NewBankAccount.RoutingNumber, String.Empty,
+                                                            new
+                                                            {
+                                                                @style = "color:red; font-size:small;"
+                                                            })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="custom-control custom-checkbox billingsameasshipping">
+                                                        <input type="checkbox" class="custom-control-input" name="BillingSameAsShipping" id="BillingSameAsShipping" value="true" checked /> 
+                                                        <label class="custom-control-label" for="BillingSameAsShipping">@Resources.Common.BillingAddressSameAsShipping</label>
+                                                        <input type="hidden" value="false" name="BillingSameAsShipping" />
+                                                </div>
+                                                @Html.EditorFor(c => NewBankAccount.BillingAddress)
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.PayWithThisAccount</button>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="row">
+                                        @if (Resources.Common.Logo_VISA != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_VISA" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_Mastercard != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_Mastercard" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_Discover != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_Discover" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_JCB != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_JCB" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_Diners != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_Diners" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_AmericanExpress != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_AmericanExpress" />
+                                            </div>
+                                        }
+                                        @if (Resources.Common.Logo_UnionPay != "")
+                                        {
+                                            <div class="col-3">
+                                                <img src="@Resources.Common.Logo_UnionPay" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    @*<script src="@Url.Content("~/Scripts/exigopayments-1.0.0.js")"></script>*@
+    <script src="@Url.Action("TokenEx", "App")"></script>
+    <script>
+        var paymentoverview;
+
+        require(["jquery", "toastr", "pubsub", "forms", "bootstrap"], function ($, toastr) {
+            paymentoverview = (function () {
+                // Iframe width fix
+                var windowWidth = $(window).width();
+                var ccFieldWidth = "90%";
+                if (windowWidth < 330) {
+                    ccFieldWidth = "90%";
+                } else if (windowWidth < 576) {
+                    ccFieldWidth = "92%";
+                } else if (windowWidth < 767) {
+                    ccFieldWidth = "80%";
+                } else if (windowWidth < 1095) {
+                    ccFieldWidth = "80%";
+                }
+
+                var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                    styles: {
+                        base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;transition: border-color .15s ease-in -out, box-shadow .15s ease-in -out;margin: 0;font-family: inherit;",
+                        focus: "color: #495057;border: 1px solid #f6cac3;outline:none;",
+                        error: "@Resources.Common.CardIsInvalid"
+                    }
+                });
+
+                // Settings
+                var context = "#view-orderpayment",
+                    $context = $(context);
+
+
+                // Parties
+                var hasError = @hasError.ToString().ToLower(),
+                    partyErrorMessage = '@partyInvalidMessage';
+
+                function registerEventHandlers() {
+                    // Parties
+                    if (hasError && partyErrorMessage.length > 0) {
+                        toastr.error(partyErrorMessage, 'Oops! Something went wrong.');
+                    }
+                    $('[data-toggle]', $context).on('click', function () {
+                        var $this = $(this);
+                        var $target = $($(this).data('toggle'));
+                        $target.slideToggle('fast');
+
+                        $this.slideUp('fast');
+                    });
+
+                    $('input:checkbox[name="BillingSameAsShipping"]').on('change', function () {
+                        var $this = $(this),
+                            $target = $this.parents('.billingsameasshipping').siblings('.view-address'),
+                            checked = $this.is(':checked');
+
+                        if (checked) {
+                            $target.slideUp('fast');
+                        }
+                        else {
+                            $target.slideDown('fast');
+                        }
+                    });
+
+                    $('input:checkbox[name="BillingSameAsShipping"]').each(function () {
+                        $(this).triggerHandler('change');
+                    });
+
+
+                    $('#btnNewCardSubmit').on('click', function () {
+                        var $this = $(this);
+                        var $form = $this.parents("form").first();
+                        $this.button("loading");
+
+                        var cardNumber = $("#NewCard_CardNumber").val();
+
+                        // Get Credit Card Token here
+                        tokenizer.tokenize({
+                            success: function (data) {
+                                console.log('tokenized success', data);
+
+                                var token = data.token;
+                                $(".creditcard-token").val(token);
+                                $(".creditcard-display").val(token.substr(token.length - 4, 4))
+                                $form.submit();
+                            },
+                            error: function (data) {
+                                console.log("get cc token failed", data);
+                                toastr.error(data);
+                                $this.button("reset");
+                                return;
+                            }
+                        });
+
+
+                        if (!$form.valid()) {
+                            $this.button("reset");
+                        }
+                    });
+                }
+
+
+                // Actions
+                var actions = {
+                    onBegin: function () {
+                        $("[type='submit']").loadingButtons();
+                        toastr.clear();
+                    },
+                    onSuccess: function (response) {
+                        if (response.success) {
+                            window.location = '@Url.Action("checkout")';
+
+                        } else {
+                            toastr.error(response.message, "@Resources.Common.InvalidPaymentType");
+                            $("[type='submit']").resetButtons();
+                        }
+                    }
+                };
+
+                // Initialization
+                function init() {
+                    registerEventHandlers();
+                }
+                init();
+
+                return {
+                    onSuccess: actions.onSuccess,
+                    onBegin: actions.onBegin
+                }
+
+            })();
+        });
+    </script>
+}

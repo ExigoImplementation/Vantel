@@ -1,0 +1,35 @@
+﻿@model Order
+@{
+    var canCloseParty = ViewData["CanCloseParty"] != null && ViewData["CanCloseParty"].CanBeParsedAs<bool>() ? Convert.ToBoolean(ViewData["CanCloseParty"]) : false;
+    var orderHasPayment = Model.Payments.Count() > 0;
+}
+<tr>
+    <td>
+        @Model.Recipient.FullName
+        <br />
+        # @Model.CustomerID
+    </td>
+    <td>
+        <a href="@Url.Action("partyorderinvoice", "orders", new { token = Common.Services.Security.Encrypt(Model.OrderID, Identity.Current.CustomerID) })">
+            @Model.OrderID
+        </a>
+    </td>
+    <td>
+        @Model.OrderDate.ToShortDateString()
+    </td>
+    <td class="text-right">
+        @Model.Total.ToString("C")
+    </td>
+    <td class="text-right">
+        @Model.CVTotal.ToString("C")
+    </td>
+    @if (!canCloseParty)
+    {
+        <td class="text-center">
+            @if (!orderHasPayment)
+            {
+                <a data-remove="@Model.OrderID" title="@Resources.Common.ClickCancelPartyOrder" class="btn btn-danger"><i class="fa-remove"></i></a>
+            }
+        </td>
+    }
+</tr>

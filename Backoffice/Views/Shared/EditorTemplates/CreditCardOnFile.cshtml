@@ -1,0 +1,4 @@
+﻿@model CreditCard
+
+<input type="hidden" name="@(Html.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix).PaymentMethodType" value="@Model.GetType().ToString()" />
+@Html.HiddenFor(c => c.Type)

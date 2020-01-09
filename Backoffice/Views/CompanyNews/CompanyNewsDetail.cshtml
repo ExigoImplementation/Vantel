@@ -1,0 +1,42 @@
+﻿@model CompanyNewsViewModel
+@{
+    ViewBag.Title = Resources.Common.CompanyNewsDetail;
+    var newsItem = Model.CompanyNewsItems.First();
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.CompanyNews, UrlPath = Url.Action("companynewslist", "companynews") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-company-news">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <h2>@newsItem.Description</h2>
+            <date>@newsItem.CreatedDate.ToShortDateString()</date>
+            <div class="row margin-top--10px">
+                <div class="col-md-12">
+                    @if (Model.CompanyNewsItems.Count() > 0)
+                    {
+                        <div class="card" id="accordion">
+                            <div class="card-body">
+                                @Html.Raw(newsItem.Content)
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>@Resources.Common.NoCurrentNewsDisplay.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,127 @@
+﻿@model EnrollmentCompleteViewModel
+@{
+    ViewBag.Title = Resources.Common.EnrollmentComplete;
+    var details = Model.Order.Details.ToList();
+    var companyAddress = Common.GlobalSettings.Company.Address;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+@Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+<div id="enrollmentform">
+    <div class="content-wrap">
+        <div class="container">
+            <h4>@Resources.Common.ThankYouForJoining.FormatWith(Resources.Common.CompanyName)</h4>
+            <div class="mb-3"></div>
+            <p>@Resources.Common.YourCustomerID: <strong>@Model.Order.CustomerID</strong></p>
+            <div class="mb-3"></div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr class="thead-light">
+                            <th>@Resources.Common.Company</th>
+                            <th>@Resources.Common.BillTo</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                @companyAddress.Address1 @companyAddress.Address2<br />
+                                @companyAddress.City, @companyAddress.State @companyAddress.Zip<br />
+                                <div class="mb-3"></div>
+                                @Resources.Common.CompanyEmail<br />
+                                @Resources.Common.CompanyPhone
+                            </td>
+                            <td>
+                                @Model.Order.Recipient.FirstName @Model.Order.Recipient.LastName<br />
+                                @Model.Order.Recipient.Address1 @Model.Order.Recipient.Address2<br />
+                                @Model.Order.Recipient.City, @Model.Order.Recipient.State, @Model.Order.Recipient.Zip<br />
+                                <div class="mb-3"></div>
+                                @foreach (var payment in Model.Order.Payments)
+                                {
+                                    <div class="payment">
+                                        @switch (payment.PaymentTypeID)
+                                        {
+                                            case 1:
+                                                @: @Resources.Common.CreditCardEnding:  @payment.CreditCardNumber
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        - @payment.Amount.ToString("C")
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="thead-light">
+                            <th colspan="2">@Resources.Common.InvoiceFor <strong>#@Model.Order.OrderID</strong></th>
+                        </tr>
+                        @foreach (var i in details)
+                        {
+                            <tr class="italic">
+                                <td>@i.ItemDescription (@i.Quantity.ToString("N0"))</td>
+                                <td>@i.PriceTotal.ToString("C") </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr class="thead-light"><th colspan="2"></th></tr>
+                        <tr>
+                            <th class="text-right">@Resources.Common.Total </th>
+                            <td class="text-left">@Model.Order.Subtotal.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right">@Resources.Common.Shipping</th>
+                            <td class="text-left">@Model.Order.ShippingTotal.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right">@Resources.Common.Tax</th>
+                            <td class="text-left">@Model.Order.TaxTotal.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right">@Resources.Common.OrderTotal</th>
+                            <td class="text-left">@Model.Order.Total.ToString("C")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                @if (Model.AutoOrder != null)
+                {
+                    <div class="mb-3"></div>
+                    <h4>@Resources.Common.AutoshipDetails #@Model.AutoOrder.AutoOrderID</h4>
+                    <table class="table">
+                        <tbody>
+                            <tr class="thead-light">
+                                <th>@Resources.Common.Frequency</th>
+                                <th>@Resources.Common.NextRunDate</th>
+                                <th>@Resources.Common.Total</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Model.AutoOrder.FrequencyTypeDescription<br />
+                                </td>
+                                <td>
+                                    @Model.AutoOrder.NextRunDate.Value.ToShortDateString()<br />
+                                </td>
+                                <td>
+                                    @Model.AutoOrder.Total.ToString("C")<br />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+            </div>
+
+            <div class="d-print-none">
+                <a onclick="window.print()" class="btn btn-primary">@Resources.Common.PrintInvoice</a>
+            </div>
+            <div class="mb-3"></div>
+        </div>
+    </div>
+</div>

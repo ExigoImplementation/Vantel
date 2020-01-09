@@ -1,0 +1,50 @@
+﻿@model BankAccount
+@{
+    var contextID = Guid.NewGuid().ToString();
+    var market = GlobalUtilities.GetCurrentMarket(this.Context);
+    Model.BillingAddress = Model.BillingAddress ?? new Address();    
+    var defaultCountryCode = (Model.BillingAddress.Country.IsNotNullOrEmpty()) ? Model.BillingAddress.Country : market.MainCountry;
+    var defaultRegionCode = (Model.BillingAddress.State.IsNotNullOrEmpty()) ? Model.BillingAddress.State : "";
+    
+}
+
+<div class="view-bankaccount" id="view-bankaccount-@contextID">
+
+    <input type="hidden" name="@(Html.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix).PaymentMethodType" value="@Model.GetType().ToString()" />
+    @Html.HiddenFor(c => c.Type)
+
+
+    <div class="row margin-5">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.NameOnAccount, new { @class = "" })
+                @Html.EditorFor(c => c.NameOnAccount)
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.BankName, new { @class = "" })
+                @Html.EditorFor(c => c.BankName)
+            </div>
+        </div>
+    </div>
+
+    <div class="row margin-5">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.AccountNumber, new { @class = "" })
+                @Html.EditorFor(c => c.AccountNumber)
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.RoutingNumber, new { @class = "" })
+                @Html.EditorFor(c => c.RoutingNumber, new { data_restrict_input = "int" })
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    @Html.EditorFor(c => Model.BillingAddress, "Address", new { VerifyEnabled = false })
+</div>

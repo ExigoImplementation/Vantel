@@ -1,0 +1,157 @@
+﻿@model Order
+@{
+    ViewBag.Title = Resources.Common.Invoice + " #" + Model.OrderID;
+    var currencyCode = Model.CurrencyCode;
+    var currencyCultureCode = new System.Globalization.CultureInfo(GlobalUtilities.GetCultureCodeFormatBasedOnCurrency(currencyCode, Identity.Current.Country));
+
+    var pageHeader = new PageHeader
+    {
+        PageName = Resources.Common.Replicated_OrderInvoice_InvoiceForOrder.FormatWith(Model.OrderID),
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem { Description = Resources.Common.OrderHistory , UrlPath = Url.Action("OrderList", "Orders") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-orderinvoice">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <span class="text-muted">@Resources.Common.Ordered @Model.OrderDate.ToString("M/d/yyyy")</span><br />
+                    @if (Model.ShippedDate != null)
+                    {
+                        <text>@Resources.Common.Shipped @(((DateTime)Model.ShippedDate).ToString("M/d/yyyy"))<br /></text>
+                    }
+                    @if (Model.HasTrackingNumbers)
+                    {
+                        <text>@Resources.Common.Tracking:<br /></text>
+                        if (Model.TrackingURL.IsNotNullOrEmpty())
+                        {
+                            foreach (var number in Model.TrackingNumbers)
+                            {
+                                <a href="@Model.TrackingURL@number" target="_blank">@number</a>
+                            }
+                        }
+                        else
+                        {
+                            <text>@string.Join(",", Model.TrackingNumbers)</text>
+                        }
+                    }
+
+                    <div class="d-print-none">
+                        <div class="mb-2"></div>
+                        <a onclick="window.print()" class="btn btn-primary"><i class="fa-print"></i> @Resources.Common.Print</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>@Resources.Common.ShippedTo:</strong>
+                            @Html.DisplayFor(c => c.Recipient, "ShippingAddress")
+                        </div>
+                        <div class="col-md-6">
+                            @if (Model.Payments.Count() > 0)
+                            {
+                                <div class="mb-3 d-block d-sm-none"></div>
+                                <strong>@Resources.Common.BilledTo:</strong>
+
+                                foreach (var payment in Model.Payments)
+                                {
+                                    <div class="payment">
+                                        @switch (payment.PaymentTypeID)
+                                        {
+                                            case 1:
+                                                @: @Resources.Common.CardEndingIn @payment.CreditCardNumber
+                                                break;
+                                            default:
+                                                @CommonResources.PaymentTypes(payment.PaymentTypeID)
+                                                break;
+                                        }
+                                        - @payment.Amount.ToString("C", currencyCultureCode)
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>@Resources.Common.SKU</th>
+                            <th>@Resources.Common.Description</th>
+                            <th class="text-right">@Resources.Common.Quantity</th>
+                            <th class="text-right">@Resources.Common.PricePerUnit</th>
+                            <th class="text-right">@Resources.Common.Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in Model.Details)
+                        {
+                            <tr>
+                                <td>@detail.ItemCode</td>
+                                <td>@detail.ItemDescription</td>
+                                <td class="text-right">@detail.Quantity.ToString("N0")</td>
+                                <td class="text-right">@detail.PriceEach.ToString("C", currencyCultureCode)</td>
+                                <td class="text-right">@detail.PriceTotal.ToString("C", currencyCultureCode)</td>
+                            </tr>
+                        }
+                        @if (Model.Details.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="no-rows">
+                                    * @Resources.Common.NoItemsPurchasedInOrder *
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right table-active">@Resources.Common.Subtotal</td>
+                            <td class="text-right table-active">@Model.Subtotal.ToString("C", currencyCultureCode)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right table-active">@Resources.Common.Shipping</td>
+                            <td class="text-right table-active">@Model.ShippingTotal.ToString("C", currencyCultureCode)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right table-active">@Resources.Common.Tax</td>
+                            <td class="text-right table-active">@Model.TaxTotal.ToString("C", currencyCultureCode)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right table-active font-weight-bold">@Resources.Common.GrandTotal</td>
+                            <td class="text-right table-active font-weight-bold">@Model.Total.ToString("C", currencyCultureCode)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-right table-active">@Resources.Common.AmountPaid</td>
+                            <td class="text-right table-active">@Model.Payments.Sum(c => c.Amount).ToString("C", currencyCultureCode)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="text-center text-muted">
+                <small>
+                    @Resources.Common.CompanyName | @Format.FlatAddress(GlobalSettings.Company.Address)<br />
+                    <i class="fa-envelope"></i> @Resources.Common.CompanyEmail &nbsp;
+                    <i class="fa-phone"></i> @Resources.Common.CompanyPhone
+                </small>
+            </div>
+
+        </div>
+    </div>
+</div>

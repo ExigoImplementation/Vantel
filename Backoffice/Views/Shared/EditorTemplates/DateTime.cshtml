@@ -1,0 +1,25 @@
+﻿@model DateTime
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+
+    var contextID = Guid.NewGuid().ToString();
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    {
+        @class = "form-control datetime-" + contextID,
+        type   = "text",
+        role   = "textbox"
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)
+
+<script>
+    require(["jquery", "kendo"], function ($, kendo) {
+        $('.datetime-@contextID').kendoDateTimePicker({
+            culture: '@UICulture',
+            parseFormats: ["MM/dd/yyyy h:mm tt"]
+        }).on("focus click", function () {
+            $(this).data("kendoDateTimePicker").open();
+        });
+    });
+</script>

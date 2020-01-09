@@ -1,0 +1,226 @@
+﻿@model PacksViewModel
+@{
+    ViewBag.Title = Resources.Common.EnrollmentPack;
+    var selectedOrderItemCode = (Model.SelectedOrderItem != null) ? Model.SelectedOrderItem.ItemCode : "";
+    var selectedOrderItemType = (Model.SelectedOrderItem != null) ? Model.SelectedOrderItem.Type : ShoppingCartItemType.EnrollmentPack;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div id="view-packs">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            <div class="customer-type-@(Model.CustomerTypeID)">
+                <input type="hidden" id="selected-order-item" data-itemcode="@selectedOrderItemCode" data-type="@selectedOrderItemType" />
+                <div class="pack-list row text-center order" style="margin: auto;" id="kit-container">
+
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        var packCount = Model.OrderItems.Count();
+                        var columnCount = 12;
+
+                        switch (packCount)
+                        {
+                            case 1:
+                                columnCount = 12;
+                                break;
+                            case 2:
+                                columnCount = 6;
+                                break;
+                            case 3:
+                                columnCount = 4;
+                                break;
+                            default:
+                                break;
+                        }
+                        <div class="col-sm-@columnCount">
+                            <section class="pack" data-itemcode="@item.ItemCode" data-type="@item.Type">
+                                <!-- hidden item code -->
+                                <input type="hidden" class="itemcode" value="@item.ItemCode" />
+
+
+                                <header>@item.ItemDescription</header>
+                                <article>
+                                    <div class="item-details">
+                                        <h4>@item.Price.ToString("C2")</h4>
+                                        <span class="pv">@Resources.Common.PV - @item.CV.ToString("N2")</span>
+                                        <img src="@item.LargeImageUrl" />
+                                        <div class="shortdescription">
+                                            @Html.Raw(item.LongDetail1)
+                                        </div>
+                                    </div>
+                                    <div class="space-20"></div>
+
+                                <div class="details">
+                                    @{
+                                        var packtype = (int)ShoppingCartItemType.EnrollmentPack;
+                                    }
+                                    <div class="addtoorder-container container" data-packtype="@packtype">
+                                        <a class="btn btn-primary btn-block" data-role="additem">@Resources.Common.AddToOrder</a>
+                                        <span class="add-confirm">
+                                            <i class="fa-check"></i> @Resources.Common.ItemAdded!<br />
+                                            <a data-role="removepack"><small>@Resources.Common.Remove</small></a>
+                                        </span>
+                                    </div>
+                                    <div class="qualifies-you-for"></div>
+                                    <div class="space-20"></div>
+                                </div>
+                            </article>
+                        </section>
+                    </div>
+                }
+            </div>
+
+                <div class="space-20"></div>
+
+                <a href="@Url.Action("checkout")" class="btn btn-outline-primary">@Resources.Common.Continue</a>
+                <div class="space-30"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "app"], function ($, ajax, app) {
+
+            // Settings
+            var context = "#view-packs",
+                $context = $(context),
+                updatePackUrl = "@Url.Action("updatepackitems")";
+
+            // State
+            var state = {
+
+            };
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('[data-role="additem"]', $context).on('click', function () {
+                    var $button = $(this);
+                    actions.addItem($button);
+                });
+
+                $('[data-role="removepack"]', $context).on('click', function () {
+                    var $button = $(this);
+                    actions.removeItem($button);
+                });
+            }
+
+            // Actions
+            var actions = {
+                addItem: function ($button) {
+
+                    var $pack = $button.parents('.pack'),
+                        $packContainer = $button.parents('.pack-list'),
+                        $itemCodeContainer = $pack.find('.itemcode'),
+                        itemCode = $itemCodeContainer.val(),
+                        $container = $button.parents('.addtoorder-container'),
+                        packType = $container.data('packtype'),
+                        action = 'add';
+
+
+                    $packContainer.find('.add-confirm').css('display', 'none');
+                    $packContainer.find('[data-role="additem"]').css('display', 'inline-block');
+
+
+                    ajax.json({
+                        url: updatePackUrl,
+                        data: {
+                            itemcode: itemCode,
+                            action: action,
+                            packType: packType
+                        },
+                        success: function (response) {
+
+
+                            if (response.success) {
+                                $button.css('display', 'none');
+                                $container.find('.add-confirm').css('display', 'inline-block');
+                            }
+                            else {
+                                app.throwError("@Resources.Common.UnableAddPack");
+                            }
+                        },
+                        error: function (xhr, error, status) {
+                            console.log("Error: ", xhr);
+                        }
+                    });
+                },
+                removeItem: function ($button) {
+
+                    var $pack = $button.parents('.pack'),
+                        $itemCodeContainer = $pack.find('.itemcode'),
+                        itemCode = $itemCodeContainer.val(),
+                        $container = $button.parents('.addtoorder-container'),
+                        packType = $container.data('packtype'),
+                        action = 'remove';
+
+                    ajax.json({
+                        url: updatePackUrl,
+                        data: {
+                            itemcode: itemCode,
+                            action: action,
+                            packType: packType
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $container.find('.add-confirm').css('display', 'none');
+                                $container.find('[data-role="additem"]').css('display', 'inline-block');
+                            }
+                            else {
+                                app.throwError("@Resources.Common.UnableAddPack");
+                            }
+                        },
+                        error: function (xhr, error, status) {
+                            console.log("Error: ", xhr);
+                        }
+                    });
+                },
+                populateExistingPacks: function () {
+                    var orderItemCode = $('#selected-order-item').data('itemcode'),
+                        autoOrderItemCode = $('#selected-auto-order-item').data('itemcode'),
+                        orderItemType = $('#selected-order-item').data('type'),
+                        autoOrderItemType = $('#selected-auto-order-item').data('type'),
+                        $orderItemButton = $('.pack[data-itemcode="' + orderItemCode + '"][data-type="' + orderItemType + '"] [data-role="additem"]'),
+                        $autoOrderItemButton = $('.pack[data-itemcode="' + autoOrderItemCode + '"][data-type="' + autoOrderItemType + '"] [data-role="additem"]'),
+                        $orderItemContainer = $orderItemButton.parents('.addtoorder-container'),
+                        $autoOrderItemContainer = $autoOrderItemButton.parents('.addtoorder-container');
+
+                    if (orderItemCode != "") {
+                        $orderItemButton.css('display', 'none');
+                        $orderItemContainer.find('.add-confirm').css('display', 'inline-block');
+                    }
+
+                    if (autoOrderItemCode != "") {
+                        $autoOrderItemButton.css('display', 'none');
+                        $autoOrderItemContainer.find('.add-confirm').css('display', 'inline-block');
+                    }
+                }
+            };
+
+
+            // Helpers
+            var helpers = {
+
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                actions.populateExistingPacks();
+
+            }
+            init();
+
+        });
+    </script>
+}

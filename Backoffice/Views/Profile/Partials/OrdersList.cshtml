@@ -1,0 +1,31 @@
+﻿<div id="view-orderslist">    
+    <div class="grid"></div>
+</div>
+
+
+<script>
+    require(["kendogrids"], function (kendoGrid) {
+        var cultureCode = "@Identity.Current.Market.CultureCode";
+        kendo.culture(cultureCode);
+
+
+        kendoGrid.create("#view-orderslist .grid", {
+            url: '@Request.Url.AbsolutePath',
+            sort: { field: "OrderDate", dir: "desc" },
+            columns: [
+                { field: "OrderDate", title: "@Resources.Common.OrderDate", type: "date", format: "{0:d}" },
+                {
+                    field: "SubTotal", title: "@Resources.Common.Total", type: "number", attributes: { "class": "text-right" },
+                    template: function (row) { return row.SubTotal.toLocaleString(row.CultureCode, { currency: row.CurrencyCode, style: 'currency' }); }
+                },
+                { field: "BusinessVolumeTotal", title: "@Resources.Common.BV", type: "number", format: "{0:N0} " + "@Resources.Common.BV", attributes: { "class": "text-right" } },
+                { field: "CommissionableVolumeTotal", title: "@Resources.Common.CV", type: "number", format: "{0:N0} " + "@Resources.Common.CV", attributes: { "class": "text-right" } }
+            ],
+            toolbar: ["excel"],
+            excel: {
+                allPages: true,
+                fileName: 'OrdersList.xlsx'
+            }
+        });
+    });
+</script>

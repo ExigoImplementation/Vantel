@@ -1,0 +1,38 @@
+﻿<div id="view-volumeslist">
+    <div class="grid"></div>
+</div>
+
+<script>
+    require(["kendogrids"], function (kendoGrid) {
+
+        var cultureCode = "@Identity.Current.Market.CultureCode";
+        kendo.culture(cultureCode);
+
+
+        kendoGrid.create("#view-volumeslist .grid", {
+            url: '@Request.Url.AbsolutePath',
+            sort: { field: "PeriodID", dir: "desc" },
+            columns: [
+                { field: "PeriodID", hidden: true, type: "number"},
+                { field: "PeriodDescription", title: "@Resources.Common.Period", sortable: false, filterable: false, width: 100 },
+                { field: "StartDate", title: "@Resources.Common.StartDate", type: "date", format: "{0:d}", width: 150 },
+                { field: "EndDate", title: "@Resources.Common.EndDate", type: "date", format: "{0:d}", width: 150 },
+                { field: "RankDescription", title: "@Resources.Common.PaidRank", width: 150 },
+                @{
+                    var buckets = new int[] { 1,2,3,4,5 }; //Spin Up Instruction: Volume Buckets - Unilevel SETUP
+                    //var buckets = new int[] {200, 199, 198, 197, 196}; //Spin Up Instruction: Volume Buckets - binary SETUP
+                }
+                { field: "@("Volume" + buckets[0])", title: "@CommonResources.Volumes(buckets[0])", type: "number", format: "{0:N0}", width: 150, attributes: { "class": "text-right" } },
+                { field: "@("Volume" + buckets[1])", title: "@CommonResources.Volumes(buckets[1])", type: "number", format: "{0:N0}", width: 150, attributes: { "class": "text-right" } },
+                { field: "@("Volume" + buckets[2])", title: "@CommonResources.Volumes(buckets[2])", type: "number", format: "{0:N0}", width: 150, attributes: { "class": "text-right" } },
+                { field: "@("Volume" + buckets[3])", title: "@CommonResources.Volumes(buckets[3])", type: "number", format: "{0:N0}", width: 150, attributes: { "class": "text-right" } },
+                { field: "@("Volume" + buckets[4])", title: "@CommonResources.Volumes(buckets[4])", type: "number", format: "{0:N0}", width: 150, attributes: { "class": "text-right" } }
+            ],
+            toolbar: ["excel"],
+            excel: {
+                allPages: true,
+                fileName: 'VolumesList.xlsx'
+            }
+        });
+    });
+</script>

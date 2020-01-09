@@ -1,0 +1,180 @@
+﻿@model ItemDetailViewModel
+@{
+    ViewBag.Title = Model.Item.ItemDescription;
+    bool hasLongDescriptions = !string.IsNullOrWhiteSpace(Model.Item.LongDetail1) || !string.IsNullOrWhiteSpace(Model.Item.LongDetail2) || !string.IsNullOrWhiteSpace(Model.Item.LongDetail3) || !string.IsNullOrWhiteSpace(Model.Item.LongDetail4);
+    bool hasAdditionalShortDetails = !string.IsNullOrWhiteSpace(Model.Item.ShortDetail2) || !string.IsNullOrWhiteSpace(Model.Item.ShortDetail3) || !string.IsNullOrWhiteSpace(Model.Item.ShortDetail4);
+
+    var pageHeader = new PageHeader()
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div data-widget="item" id="view-item" class="view-item view-item-detail">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            @* Party Info Bar *@
+            @if (ViewBag.ActiveParty != null)
+            {
+                @Html.Partial("Partials/_PartyOrderMessage", Model)
+            }
+            @* End Party Info Bar*@
+            <div class="row mb-5">
+                <div class="col-md-9">
+                    <div class="row mb-5">
+                        <div class="col-md-4">
+                            <div class="images">
+                                <div class="image">
+                                    <img src="@Model.Item.LargeImageUrl" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="details mb-3">
+                                <div class="itemdescription text-hide">@Model.Item.ItemDescription</div>
+                                <div class="itemcode">
+                                    <strong>@Resources.Common.SKU:</strong>  <span class="text-muted">@Model.Item.ItemCode</span>
+                                </div>
+                                <div class="price">
+                                    <strong>@Resources.Common.Price:</strong> <span class="text-muted">@Model.Item.Price.ToString("C")</span>
+                                </div>
+                                <div class="volumeBV">
+                                    <strong>@Resources.Common.BV:</strong> <span class="text-muted">@Model.Item.BV.ToString("F")</span>
+                                </div>
+                                <div class="volumeCV">
+                                    <strong>@Resources.Common.CV:</strong> <span class="text-muted">@Model.Item.CV.ToString("F")</span>
+                                </div>
+                            </div>
+                            <div class="summary">
+                                <p class="text-muted mb-1">@Html.Raw(Model.Item.ShortDetail1)</p>
+                                
+                                @* If extra short details are available, display collapse functionality for displaying them. -Brian B *@
+                                @if (hasAdditionalShortDetails)
+                                {
+                                    <div class="addDetailsContainer">
+                                        <a class="addDetails" data-toggle="collapse" data-target="#demo">
+                                            <i id="details" class="fa-plus-circle fa"></i> @Resources.Common.AdditionalDetails
+                                        </a>
+
+                                        <div id="demo" class="collapse addDetailsSub">
+                                            @if (!string.IsNullOrWhiteSpace(Model.Item.ShortDetail2))
+                                            {
+                                                <p class="text-muted">- @Html.Raw(Model.Item.ShortDetail2)</p>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(Model.Item.ShortDetail3))
+                                            {
+                                                <p class="text-muted">- @Html.Raw(Model.Item.ShortDetail3)</p>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(Model.Item.ShortDetail4))
+                                            {
+                                                <p class="text-muted">- @Html.Raw(Model.Item.ShortDetail4)</p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabbed Details -->
+                    
+                    @* If extra Long details are available, display their tabs, and content for the tabs.*@
+                    @if (hasLongDescriptions)
+                    {
+                        <div class="tabbeddetails">
+                            <ul class="nav nav-pills nav-fill mb-5" role="tablist">
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail1))
+                                {
+                                    <li name="longDetailTab" class="nav-item"><a href="#tab01" class="nav-link active" data-toggle="pill" role="tab">@Resources.Common.ProductDescription</a></li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail2))
+                                {
+                                    <li name="longDetailTab" class="nav-item"><a href="#tab02" class="nav-link" data-toggle="pill" role="tab">@Resources.Common.ProductDescription2</a></li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail3))
+                                {
+                                    <li name="longDetailTab" class="nav-item"><a href="#tab03" class="nav-link" data-toggle="pill" role="tab">@Resources.Common.ProductDescription3</a></li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail4))
+                                {
+                                    <li name="longDetailTab" class="nav-item"><a href="#tab04" class="nav-link" data-toggle="pill" role="tab">@Resources.Common.ProductDescription4</a></li>
+                                }
+                            </ul>
+                            <div class="tab-content">
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail1))
+                                {
+                                    <div class="tab-pane fade show active" id="tab01" role="tabpanel" name="longDetailContent">
+                                        @Html.Raw(Model.Item.LongDetail1)
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail2))
+                                {
+                                    <div class="tab-pane fade" id="tab02" role="tabpanel" name="longDetailContent">
+                                        @Html.Raw(Model.Item.LongDetail2)
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail3))
+                                {
+                                    <div class="tab-pane fade" id="tab03" role="tabpanel" name="longDetailContent">
+                                        @Html.Raw(Model.Item.LongDetail3)
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail4))
+                                {
+                                    <div class="tab-pane fade" id="tab04" role="tabpanel" name="longDetailContent">
+                                        @Html.Raw(Model.Item.LongDetail4)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-3">
+                    <!-- Detail Options -->
+                    @if (Model.Item.IsGroupMaster)
+                    {
+                        @Html.Partial("Partials/Items/Details/GroupedItem", Model.Item)
+                    }
+                    else
+                    {
+                        @Html.Partial("Partials/Items/Details/SingleItem", Model.Item)
+                    }
+                </div>
+            </div>
+            
+            <a class="btn btn-primary mb-5" href="@Url.Action("ItemList")">@Resources.Common.BackToProducts</a>
+
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "shopping", "toastr", "extensions", "pubsub"], function ($, ajax, shopping, toastr) {
+            shopping.bind('#view-item');
+
+            var hasAdditionalShortDetails = @hasAdditionalShortDetails.ToString().ToLower(),
+                hasLongDescriptions = @hasLongDescriptions.ToString().ToLower();
+
+            if (hasAdditionalShortDetails) {
+                $('[data-target="#demo"]').on('click', function() {
+                    $('#details').toggleClass('fa-minus-circle').toggleClass('fa-plus-circle');
+                });
+            }
+
+            if (hasLongDescriptions) {
+                // set first visible long detail tab and content to active
+                $('[name="longDetailTab"]').first().addClass('active');
+                $('[name="longDetailContent"]').first().addClass('active');
+            }
+
+        });
+    </script>
+}

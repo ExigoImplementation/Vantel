@@ -1,0 +1,120 @@
+﻿@model Address
+@{
+    var contextID = Guid.NewGuid().ToString();
+    var market = GlobalUtilities.GetCurrentMarket(this.Context);
+    var defaultCountryCode = (Model.Country.IsNotNullOrEmpty()) ? Model.Country : market.MainCountry;
+    var defaultRegionCode = (Model.State.IsNotNullOrEmpty()) ? Model.State : "";
+    var isVerifyable = ViewData["VerifyEnabled"] == null || Convert.ToBoolean(ViewData["VerifyEnabled"]) == true;
+}
+
+<div class="view-address" id="view-address-@contextID">
+
+    @Html.HiddenFor(c => c.AddressType, new { data_role = "AddressType" })
+
+    @if(Model.AddressType != AddressType.Main)
+    {
+    <div class="form-group">
+        @Html.LabelFor(c => c.Country, new { @class = "" })
+        @Html.DropDownListFor(c => c.Country,
+            selectList: Html.Countries(defaultCountryCode),
+            htmlAttributes: new
+            {
+                @class = "form-control",
+                data_region_bind = "#" + Html.IdFor(c => c.State) + "_" + contextID,
+                data_address_bind = "#" + Html.IdFor(c => c.Address2) + "_" + contextID,
+                data_role = "Country"
+            })
+        @Html.ValidationMessageFor(c => c.Country)
+    </div>
+    }
+    else
+    {
+    <div class="form-group">
+        @Html.LabelFor(c => c.Country)
+        @Html.TextBoxFor(c => c.Country, new { @disabled = "disabled", @class = "form-control", data_role = "Country" })
+    </div>
+    }
+    <div class="padding-bottom--5px"></div>
+
+    <div class="form-group">
+        @Html.LabelFor(c => c.Address1, new { @class = "" })
+        @Html.TextBoxFor(c => c.Address1, new
+        {
+            @class = "form-control",
+            data_role = "Address1"
+        })
+        @Html.ValidationMessageFor(c => c.Address1)
+
+        <div class="padding-bottom--5px"></div>
+        <div class="form-group" @if (defaultCountryCode == "US") { <text> style="display: none;" </text> }>
+            @Html.TextBoxFor(c => c.Address2, new
+            {
+                @class = "form-control",
+                id = Html.IdFor(c => c.Address2) + "_" + contextID,
+                data_role = "Address2"
+            })
+            @Html.ValidationMessageFor(c => c.Address2)
+        </div>
+    </div>
+
+
+    <div class="row margin-5">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                @Html.LabelFor(c => c.City, new { @class = "d-block" })
+                @Html.TextBoxFor(c => c.City, new
+                {
+                    @class = "form-control",
+                    data_role = "City"
+                })
+                @Html.ValidationMessageFor(c => c.City)
+            </div>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="form-group">
+                @Html.LabelFor(c => c.State, new { @class = "d-block" })
+                @Html.DropDownListFor(c => c.State,
+                    selectList: Html.Regions(defaultCountryCode, defaultRegionCode),
+                    htmlAttributes: new
+                    {
+                        @class = "form-control",
+                        id = Html.IdFor(c => c.State) + "_" + contextID,
+                        data_role = "State"
+                    })
+                @Html.ValidationMessageFor(c => c.State)
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.Zip, new { @class = "d-block" })
+                @Html.TextBoxFor(c => c.Zip, new
+                {
+                    @class = "form-control",
+                    data_role = "Zip"
+                })
+                @Html.ValidationMessageFor(c => c.Zip)
+            </div>
+        </div>
+    </div>
+    @if (isVerifyable)
+    {
+        <div class="row margin-5">
+            <div class="col-12">
+                <button type="button" class="btn btn-secondary" data-role="verify">@Resources.Common.VerifyAddress</button>
+            </div>
+        </div>
+        <div class="padding-bottom--20px"></div>
+    }
+</div>
+
+
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+        require(["addresses"], function (address) {
+            address.bind('#view-address-@contextID');
+        });
+    </script>
+}

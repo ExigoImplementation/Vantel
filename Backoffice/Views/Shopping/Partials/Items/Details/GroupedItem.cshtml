@@ -1,0 +1,44 @@
+﻿@model Item
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="options">
+
+            @Html.HiddenFor(c => c.Type)
+            @Html.Hidden("GroupMasterItemCode", Model.ItemCode)
+
+            @Html.LabelFor(c => c.ItemDescription, Model.ItemDescription)
+            <select name="@Html.NameFor(c => c.ItemCode)" class="form-control">
+                @foreach (var member in Model.GroupMembers)
+                {
+                    var description = GlobalUtilities.Coalesce(
+                        member.MemberDescription,
+                        member.Item.ItemDescription,
+                        "Item: " + Model.GroupMembers.IndexOf(member));
+                    <option value="@member.ItemCode">@description</option>
+                }
+            </select>
+
+            <div class="space-10"></div>
+            @Html.LabelFor(c => c.Quantity)<br />
+            @Html.TextBoxFor(c => c.Quantity,
+                            htmlAttributes: new
+                            {
+                                type = "number",
+                                @class = "form-control form-control-inline input-sm",
+                                style = "width: 80px"
+                            })
+
+            <div class="space-20"></div>
+            <button type="button" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoorder"><i class="fa-shopping-cart"></i> @Resources.Common.AddToCart</button>
+            @if (Model.AllowOnAutoOrder)
+            {
+                <div class="text-divider">
+                    <h5>@Resources.Common.or</h5>
+                </div>
+                <button type="button" class="button nomargin fullwidth btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder"><i class="fa-refresh"></i> @Resources.Common.AddToAutoShip</button>
+            }
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿@model GetCustomerOrdersResponse
+@{
+    var page = Model.Page;
+
+    var action = ViewContext.RouteData.Values["action"].ToString().ToLower();
+    var rowCount = Model.RowCount;
+    var hasPreviousPage = page > 1;
+    var hasNextPage = rowCount < Model.OrderCount && rowCount <= Model.Orders.Count();
+    var hasPagination = hasPreviousPage || hasNextPage;
+}
+
+<div class="navbar-right mr-3 mt-sm-0 mt-3">
+    @if (hasPreviousPage)
+    {
+        <a data-page-action="@Url.Action(action, new { count = Model.OrderCount, page = (page == 1) ? page : page - 1 })" class="btn btn-default btn-sm navbar-btn" data-loading-text="@Resources.Common.Loading"><i class="fa-chevron-left"></i> @Resources.Common.Newer</a>
+    }
+
+    @if (hasNextPage)
+    {
+        <a data-page-action="@Url.Action(action, new { count = Model.OrderCount, page = (Model.Orders.Count() > 0) ? page + 1 : page })" class="btn btn-default btn-sm navbar-btn" data-loading-text="@Resources.Common.Loading">@Resources.Common.Older <i class="fa-chevron-right"></i></a>
+    }
+</div>

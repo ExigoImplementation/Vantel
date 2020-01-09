@@ -1,0 +1,13 @@
+﻿@model Boolean
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes();
+}
+
+<div class="checkbox">
+    <label for="@Html.IdFor(c => c)">
+        @Html.RadioButtonFor(c => c, htmlAttributes)
+        @Html.DisplayNameFor(c => c)
+    </label>
+</div>

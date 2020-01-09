@@ -1,0 +1,222 @@
+﻿@model Address 
+@{
+    ViewBag.Title = "CartView";
+    var contextID = Guid.NewGuid().ToString();
+    var market = GlobalUtilities.GetCurrentMarket(this.Context);
+    var defaultCountryCode = "US";
+}
+
+<div class="container-fluid">
+    <section id="page-title">
+        <div class="container clearfix">
+            <h1>@Resources.Common.Cart</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">@Resources.Common.Home</a></li>
+                <li class="breadcrumb-item"><a href="#">@Resources.Common.Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Resources.Common.Cart</li>
+            </ol>
+        </div>
+    </section>
+    <section id="content">
+        <div class="content-wrap">
+            <div class="container clearfix">
+
+                <div class="table-responsive">
+                    <table class="table cart">
+                        <thead>
+                            <tr>
+                                <th class="cart-product-remove">&nbsp;</th>
+                                <th class="cart-product-thumbnail">&nbsp;</th>
+                                <th class="cart-product-name">@Resources.Common.Product</th>
+                                <th class="cart-product-price">@Resources.Common.UnitPrice</th>
+                                <th class="cart-product-quantity">@Resources.Common.Quantity</th>
+                                <th class="cart-product-subtotal">@Resources.Common.Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cart_item">
+                                <td class="cart-product-remove">
+                                    <a href="#" class="remove" title="Remove this item"><i class="fa-trash2"></i></a>
+                                </td>
+
+                                <td class="cart-product-thumbnail">
+                                    <a href="#"><img width="64" height="64" src="~/Content/theme/images/shop/thumbs/small/dress-3.jpg" alt="Pink Printed Dress"></a>
+                                </td>
+
+                                <td class="cart-product-name">
+                                    <a href="#">@Resources.Common.Cart_ItemName1</a>
+                                </td>
+
+                                <td class="cart-product-price">
+                                    <span class="amount">$19.99</span>
+                                </td>
+
+                                <td class="cart-product-quantity">
+                                    <div class="quantity clearfix">
+                                        <input type="button" value="-" class="minus">
+                                        <input type="text" name="quantity" value="2" class="qty" />
+                                        <input type="button" value="+" class="plus">
+                                    </div>
+                                </td>
+
+                                <td class="cart-product-subtotal">
+                                    <span class="amount">$39.98</span>
+                                </td>
+                            </tr>
+                            <tr class="cart_item">
+                                <td class="cart-product-remove">
+                                    <a href="#" class="remove" title="Remove this item"><i class="fa-trash2"></i></a>
+                                </td>
+
+                                <td class="cart-product-thumbnail">
+                                    <a href="#"><img width="64" height="64" src="~/Content/theme/images/shop/thumbs/small/shoes-2.jpg" alt="Checked Canvas Shoes"></a>
+                                </td>
+
+                                <td class="cart-product-name">
+                                    <a href="#">@Resources.Common.Cart_ItemName2</a>
+                                </td>
+
+                                <td class="cart-product-price">
+                                    <span class="amount">$24.99</span>
+                                </td>
+
+                                <td class="cart-product-quantity">
+                                    <div class="quantity clearfix">
+                                        <input type="button" value="-" class="minus">
+                                        <input type="text" name="quantity" value="1" class="qty" />
+                                        <input type="button" value="+" class="plus">
+                                    </div>
+                                </td>
+
+                                <td class="cart-product-subtotal">
+                                    <span class="amount">$24.99</span>
+                                </td>
+                            </tr>
+                            <tr class="cart_item">
+                                <td class="cart-product-remove">
+                                    <a href="#" class="remove" title="Remove this item"><i class="fa-trash2"></i></a>
+                                </td>
+
+                                <td class="cart-product-thumbnail">
+                                    <a href="#"><img width="64" height="64" src="~/Content/theme/images/shop/thumbs/small/tshirt-2.jpg" alt="Pink Printed Dress"></a>
+                                </td>
+
+                                <td class="cart-product-name">
+                                    <a href="#">@Resources.Common.Cart_ItemName3</a>
+                                </td>
+
+                                <td class="cart-product-price">
+                                    <span class="amount">$13.99</span>
+                                </td>
+
+                                <td class="cart-product-quantity">
+                                    <div class="quantity clearfix">
+                                        <input type="button" value="-" class="minus">
+                                        <input type="text" name="quantity" value="3" class="qty" />
+                                        <input type="button" value="+" class="plus">
+                                    </div>
+                                </td>
+
+                                <td class="cart-product-subtotal">
+                                    <span class="amount">$41.97</span>
+                                </td>
+                            </tr>
+                            <tr class="cart_item">
+                                <td colspan="6">
+                                    <div class="row clearfix">
+
+                                        <div class="col-lg-8 col-8 offset-4 nopadding">
+                                            <a href="#" class="btn btn-primary">@Resources.Common.UpdateCart</a>
+                                            <a href="@Url.Action("Checkout", "Enrollment")" class="btn btn-primary">@Resources.Common.ProceedToCheckout</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-lg-6 clearfix">
+                    <h4>@Resources.Common.CalculateEstimatedShipping</h4>
+                    
+                        <form>
+                            <div class="col_full">
+                                <div class="form-group">
+                                    @Html.DropDownListFor(c => c.Country, 
+                                        selectList: Html.Countries(defaultCountryCode),
+                                        htmlAttributes: new
+                                        {
+                                            @class = "form-control",
+                                            data_region_bind = "#" + Html.IdFor(c => c.State) + "_" + contextID,
+                                            data_address_bind = "#" + Html.IdFor(c => c.Address2) + "_" + contextID,
+                                            data_role = "Country"
+                                        })
+                                    @Html.ValidationMessageFor(c => c.Country)
+                                </div>
+                            </div>
+                            <div class="col_half">
+                                <div class="form-group">
+                                    @Html.EditorFor(c => c.State,new { htmlAttributes = new {@class = "form-control" }})
+                                </div>
+                            </div>
+
+                            <div class="col_half col_last">
+                                <div class="form-group">
+                                    @Html.TextBoxFor(c => c.Zip,new
+                                    {
+                                        @class = "form-control",
+                                        data_role = "Zip"
+                                    })
+                                    @Html.ValidationMessageFor(c => c.Zip)
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-primary">@Resources.Common.UpdateTotals </a>
+                        </form>
+                    </div>
+
+                    <div class="col-lg-6 clearfix">
+                        <h4>@Resources.Common.CartTotals</h4>
+
+                        <div class="table-responsive">
+                            <table class="table cart">
+                                <tbody>
+                                    <tr class="cart_item">
+                                        <td class="cart-product-name">
+                                            <strong>@Resources.Common.CartSubtotal</strong>
+                                        </td>
+
+                                        <td class="cart-product-name">
+                                            <span class="amount">$106.94</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="cart_item">
+                                        <td class="cart-product-name">
+                                            <strong>@Resources.Common.Shipping</strong>
+                                        </td>
+
+                                        <td class="cart-product-name">
+                                            <span class="amount">@Resources.Common.FreeDelivery</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="cart_item">
+                                        <td class="cart-product-name">
+                                            <strong>@Resources.Common.Total</strong>
+                                        </td>
+
+                                        <td class="cart-product-name">
+                                            <span class="amount color lead"><strong>$106.94</strong></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>

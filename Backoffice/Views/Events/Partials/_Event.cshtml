@@ -1,0 +1,371 @@
+﻿@model CalendarViewModel
+@{
+    var defaultCountryCode = Identity.Current.Country ?? "US";
+}
+
+<div id="editable" style="display: none;">
+    <section class="input-group">
+        <span class="input-group-addon" for="title">@Resources.Common.Title</span>
+        <input type="text" class="form-control" placeholder="@Resources.Common.Title" name="title" />
+    </section>
+
+
+    <section class="input-group">
+        <span class="input-group-addon" for="description">@Resources.Common.Description</span>
+        <input type="text" class="form-control" placeholder="@Resources.Common.Description" name="description" />
+    </section>
+
+    <section class="input-group">
+        <span class="input-group-addon" for="calendarEventTypeID">@Resources.Common.EventType</span>
+        <select name="calendarEventTypeID" class="form-control">
+            @foreach (var type in Model.EventTypes)
+            {
+            <option value="@type.CalendarEventTypeID" @((type.CalendarEventTypeID == Model.EventTypes.FirstOrDefault().CalendarEventTypeID) ? "selected" : "")>@Html.Raw(type.CalendarEventTypeDescription)</option>
+            }
+        </select>
+    </section>
+
+    <section>
+        <input type="checkbox" name="isAllDay" />
+        @Resources.Common.AllDay
+    </section>
+
+    <section data-container-for="start">
+        <span class="input-group-addon" for="start">@Resources.Common.Start</span>
+        <input name="start" type="text" data-type="date" data-role="datetimepicker" data-bind="value: start,invisible: isAllDay" />
+        <input name="start" type="text" data-type="date" data-role="datepicker" data-bind="value: start,visible: isAllDay" />
+        @*<span data-bind="text: startTimezone, visible: startTimezone"></span>*@
+        <span data-for="start"></span>
+    </section>
+
+    <section data-container-for="end">
+        <span class="input-group-addon" for="end">@Resources.Common.End</span>
+        <input name="end" type="text" data-type="date" data-role="datetimepicker" data-bind="value: end,invisible: isAllDay" />
+        <input name="end" type="text" data-type="date" data-role="datepicker" data-bind="value: end,visible: isAllDay" />
+        @*<span data-bind="text: endTimezone"></span>*@
+    </section>
+
+    @*<div data-container-for="startTimezone">
+            <span class="input-group-addon" for="startTimezone">@Resources.Common.StartTimezone</span>
+            <div data-bind="value:startTimezone" id="startTimezone" name="startTimezone" data-role="timezoneeditor"></div>
+        </div>
+
+        <section data-container-for="endTimezone">
+            <span class="input-group-addon" for="endTimezone">@Resources.Common.EndTimezone</span>
+            <div data-bind="value:endTimezone" id="endTimezone" name="endTimezone" data-role="timezoneeditor"></div>
+        </section>
+
+        <section class="endTimezoneRow">
+            <input checked="checked" class="k-timezone-toggle" type="checkbox" value="true" />
+            @Resources.Common.UseSeparateStartEndTimeZones
+        </section>*@
+
+
+    <section class="input-group">
+        <span class="input-group-addon" for="recurrenceRule">@Resources.Common.RecurrenceRule</span>
+        <section data-bind="value:recurrenceRule" id="recurrenceRule" name="recurrenceRule" data-role="recurrenceeditor"></section>
+    </section>
+
+    <section>
+        <label for="calendarEventPrivacyTypeID">@Resources.Common.Privacy: </label>
+        @foreach (var type in Model.PrivacyTypes)
+            {
+        <label><input type="radio" name="calendarEventPrivacyTypeID" value="@type.CalendarEventPrivacyTypeID" @((type.CalendarEventPrivacyTypeID == Model.PrivacyTypes.FirstOrDefault().CalendarEventPrivacyTypeID) ? "checked" : "") /> @type.CalendarEventPrivacyTypeDescription</label>
+        }
+    </section>
+
+    <span data-toggle="collapse" data-target="[id='more-info']"><i class="fa fa-plus-circle"></i> @Resources.Common.AddMoreInformation</span>
+
+    <section id="more-info" class="collapse">
+        <hr />
+
+        @*<section class="input-group">
+                <span class="input-group-addon" for="speakersName">@Html.Raw(Resources.Common.SpeakersName)</span>
+                <input type="text" class="form-control" placeholder="@Html.Raw(Resources.Common.SpeakersName)" name="speakersName" />
+            </section>*@
+
+        <section class="event-address">
+            <label>@Resources.Common.Location: </label>
+            <input type="text" class="form-control" placeholder="@Resources.Common.StreetAddress" name="location_Address1" />
+            <input type="text" class="form-control" placeholder="@Resources.Common.StreetAddress 2" name="location_Address2" />
+
+            <section class="col-12 col-md-4 col-lg-4 col-xl-4 no-padding">
+                <input type="text" class="form-control" placeholder="@Resources.Common.City" name="location_City" />
+            </section>
+
+            <section class="col-12 col-md-4 col-lg-4 col-xl-4 no-padding">
+                @Html.DropDownList("location_State", Html.Regions(defaultCountryCode, ""), new
+                   {
+                       @class = "form-control"
+                   })
+            </section>
+            <section class="col-12 col-md-4 col-lg-4 col-xl-4 no-padding">
+                <input type="text" class="form-control" placeholder="@Resources.Common.Zip" name="location_Zip" />
+            </section>
+
+            @Html.DropDownList("location_Country", Html.Countries(defaultCountryCode), new
+       {
+           @class = "form-control",
+           id= "calendar-event-country"
+       })
+
+            <div class="clearfix"></div>
+            <div class="space-30"></div>
+        </section>
+
+        @*<section data-bind="visible: id" class="text-right">
+                <button type="button" class="btn btn-default" data-action="map-view" data-bind="visible: location_Country">@Resources.Common.ViewOnMap</button>
+            </section>*@
+
+        <section class="input-group">
+            <span class="input-group-addon" for="phone">@Resources.Common.Phone</span>
+            <input type="text" class="form-control" placeholder="@Resources.Common.Phone" name="phone" />
+        </section>
+
+        <section class="input-group">
+            <span class="input-group-addon" for="cost">@Resources.Common.Cost</span>
+            <input type="text" class="form-control" placeholder="@Resources.Common.Cost" name="cost" />
+        </section>
+
+        <section class="input-group">
+            <span class="input-group-addon" for="conferenceNumber">@Resources.Common.ConferenceCallNumber</span>
+            <input type="text" class="form-control" placeholder="@Resources.Common.ConferenceCallNumber" name="conferenceNumber" />
+        </section>
+
+        <section class="input-group">
+            <span class="input-group-addon" for="conferencePIN">@Resources.Common.PIN</span>
+            <input type="text" class="form-control" placeholder="@Resources.Common.PIN" name="conferencePIN" />
+        </section>
+
+        <section class="input-group">
+            <span class="input-group-addon" for="flyer">@Resources.Common.Flyer</span>
+            <input type="text" class="form-control" placeholder="@Resources.Common.Flyer" name="flyer" />
+        </section>
+
+        <section class="input-group">
+            <span class="input-group-addon" for="url">@Resources.Common.URL</span>
+            <input type="text" class="form-control" placeholder="@Resources.Common.URL" name="url" />
+        </section>
+        @*<div class="space-10"></div>
+        <small class="text-muted">Note: To create multiple tags use commas.</small>
+            <section class="input-group">
+                <span class="input-group-addon" for="tags">@Resources.Common.Tags</span>
+                <textarea name="tags" class="form-control"></textarea>
+            </section>
+    </section>*@
+
+    @*<section data-bind="visible: id" class="text-right">
+            <button type="button" class="btn btn-default" data-action="sync">@Resources.Common.SyncWithGoogle</button>
+        </section>*@
+</div>
+<div id="non-editable" style="display: none;">
+
+
+    <section class="input-group">
+        #if (title != null && title != '')  { #
+        <span for="title">@Resources.Common.Title: </span>
+        <label>#: title #</label>
+        # } #
+    </section>
+
+
+    <section class="input-group">
+        #if (description != null && description != '')  { #
+
+        <span for="description">@Resources.Common.Description: </span>
+        <label>#: description #</label>
+        # } #
+    </section>
+
+    <section class="input-group">
+        #if (calendarEventTypeID != null && calendarEventTypeID != '')  { #
+
+        <span for="calendarEventTypeID">@Resources.Common.EventType: </span>
+
+
+
+        @foreach (var type in Model.EventTypes)
+            {
+            <text>
+                #if(calendarEventTypeID == "@type.CalendarEventTypeID"){ #
+
+                <label>
+                    @Html.Raw(type.CalendarEventTypeDescription)
+                </label>
+
+
+                # } #
+            </text>
+        }
+        # } #
+
+    </section>
+
+    <section data-container-for="start">
+        #if (start != null && start != '')  { #
+        <span for="start">@Resources.Common.Start: </span>
+        <label>#: start #</label>
+        # } #
+
+    </section>
+
+    <section data-container-for="end">
+        #if (end != null && end != '')  { #
+
+        <span for="end">@Resources.Common.End: </span>
+        <label>#: end #</label>
+        # } #
+    </section>
+
+
+    <section id="more-info">
+        <div class="space-30"></div>
+        @*<section class="input-group">
+                #if (speakersName != null && speakersName != '')  { #
+                <span for="speakersName">@Html.Raw(Resources.Common.SpeakersName): </span>
+                <label>#: speakersName #</label>
+                # } #
+            </section>*@
+
+        <section class="event-address">
+            #if ((location_Address1 != null && location_Address1 != '') || (location_Address2 != null && location_Address2 != '') || (location_City != null && location_City != '') ||  (location_State != null && location_State != '') || (location_Zip != null && location_Zip != '') || (location_Country != null && location_Country != ''))  { #
+            <span>@Resources.Common.Location: </span>
+            # } #
+
+            #if (location_Address1 != null && location_Address1 != '')  { #
+
+            <label>#: location_Address1 #</label>
+            # } #
+
+            #if (location_Address2 != null && location_Address2 != '')  { #
+
+
+            <label>#: location_Address2 #</label>
+            # } #
+            #if (location_City != null && location_City != '')  { #
+
+
+            <label class="">#: location_City #</label>
+
+            # } #
+
+            #if (location_State != null && location_State != '')  { #
+
+            <label>#: location_State #</label>
+
+
+            # } #
+
+            #if (location_Zip != null && location_Zip != '')  { #
+            <label>#: location_Zip #</label>
+
+
+            # } #
+
+            #if (location_Country != null && location_Country != '')  { #
+            <label>#: location_Country #</label>
+            # } #
+            <div class="clearfix"></div>
+        </section>
+
+
+        #if (phone != null && phone != '')  { #
+
+        <section class="input-group">
+
+            <span for="phone">@Resources.Common.Phone: </span>
+            <label>#: phone #</label>
+        </section>
+        # } #
+
+        #if (cost != null && cost != '')  { #
+
+        <section class="input-group">
+            <span for="cost">@Resources.Common.Cost: </span>
+            <label>#: cost #</label>
+        </section>
+
+        # } #
+        #if (conferenceNumber != null && conferenceNumber != '')  { #
+
+        <section class="input-group">
+            <span for="conferenceNumber">@Resources.Common.ConferenceCallNumber: </span>
+            <label>#: conferenceNumber #</label>
+        </section>
+
+        # } #
+        #if (conferencePIN != null && conferencePIN != '')  { #
+
+        <section class="input-group">
+            <span for="conferencePIN">@Resources.Common.PIN: </span>
+            <label>#: conferencePIN #</label>
+        </section>
+        # } #
+        #if (flyer != null && flyer != '')  { #
+
+
+        <section class="input-group">
+            <span for="flyer">@Resources.Common.Flyer: </span>
+            <a href="#: flyer #" target="_blank">#: flyer #</a>
+        </section>
+        # } #
+
+        #if (url != null && url != '')  { #
+
+        <section class="input-group">
+            <span for="url">@Resources.Common.URL: </span>
+            <a href="#: url #" target="_blank">#: url #</a>
+        </section>
+
+        # } #
+        @*#if (tags != null && tags != '')  { #
+
+        <section class="input-group">
+            <span for="tags">@Resources.Common.Tags: </span>
+            <label>#: tags #</label>
+        </section>
+        # } #*@
+    </section>
+</div>
+<input type="hidden" name="id" />
+<input type="hidden" name="calendarEventID" />
+<input type="hidden" name="calendarID" />
+<input type="hidden" name="createdBy" />
+<input type="hidden" name="createdDate" />
+
+<script>
+
+    
+
+
+
+    $(".k-timezone-toggle").on("click", function() {
+        var isVisible = $(this).is(":checked");
+        var container = $(this).closest(".k-popup-edit-form");
+
+        var endTimezoneRow = container.find("label[for='endTimezone']").parent().add(container.find("section[data-container-for='endTimezone']"));
+        endTimezoneRow.toggle(isVisible);
+
+        if (!isVisible) {
+            var uid = container.attr("data-uid");
+            var scheduler = $("[data-widget='scheduler']").data("kendoScheduler");
+            var model = scheduler.dataSource.getByUid(uid);
+            model.set("endTimezone", null);
+        }
+
+        $("[data-action='map-view']").on("click", function() {
+            window.location = "@Url.Action("EventMap", "Events")" + "?calendarEventId=" + $(this).parents(".k-edit-form-container").find("[name='id']").val();
+        });
+
+        $("[data-action='sync']").on("click", function() {
+            window.location = "@Url.Action("Sync", "Events")" + "?calendarEventId=" + $(this).parents(".k-edit-form-container").find("[name='id']").val();
+        });
+    });
+
+    var endTimezone = '${data.endTimezone}';
+    if (!endTimezone || endTimezone == "null") {
+        $(".k-timezone-toggle").trigger('click');
+    }
+
+    @* The Closing Script Tag is intentionally written as <\/script> it is being escaped for when rendered *@
+    <\/script>

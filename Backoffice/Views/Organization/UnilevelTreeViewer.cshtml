@@ -1,0 +1,444 @@
+﻿@model TreeViewerViewModel
+
+@{
+    ViewBag.Title = Resources.Common.TreeViewer;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "unileveltreeviewer"
+    };
+}
+
+<div id="view-treeviewer">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+
+                    <div id="view-tree-viewer">
+                        <div class="row">
+                            <div class="col-md-8 tree">
+
+                                <!-- Customer Details -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title">@Resources.Common.CustomerDetails</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="customer-details-container">
+                                            @Resources.Common.Loading
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tree -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title">
+                                            @Resources.Common.TreeViewer
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <a class="btn btn-primary" data-role="uplevel">@Resources.Common.UpOneLevel</a>
+                                        <a class="btn btn-primary pull-right" data-role="treetop">@Resources.Common.BackToTop</a>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="view-binary-viewer" style="width: 100%; height: 415px; overflow: auto;">
+                                            @Resources.Common.Loading
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Key -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title">@Resources.Common.Key</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row margin-10">
+                                            <div class="col-md-6">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-2">
+                                                        <span class="key-item icon fa-repeat"></span>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        @Resources.Common.HasAutoOrder
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-2">
+                                                        <span class="key-item icon fa-heart"></span>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        @Resources.Common.PersonallyEnrolled
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="space-40"></div>
+                                        <div class="row">
+
+                                            @foreach (var rank in Model.Ranks)
+                                            {
+                                                <div class="col-md-4">
+                                                    <div class="legend">
+                                                        <div class="legend-item">
+                                                            <div class="legend-object"><span class="key-item rank-@(rank.RankID)"></span></div>
+                                                            <div class="legend-body">@CommonResources.Ranks(rank.RankID, defaultDescription: rank.RankDescription)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4 upline-viewer">
+                                <!-- Search -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title">@Resources.Common.Search</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="search-field" placeholder="@Resources.Common.SearchByNameOrID">
+                                            <div class="input-group-append"><span data-role="search" class="btn btn-primary search-button"><span class="fa-search"></span></span></div>
+                                        </div>
+                                    </div>
+
+
+                                    <div id="search-results-container">
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>@Resources.Common.ID#</th>
+                                                            <th>@Resources.Common.First</th>
+                                                            <th>@Resources.Common.Last</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="search-results"></tbody>
+                                                </table>
+                                                <script id="search-results-template" data-target="#search-results" type="text/x-handlebars-template">
+                                                    {{#each results}}
+                                                    <tr data-id="{{CustomerID}}" data-token="{{Token}}">
+                                                        <td>{{CustomerID}}</td>
+                                                        <td>{{FirstName}}</td>
+                                                        <td>{{LastName}}</td>
+                                                    </tr>
+                                                    {{/each}}
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upline Viewer -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title">@Resources.Common.UplineViewer</h4>
+                                    </div>
+                                    <div id="upline-container">
+                                        @Resources.Common.Loading
+                                    </div>
+                                </div>
+                                @if (!ViewBag.AllowWaitingRoomPlacements)
+                                {
+                                    @*@Html.ContentBlock("F09ED7FA-8C26-4538-9989-839A2062A9B8")*@
+                                    <!-- Waiting Room -->
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">
+                                                @Resources.Common.MakeAPlacement
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="waiting-room-container">
+                                                @Resources.Common.Loading
+                                            </div>
+
+                                            <h4>@Resources.Common.DirectionsMakingPlacement</h4>
+                                            <ul class="placement-directions list-unstyled">
+                                                <li>
+                                                    <strong>@Resources.Common.Step1</strong>@Resources.Common.ChoosePersonNewMember
+                                                </li>
+                                                <li>
+                                                    <strong>@Resources.Common.Step2</strong>@Resources.Common.ClickNewMemberWishPlace
+                                                </li>
+                                                <li>
+                                                    <strong>@Resources.Common.Step3</strong>@Resources.Common.ClickNewPlacementSponsor
+                                                </li>
+                                                <li>
+                                                    <strong>@Resources.Common.Step4</strong>@Resources.Common.PopUpAppearConfPlacement
+                                                </li>
+                                                <li>
+                                                    <strong>@Resources.Common.Step5</strong>@Resources.Common.YourPlacementCompleted
+                                                </li>
+                                            </ul>
+
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @*<p>Member placements are not allowed during the first week of a calendar month.</p>*@
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <script>
+        require(["jquery", "ajax", "app", "toastr", "handlebars", "trees", "jquery-scrollto", "extensions"], function ($, ajax, app, toastr, Handlebars) {
+
+            // Settings
+            var context             = "#view-binary-viewer",
+                $context            = $(context),
+                mousemoveLocked     = false,
+                topCustomerID       = @Identity.Current.CustomerID,
+                topCustomerToken       = "@Security.Encrypt(Identity.Current.CustomerID)";
+
+
+
+            // State
+            var state = {
+                selectedCustomerId: 0,
+                selectedWaitingRoomId: 0
+            };
+
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('.jOrgChart').on('click', '.node-body', function () {
+                    actions.scrollToNode($(this));
+                });
+
+                // Tree top
+                $('[data-role="treetop"]').on('click', function () {
+                    actions.fetchTree(topCustomerToken);
+                });
+
+                $('body').on('click', '.waitingroomnode', function() {
+                    var $this = $(this),
+                    isSelected = $this.hasClass('activerow'),
+                    $list = $('#waiting-room-container tbody tr');
+
+                    state.selectedWaitingRoomId = $this.data('waitingroomid');
+                    $list.removeClass('activerow');
+                    if(isSelected){
+                        $this.removeClass('activerow');
+                        state.selectedWaitingRoomId = 0;
+                    }
+                    else {
+                        $this.addClass('activerow');
+                    }
+                    console.log("state.selectedWaitingRoomId: ", state.selectedWaitingRoomId);
+                });
+
+                // Up one level
+                $('[data-role="uplevel"]').on('click', function () {
+                    if (state.selectedCustomerId == topCustomerID) { return; }
+                    actions.upOneLevel(state.selectedCustomerId);
+                });
+
+                // Search and Upline row click
+                $('#view-tree-viewer').on('click', '[data-token]', function () {
+                    var id = $(this).data("token"),
+                    isPlacingWaitingRoomCustomer = (state.selectedWaitingRoomId != 0) ? true : false;
+
+                    if(!isPlacingWaitingRoomCustomer){
+                        actions.fetchTree(id);
+                    }
+                });
+
+                // Search when Enter is pressed
+                $('#search-field').on("keypress", function (e) {
+                    if (e.which == 13) {
+                        e.preventDefault();
+                        $('[data-role="search"]').click();
+                    }
+                });
+
+                // Search
+                $('[data-role="search"]').on('click', function () {
+                    var query = $('#search-field').val();
+
+                    if (query != "") {
+                        actions.search(query);
+                    }
+                    else {
+                        $('#search-field').focus();
+                    }
+                });
+
+
+                // Handle click for tree nodes
+                $context.on('click', '.node', function () {
+                    var $this = $(this),
+                        token = $this.data('token'),
+                        isPlacingWaitingRoomCustomer = (state.selectedWaitingRoomId != 0) ? true : false,
+                        sponsorID = $this.data('id');
+
+
+
+                    if (isPlacingWaitingRoomCustomer) {
+                        var confirmed = confirm("@Resources.Common.ConfirmCustomerPlacement".format(state.selectedWaitingRoomId.toString(), sponsorID.toString()));
+
+                        if(confirmed) {
+                            ajax.json({
+                                url: '@Url.Action("placewaitingroomcustomer", "organization")',
+                                data: {
+                                    id: state.selectedWaitingRoomId,
+                                    sponsorid: sponsorID
+                                },
+                                success: function (response) {
+                                    if(response.success){
+                                        toastr.success("<strong>@Resources.Common.Success:</strong><br /><p>{0}</p>".format(response.message));
+                                        setTimeout(function () {
+                                            window.location = window.location
+                                        }, 1000);
+                                    }
+                                    else {
+                                        toastr.error("<strong>@Resources.Common.Error:</strong><br /><p>{0}</p>".format(response.message));
+                                    }
+                                },
+                                error: function(xhr) {
+                                    toastr.error("<strong>@Resources.Common.CustomerCouldNotBePlaced</strong>");
+                                }
+                            });
+                        }
+                        else {
+                            console.log("@Resources.Common.ChoseNotToPlace");
+                            return;
+                        }
+                    }
+                    else {
+                        $this.find('.node-body').first().html('<div class="text-center"><img src="@Url.Content("~/Content/images/circle-white-24.gif")" style="position: relative; top: 18px;" /></div>');
+                        actions.fetchTree(token);
+                    }
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                fetchTree: function (token) {
+                    $.ajax({
+                        url: '@Url.Action("fetchUnilevelTree", "organization", new {token = 0})'.slice(0, -1) + token,
+                        type: 'GET',
+                        cache: false,
+                        success: function (response) {
+
+                            $context.html(response.treehtml);
+                            $('#customer-details-container').html(response.customerdetailshtml);
+                            $('#upline-container').html(response.uplinehtml);
+                            $('#waiting-room-container').html(response.waitingroomlisthtml);
+                            actions.scrollToNode($('.jOrgChart .node:first'));
+                            state.selectedCustomerId = response.id;
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                },
+                search: function (query) {
+                    ajax.json({
+                        url: "@Url.Action("unilevelsearch", "organization")",
+                        data: { query: query },
+                        beforeSend: function () {
+                            var loadingimg = "<tr><td colspan='3'><div class='text-center'><img src=@Url.Content("~/Content/images/circle-24.gif") /></div></td></tr>";
+                            $("#search-results").html(loadingimg);
+                        },
+                        success: function (response) {
+                            if (response.success) {
+
+                                if (response.results.length == 0) {
+                                    $("#search-results-container").hide();
+                                    $("#search-field").val("");
+                                    app.throwError("@Resources.Common.SearchNoResults");
+                                    return;
+                                }
+
+                                var source = $("#search-results-template").html();
+                                var template = Handlebars.compile(source);
+                                var html = template(response);
+                                $("#search-results").html(html);
+
+                                if(!$("#search-results-container").is(":visible")){
+                                    $("#search-results-container").show();
+                                }
+                            }
+                            else {
+                                console.log("message", response.message);
+                                $("#search-results-container").hide();
+                                app.throwError("@Resources.Common.SearchNoResults");
+                            }
+                        }
+                    });
+                },
+                upOneLevel: function(id){
+                    var nodeId = id || 0;
+
+                    $.ajax({
+                        url: '@Url.Action("unileveluponelevel", "organization", new { id = 0 })'.slice(0, -1) + nodeId,
+                        type: 'GET',
+                        cache: false,
+                        success: function (response) {
+                            if (response.success) {
+                                actions.fetchTree(response.token);
+                            }
+                            else {
+                                console.log(response.message);
+                            }
+                        },
+                    });
+                },
+                scrollToNode: function ($element, lockMouseMove) {
+                    lockMouseMove = lockMouseMove || false;
+
+                    if (lockMouseMove) mousemoveLocked = true;
+
+                    if ($element.length == 0) return;
+
+                    $context.stop().scrollTo($element, 500, {
+                        offset: function () { return { top: 0, left: ($element.width() / 2) - ($context.width() / 2) }; },
+                        onAfter: function () {
+                            if (lockMouseMove) {
+                                setTimeout(function () {
+                                    mousemoveLocked = false;
+                                }, 1000);
+                            }
+                        }
+                    });
+                }
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+                var id = "@Security.Encrypt(Model.TopCustomerID)";
+                actions.fetchTree(id);
+            }
+            init();
+
+        });
+    </script>
+}

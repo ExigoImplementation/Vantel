@@ -1,0 +1,55 @@
+﻿@model ShoppingItemListViewModel
+@{
+    var cardIndex = 0;
+}
+@foreach (var item in Model.Items)
+{
+    // keep track of which card we're displaying for use with clearfix
+    cardIndex++;
+    <div class="@Model.Xs_Column_Class @Model.Sm_Column_Class @Model.Md_Column_Class @Model.Lg_Column_Class item-row" data-itemcode="@item.ItemCode">
+        @switch (item.ItemTypeID)
+        {
+            case ItemTypes.Standard:
+                if (item.IsGroupMaster)
+                {
+                    @:@Html.Partial("~/Views/Shopping/Partials/Items/Cards/GroupedItem.cshtml", item)
+                }
+                else
+                {
+                    @:@Html.Partial("~/Views/Shopping/Partials/Items/Cards/StandardItem.cshtml", item)
+                }
+                break;
+            case ItemTypes.StaticKit:
+                @:@Html.Partial("~/Views/Shopping/Partials/Items/Cards/StaticKitItem.cshtml", item)
+                break;
+            case ItemTypes.DynamicKit:
+                @:@Html.Partial("~/Views/Shopping/Partials/Items/Cards/DynamicKitItem.cshtml", item)
+                break;
+            default:
+                @: Item type @item.ItemTypeID not supported
+                break;
+        }
+    </div>
+    // clearfix will break the rows as expected regardless of previous row height variations
+    var clearfixVisibility = string.Empty;
+    if (Model.Xs_Column_Qty > 1 && cardIndex % Model.Xs_Column_Qty == 0)
+    {
+        clearfixVisibility += " d-block d-sm-none";
+    }
+    if (Model.Sm_Column_Qty.HasValue && Model.Sm_Column_Qty.Value > 1 && cardIndex % Model.Sm_Column_Qty.Value == 0)
+    {
+        clearfixVisibility += " d-none d-sm-block d-md-none";
+    }
+    if (Model.Md_Column_Qty.HasValue && Model.Md_Column_Qty.Value > 1 && cardIndex % Model.Md_Column_Qty.Value == 0)
+    {
+        clearfixVisibility += " d-none d-md-block d-lg-none";
+    }
+    if (Model.Lg_Column_Qty.HasValue && Model.Lg_Column_Qty.Value > 1 && cardIndex % Model.Lg_Column_Qty.Value == 0)
+    {
+        clearfixVisibility += " d-none d-lg-block d-xl-none";
+    }
+    if (clearfixVisibility.IsNotNullOrEmpty())
+    {
+        <div class="clearfix @clearfixVisibility"></div>
+    }
+}

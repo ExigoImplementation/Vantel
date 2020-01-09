@@ -1,0 +1,156 @@
+﻿@model CreditCard
+@{
+    switch (Model.Type)
+    {
+        case CreditCardType.New:
+            ViewBag.Title = Resources.Common.Global_AddNewCard;
+            break;
+        case CreditCardType.Primary:
+            ViewBag.Title = Resources.Common.Global_EditPrimaryCard;
+            break;
+        case CreditCardType.Secondary:
+            ViewBag.Title = Resources.Common.Global_EditSecondaryCard;
+            break;
+    }
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.YourCreditCards, UrlPath = Url.Action("PaymentMethodList", "Account") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-ccoverview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            @using (Html.BeginForm("savecreditcard", "account"))
+            {
+
+                @Html.HiddenFor(c => c.Type)
+
+                if (Model.IsUsedInAutoOrders)
+                {
+                    <div class="alert alert-info" role="alert">
+                        <h4>@Resources.Common.EditingAutoOrderCreditCards</h4>
+                        @Resources.Common.ChangesToAutoOrderCreditCards.FormatWith(Model.AutoOrderIDs.Length)
+                    </div>
+                }
+
+                <div class="card card-body mb-3 border-right-0 border-left-0">
+                    @Html.EditorForModel()
+                </div>
+
+                <a href="#" id="btnSaveCard" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</a>
+                <a href="@Url.Action("PaymentMethodList")" class="btn btn-danger">@Resources.Common.Cancel</a>
+
+                if (Model.Type != CreditCardType.New && !Model.IsUsedInAutoOrders)
+                {
+                    <span class="float-right">
+                        <a href="@Url.Action("DeleteCreditCard", new { type = Model.Type })" class="btn btn-secondary">@Resources.Common.Delete</a>
+                    </span>
+                }
+
+                @Html.AntiForgeryToken()
+            }
+
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <style>
+        #cc-wrapper {
+            max-height: 40px;
+        }
+    </style>
+    <script src="@Url.Action("TokenEx", "App")"></script>
+    <script>
+        require(["jquery", "toastr", "forms", "bootstrap"], function ($, toastr) {
+
+            // Settings
+            var context = "#view-ccoverview",
+                $context = $(context);
+
+            var windowWidth = $(window).width();
+            var ccFieldWidth = "90%";
+            if (windowWidth < 330) {
+                ccFieldWidth = "90%";
+            } else if (windowWidth < 576) {
+                ccFieldWidth = "92%";
+            } else if (windowWidth < 767) {
+                ccFieldWidth = "80%";
+            } else if (windowWidth < 1095) {
+                ccFieldWidth = "80%";
+            }
+
+            var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                styles: {
+                    base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;font-weight: 400;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !default;",
+                    focus: "color: #495057;background-color: #fff;border-color: #80bdff;outline:none;box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);",
+                        error: "@Resources.Common.CardIsInvalid"
+                }
+            });
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $("#btnSaveCard").on("click", function () {
+                    var $this = $(this);
+                    var $form = $this.parents("form").first();
+
+                    if ($form.valid()) {
+                        $this.buttonState("loading");
+
+                        var cardNumber = $("#@Html.IdFor(c => c.CardNumber)").val();
+
+                        var tokenize = function () {
+                             tokenizer.tokenize({
+                                success: function (data) {
+                                    console.log('tokenized success', data);
+
+                                    var token = data.token;
+                                    $(".creditcard-token").val(token);
+
+                                    //var cardDisplay = token.substr(token.length - 4);
+                                    //$(".creditcard-display").val(cardDisplay);
+
+                                    $form.submit();
+                                },
+                                error: function (data) {
+                                    console.log("get cc token failed", data);
+                                    toastr.error(data);
+                                    $this.buttonState("reset");
+                                    return;
+                                }
+                            });
+                        };
+
+                        var tokenizeResult = tokenize();
+
+                        if (tokenizeResult == false)
+                            toastr.message("Error on tokenize cc");
+
+                        if (!$form.valid()) {
+                            $this.buttonState("reset");
+                        }
+                    }
+                });
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}

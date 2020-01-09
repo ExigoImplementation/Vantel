@@ -1,0 +1,22 @@
+﻿[
+  {
+    "outputFile": "Content/styles/site.css",
+    "inputFile": "Content/styles/site.scss"
+  },
+  {
+    "outputFile": "Content/styles/vendor/Bootstrap/bootstrap.css",
+    "inputFile": "Content/styles/vendor/Bootstrap/bootstrap.scss"
+  },
+  {
+    "outputFile": "Content/scripts/modules/animsition.min.js",
+    "inputFile": "Content/scripts/modules/animsition.js"
+  },
+  {
+    "outputFile": "Content/scripts/modules/isotope.min.js",
+    "inputFile": "Content/scripts/modules/isotope.js"
+  },
+  {
+    "outputFile": "Content/scripts/modules/plugins.min.js",
+    "inputFile": "Content/scripts/modules/plugins.js"
+  }
+]

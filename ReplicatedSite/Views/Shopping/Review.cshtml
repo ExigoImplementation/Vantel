@@ -1,0 +1,289 @@
+﻿@model OrderReviewViewModel
+@{
+    ViewBag.Title = Resources.Common.ReviewYourOrder;
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var submitLoadingImageContainerVisibility = (Model.PropertyBag.IsSubmitting) ? "inline" : "none";
+    var submitButtonVisibility = (Model.PropertyBag.IsSubmitting) ? "none" : "block";
+
+    var hasError = !Request.QueryString["message"].IsNullOrEmpty() || (ViewBag.PartyInvalid != null && ViewBag.PartyInvalid == true);
+    var partyInvalidMessage = hasError ? Resources.Common.PartyInvalidMessage : "";
+    var hasOpenParties = ViewBag.OpenParties != null;
+    List<Party> OpenParties = hasOpenParties ? ViewBag.OpenParties : new List<Party>();
+    var canChooseOpenParty = ViewBag.ActiveParty == null && hasOpenParties && OpenParties.Count() > 0;
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Cart, UrlPath = Url.Action("Cart", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.ShippingAddress, UrlPath = Url.Action("Shipping", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Payment, UrlPath = Url.Action("Payment", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+
+    var orderItems = Model.Items.Where(c => c.Type == ShoppingCartItemType.Order);
+    var hasOrder = orderItems.Count() > 0;
+    var autoOrderItems = Model.Items.Where(c => c.Type == ShoppingCartItemType.AutoOrder);
+    var hasAutoOrder = autoOrderItems.Count() > 0;
+}
+
+<div id="view-shoppingreview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            @* Party Info Bar *@
+            @if (ViewBag.ActiveParty != null)
+            {
+                Party ActiveParty = ViewBag.ActiveParty;
+
+                @Html.DisplayFor(c => ActiveParty, "PartyDetailBar")
+            }
+            else if (canChooseOpenParty)
+            {
+                <div class="party-link">@Resources.Common.Replicated_ShoppingController_PartyLinkText <a data-role="find-party-modal">@Resources.Common.ClickHere.ToLower()</a></div>
+
+                @Html.Partial("Partials/_PartyHostModal", OpenParties)
+            }
+            @* End Party Info Bar*@
+            <div class="row">
+                <div class="col-lg-8 col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <h5>@Resources.Common.ShippingAddress</h5>
+                                    @Html.DisplayFor(c => c.PropertyBag.ShippingAddress)
+                                    <div class="space-10"></div>
+                                    <a href="@Url.Action("Shipping")"><i class="fa-edit"></i> @Resources.Common.Edit</a>
+                                </div>
+                                <div class="col-sm-4">
+                                    <h5>@Resources.Common.PaymentMethod</h5>
+                                    @Html.DisplayFor(c => c.PropertyBag.PaymentMethod, "PaymentMethod")
+                                    <div class="space-10"></div>
+                                    <a href="@Url.Action("Payment")"><i class="fa-edit"></i> @Resources.Common.Edit</a>
+                                </div>
+                                <div class="col-sm-4">
+                                    <h5>@Resources.Common.ChooseShippingMethod:</h5>
+                                    <div id="shipmethods">
+                                        @using (Html.BeginForm("SetShipMethodID", controller))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            foreach (var shipMethod in Model.ShipMethods.OrderBy(c => c.Price))
+                                            {
+                                                <div class="form-check">
+                                                    @Html.RadioButton("ShipMethodID", shipMethod.ShipMethodID, shipMethod.Selected)
+                                                    <label>
+                                                        @shipMethod.ShipMethodDescription <small class="text-muted">@shipMethod.Price.ToString("C")</small>
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (hasOrder)
+                    {
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title">@Resources.Common.Order</h5>
+                            </div>
+                            <div class="card-body m-0 p-0">
+                                @Html.Partial("Partials/Cart/PaneledCart", orderItems, new ViewDataDictionary {
+                                    { "Type", ShoppingCartItemType.Order },
+                                    { "HideControls", true }
+                                })
+                            </div>
+                        </div>
+                    }
+
+                    @if (hasAutoOrder)
+                    {
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title">@Resources.Common.AutoOrder</h5>
+                            </div>
+                            <div class="card-body m-0 p-0">
+                                @Html.Partial("Partials/Cart/PaneledCart", autoOrderItems, new ViewDataDictionary {
+                                    { "Type", ShoppingCartItemType.AutoOrder },
+                                    { "HideControls", true }
+                                })
+                            </div>
+                        </div>
+                    }
+
+                    <a href="@Url.Action("Cart", "Shopping")" class="btn btn-secondary mb-3">@Resources.Common.EditItems</a>
+
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="card margin-bottom--20px">
+                        <div class="card-header">
+                            <h5 class="card-title">@Resources.Common.TodaysOrder</h5>
+                        </div>
+                        <div class="card-body order-totals">
+                            <div class="row">
+                                <div class="col-7 text-right text-sm-left">
+                                    <strong>@Resources.Common.Subtotal:</strong>
+                                </div>
+                                <div class="col-5">
+                                    @Model.OrderTotals.Subtotal.ToString("C")
+                                </div>
+                                <div class="col-7 text-right text-sm-left">
+                                    <strong>@Resources.Common.Shipping:</strong>
+                                </div>
+                                <div class="col-5">
+                                    @Model.OrderTotals.Shipping.ToString("C")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body order-totals">
+                            <div class="row">
+                                <div class="col-7 text-right text-sm-left">
+                                    <strong>@Resources.Common.TotalBeforeTax:</strong>
+                                </div>
+                                <div class="col-5">
+                                    @((Model.OrderTotals.Subtotal + Model.OrderTotals.Shipping).ToString("C"))
+                                </div>
+                                <div class="col-7 text-right text-sm-left">
+                                    <strong>@Resources.Common.Tax:</strong>
+                                </div>
+                                <div class="col-5">
+                                    @Model.OrderTotals.Tax.ToString("C")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body order-totals">
+                            <div class="row">
+                                <div class="col-7 text-right">
+                                    <strong>@Resources.Common.GrandTotal:</strong>
+                                </div>
+                                <div class="col-5">@Model.OrderTotals.Total.ToString("C")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="submit" class="btn btn-primary btn-block btn-lg" style="display: @submitButtonVisibility">@Resources.Common.PlaceOrder</button>
+
+                    <div id="submit-loading" style="display: @submitLoadingImageContainerVisibility">
+                        <p class="text-center">
+                            <img src="~/Content/images/loading/circle-32.gif" />
+                        </p>
+                        <p>@Resources.Common.OrderSubmittingMessage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "toastr", "forms", "bootstrap"], function ($, ajax, toastr) {
+
+            // Settings
+            var context = "#view-shoppingreview",
+                $context = $(context),
+                submitCheckoutUrl = '@Url.Action("SubmitCheckout")',
+                orderCompleteUrl = '@Url.Action("OrderComplete")',
+                checkOrderSubmissionStatusUrl = '@Url.Action("CheckOrderSubmissionStatus")',
+                isSubmitting = ('@Model.PropertyBag.IsSubmitting' == "True") ? true : false;
+
+            // Parties
+            var hasError = @hasError.ToString().ToLower(),
+                partyErrorMessage = '@partyInvalidMessage';
+
+            function registerEventHandlers() {
+                // Parties
+                if (hasError && partyErrorMessage.length > 0) {
+                    toastr.error(partyErrorMessage, '@Resources.Common.Oops @Resources.Common.SomethingWentWrong');
+                }
+
+                $('[name="ShipMethodID"]', $context).on('change', function () {
+                    var $form = $(this).parents('form').first();
+
+                    $form.submit();
+                });
+
+                $('#submit', $context).on('click', function () {
+                    actions.submit();
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                submit: function () {
+                    var $submitButton = $('#submit'),
+                    $orderProcessingContainer = $("#submit-loading");
+
+                    if (isSubmitting == false) {
+                        isSubmitting = true;
+                        $submitButton.hide();
+                        $orderProcessingContainer.show();
+
+                        ajax.json({
+                            url: submitCheckoutUrl,
+                            success: function (response) {
+                                if (response.success) {
+                                    window.location = response.redirectUrl;
+                                }
+                                else {
+                                    isSubmitting = false;
+                                    $submitButton.show();
+                                    $orderProcessingContainer.hide();
+                                    toastr.error(response.message);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                checkOrderStatus: function () {
+                    ajax.json({
+                        url: checkOrderSubmissionStatusUrl,
+                        success: function (response) {
+                            if (response.success) {
+                                window.location = orderCompleteUrl;
+                            }
+                            else {
+                                if (response.orderHadException) {
+                                    var $submitButton = $('#submit'),
+                                        $orderProcessingContainer = $("#submit-loading");
+
+                                    $submitButton.show();
+                                    $orderProcessingContainer.hide();
+
+                                    toastr.error(response.exceptionMessage);
+                                }
+                                else {
+                                    setTimeout(actions.checkOrderStatus(), 3000);
+                                }
+                            }
+                        }
+                    });
+                }
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                // if the user refreshed the page during submission, check to see repeatedly if the order has been placed or had an error
+                if (isSubmitting) {
+                    actions.checkOrderStatus();
+                }
+            }
+            init();
+        });
+
+    </script>
+}

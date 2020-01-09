@@ -1,0 +1,129 @@
+﻿#resource-filters, .table-resource {
+    .select2-container--default .select2-selection--multiple {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    a {
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline !important;
+        }
+    }
+
+    ul {
+        list-style-type: none;
+
+        ul {
+            padding-inline-start: 30px;
+        }
+    }
+
+    label.custom-control-label {
+        &::after {
+            top: .15rem;
+        }
+
+        &::before {
+            top: .15rem;
+        }
+    }
+}
+
+#view-resource-items {
+    .col-form-label {
+        letter-spacing: 0;
+        text-transform: none;
+        color: inherit;
+        font: inherit;
+    }
+
+    .category-list, .market-list {
+        overflow: auto;
+        min-height: 125px;
+        padding: 6px 15px;
+    }
+}
+
+#view-resource-list, #view-manage-resources {
+    #resource-filters {
+        .card {
+            .card-body {
+                padding: 1.25rem .5rem;
+            }
+        }
+    }
+
+    #resourcelist-target {
+        .card {
+            .card-body {
+                padding: 1.25rem 0;
+            }
+        }
+    }
+}
+
+.table-resource {
+    .pop-over {
+        text-align: center;
+        width: 50px;
+
+        &:hover {
+            .pop-over-content {
+                position: absolute;
+                background: #fcfcfc;
+                display: block;
+                transform: translate(60px, -13px);
+                z-index: 999;
+                border: 1px solid #dbdbdb;
+                border-radius: 5px;
+
+                @media screen and (max-width: 767px) {
+                    transform: translate(60px, -10px);
+                }
+
+                img {
+                    max-width: 300px;
+                }
+            }
+        }
+
+        img {
+            max-width: 50px;
+            margin: 0 auto;
+        }
+    }
+
+    .pop-over-content {
+        display: none;
+    }
+
+    [date-sort] {
+        cursor: pointer;
+
+        .carret-up, .carret-down {
+            display: none;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            position: relative;
+            top: -2px;
+        }
+
+        &.asc {
+            .carret-up {
+                display: inline-block;
+                border-bottom: 5px solid #000;
+            }
+        }
+
+        &.desc {
+            .carret-down {
+                display: inline-block;
+                border-top: 5px solid #000;
+            }
+        }
+    }
+}

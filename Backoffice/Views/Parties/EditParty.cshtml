@@ -1,0 +1,494 @@
+﻿@model CreatePartyViewModel
+@{
+    ViewBag.Title = "Edit your Party";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div id="party-manager">
+    <div id="view-createparty">
+        <div class="space-10"></div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;" id="createpartyerror">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="body"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                @Html.Navigation()
+            </div>
+            <div class="col-md-9">
+
+                @using (Ajax.BeginForm(new AjaxOptions
+                {
+                    OnBegin = "partyModule.onBegin",
+                    OnSuccess = "partyModule.onSuccess",
+                    OnFailure = "partyModule.onFailure",
+                    OnComplete = "partyModule.onComplete"
+                }))
+                {
+                    if (Model.PartyID > 0)
+                    {
+                        <input type="hidden" value="@Model.PartyID" name="request.PartyID" />
+                    }
+                    else
+                    {
+                        <input type="hidden" value="@Model.ParentPartyID" name="request.ParentPartyID" />
+                    }
+
+                    <div class="wizard-card" data-cardname="details">
+                        @Html.EditorForModel("PartyPanel", Model)
+                    </div>
+                    <div class="space-40"></div>
+                    <div class="wizard-card" data-cardname="host">
+                        @Html.EditorForModel("HostPanel", Model)
+                    </div>
+                    <div class="space-40"></div>
+
+                    <div class="wizard-card" data-cardname="location">
+                        @Html.EditorForModel("LocationPanel", Model)
+                    </div>
+
+                    <div class="space-40"></div>
+
+                    <button type="submit" class="btn btn-lg btn-primary btn-submit">Update Party</button>
+
+                    <div class="space-40"></div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div id="host-choice-container">
+        <div class="modal fade"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="@Url.Content("~/Scripts/jquery-2.2.2.min.js")"></script>
+    <link href="@Url.Content("~/Content/scripts/vendor/typeahead/typeahead.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Content/scripts/vendor/typeahead/typeahead.js")"></script>
+
+    <script>
+        var currentCustomerID       = @Identity.Current.CustomerID;
+        var partyModule = {};
+
+        require(["jquery", "ajax", "kendo", "toastr", "handlebars"], function ($, ajax, kendo, toastr, handlebars) {
+
+            var currentHostessID = parseInt("@Model.CreatePartyRequest.HostID"),
+                previouslyCreatedHostID = 0,
+                startTimeString = "",
+                endDateString = "",
+                hosts = [],
+                matchList = [],
+                currentCultureCode = "@Identity.Current.Language.CultureCode.ToLower()",
+                partySummaryUrl = "@Url.Action("summary", "parties", new { id = Model.PartyID })",
+                partyExpirationDays = @GlobalSettings.Parties.PartyOpenDays,
+                hostessSearchUrl = "@Url.Action("GetPotentialHostesses","parties")",
+                sendingHosts = false;
+
+            function registerEventHandlers() {
+                $('#party-manager').on('click', '[data-role="hostess-choice"]', function() {
+                    var hostessID = $(this).data('id');
+                    $('[name="request.HostID"]').val(hostessID);
+                    $(this).buttonState("loading");
+                    $('.btn-submit').click();
+                });
+
+                $('#submit').on("click", function() {
+                    console.log($("form").serializeObject());
+                });
+
+                $('[data-type="date"]').kendoDatePicker({
+                    culture: currentCultureCode,
+                    beforeShowDay: function (date) {
+                        if (date.getDate() > 28) {
+                            return [false, ''];
+                        } else {
+                            return [true, ''];
+                        }
+                    },
+                    min: new Date(),
+                    change: function () {
+                        // Set the end date to be a month from the start date, when it changes its value
+                        var date = new Date(this.value());
+
+                        date.setMonth(date.getMonth() + 1, 0); // one month to event end date
+                        date.setHours(0, 0, 0, 0);
+
+                        $('.end-date-picker').val(date.format("MM/dd/yyyy"));
+                        $('[name="request.EventEndDate"]').val(date.format("MM/dd/yyyy"));
+                    }
+                }).on({
+                    focus: function () {
+                        $(this).data("kendoDatePicker").open();
+                    },
+                    click: function () {
+                        $(this).data("kendoDatePicker").open();
+                    },
+                    keypress: function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+
+                $(".form-time-picker").kendoTimePicker({
+                    interval: 15
+                }).on({
+                    focus: function () {
+                        $(this).data("kendoTimePicker").open();
+                    },
+                    click: function () {
+                        $(this).data("kendoTimePicker").open();
+                    },
+                    keypress: function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+
+
+                $("#virtualParty").on('click',function(){
+                    var $this = $(this);
+                    if ($this.is(':checked')) {
+                        $('#addresses').hide();
+                    } else {
+                        $('#addresses').show();
+                    }
+
+                });
+
+                // Date and time plugins
+                var nowTemp = new Date();
+                var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+                $('.form-date-picker, .form-time-picker').keypress(function(e) {
+                    e.preventDefault();
+                });
+
+
+                $("#chkNewHost").on("change", function() {
+                    var $this = $(this),
+                        isChecked = $this.is(":checked");
+
+                    if (isChecked) {
+                        $("[name='request.HostID']").val(0);
+                        $('#newhostwrapper').slideDown('fast');
+                        $("#hostaddresswrapper .addresstext").html("<strong>Host Address</strong>");
+                        $('#hostess-search-container').slideUp('fast');
+                        actions.populateSelectedAddress(null, true);
+                        $("#HostID").val("");
+                    }
+                    else {
+                        $('#newhostwrapper').slideUp('fast');
+                        $("[name='request.HostID']").val("");
+                        $('#hostess-search-container').slideDown('fast');
+                    }
+                });
+
+                $("#HostID").on("click", function() {
+                    $(this).select();
+                });
+
+                partyModule.onBegin = function() {
+                    $(".btn-submit").buttonState("loading");
+                    console.log($("#view-createparty").find("form").serializeObject());
+                };
+                partyModule.onSuccess = function (response) {
+                    if(response.success) {
+
+                        // Redirect to the createparty page
+                        window.location = partySummaryUrl;
+                        console.log("createparty response success", response);
+
+                    } else {
+                        toastr.error(response.error, "Error");
+                        console.log("createparty response failed", response);
+
+                        if (response.hostHtml.length > 0) {
+                            $('#host-choice-container .modal').html("");
+                            $('#host-choice-container .modal').html(response.hostHtml);
+                            $('#host-choice-container .modal').modal('show');
+                        }
+                    }
+                };
+                partyModule.onFailure = function(response) {
+                    console.log("failed to create party", response);
+                };
+                partyModule.onComplete = function() {
+                    $(".btn-submit").buttonState("reset");
+                };
+            }
+
+
+            // Actions
+            var actions = {
+                populateSelectedAddress: function (host, reset) {
+
+                    if (reset) {
+                        $('#request_Address1').val("");
+                        $('#request_Address2').val("");
+                        $('#request_City').val("");
+                        $('#request_State').val("");
+                        $('#request_Country').val("");
+                        $('#request_Zip').val("");
+                    } else {
+                        var address = host.address;
+                        if (address != null) {
+                            $('#request_Address1').val(address.Address1);
+                            $('#request_Address2').val(address.Address2);
+                            $('#request_City').val(address.City);
+                            $('#request_State').val(address.State);
+                            $('#request_Country').val(address.Country);
+                            $('#request_Zip').val(address.Zip);
+                        }
+                    }
+                },
+
+                getHosts: function () {
+
+                    return function grabHosts(query, callback) {
+                        var matchCount = 0;
+                        if(query.length % 3 != 0){
+                            var substrRegex = new RegExp(query, 'i');
+
+                            $.each(hosts, function(i, option) {
+
+
+                                if (substrRegex.test(option.FullName)) {
+                                    matchCount++;
+
+                                }
+
+
+                            });
+                        }
+
+
+                        if (query.length % 3 == 0 || (hosts.length * .25) > matchCount || hosts.length == 0 || matchCount == 0) {
+                            
+                            if(!sendingHosts){
+                                sendingHosts = true;
+                                $('#loading-container').slideDown();
+                                ajax.json({
+                                    url: hostessSearchUrl,
+                                    data: { query: query},
+                                    success: function(response) {
+                                        if(response.success) {
+                                            hosts = response.hosts;
+                                            sendingHosts = false;
+
+                                            helpers.substringMatcher(query,hosts, callback);
+                                        } else {
+                                            toastr.error("Unable to load hosts");
+                                            sendingHosts = false;
+
+                                            helpers.substringMatcher(query,hosts, callback, true);
+                                        }
+                                                                                
+                                        $('#loading-container').slideUp();
+                                        
+                                        //var theVal = $('#HostID').val();
+                                        //$("#HostID").typeahead('val', '')
+                                        //$("#HostID").focus().typeahead('val',theVal).focus();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.log(error);
+                                        sendingHosts = false;
+                                    }
+                                });
+                            }
+                            else{
+                                helpers.substringMatcher(query,hosts, callback, true);
+
+                            }
+                        }
+                        else{
+                            helpers.substringMatcher(query,hosts, callback, true);
+                        }
+                    }
+
+                }
+            };
+
+
+            // Helpers
+            var helpers = {
+                getHost: function(id) {
+                    for(var h = 0, max = hosts.length; h < max; h++) {
+                        var host = hosts[h];
+
+                        if(host.CustomerID == id) {
+                            return host;
+                        }
+                    }
+                },
+                substringMatcher: function(query, results, callback, compare) {
+
+                    var matches,
+                        matches = [],
+                         hosts = [],
+                         options = results,
+                    substrRegex = '';
+
+                    if(compare) substrRegex = new RegExp(query, 'i');
+                    $.each(options, function(i, option) {
+                        if (!compare || (compare &&  substrRegex.test(option.FullName))) {
+                            var address = { Address1: option.Address1, Address2: option.Address2, City: option.City, State: option.State, Zip: option.Zip, Country: option.Country };
+
+                            matches.push({ text: option.FullName + ' #' + option.CustomerID, CustomerID: option.CustomerID, address: address });
+
+                        }
+
+                    });
+
+                    matchList = matches;
+                    callback(matches);
+
+                },
+                getSelectedHost: function() {
+                    var hostID = Number($('#HostID').val());
+                    var $option = $('#HostID option:selected');
+
+                    if(hostID != 0) {
+                        return helpers.getHost(hostID);
+                    }
+                    else {
+                        return {
+                            CustomerID: hostID,
+                            FirstName:  $('[name="request.HostFirstName"]').val(),
+                            LastName:   $('[name="request.HostLastName"]').val(),
+                            Email:      $('[name="request.HostEmail"]').val(),
+                            Phone:      $('[name="request.HostPhone"]').val(),
+                            Address1:   $('[name="request.HostAddress1"]').val(),
+                            Address2:   $('[name="request.HostAddress2"]').val(),
+                            City:       $('[name="request.HostCity"]').val(),
+                            State:      $('[name="request.HostState"]').val(),
+                            Zip:        $('[name="request.HostZip"]').val(),
+                            Country:    "US"
+                        }
+                    }
+                },
+                getSelectedLocation: function() {
+                    var locationID = Number($('input:radio[data-role="PartyAddress"]:checked').val());
+
+                    if(locationID > 0) {
+                        var host = helpers.getHost(locationID);
+                        return {
+                            Address1: host.Address1,
+                            Address2: host.Address2,
+                            City: host.City,
+                            State: host.State,
+                            Zip: host.Zip,
+                            Country: host.Country
+                        };
+                    }
+                    else if(locationID == -1) {
+                        return {
+                            Address1: $('#HostAddress1').val(),
+                            Address2: $('#HostAddress2').val(),
+                            City: $('#HostCity').val(),
+                            State: $('#HostState').val(),
+                            Zip: $('#HostZip').val(),
+                            Country: $('#HostCountry').val()
+                        }
+                    }
+                    else {
+                        return {
+                            Address1: $('#Address1').val(),
+                            Address2: $('#Address2').val(),
+                            City: $('#City').val(),
+                            State: $('#State').val(),
+                            Zip: $('#Zip').val(),
+                            Country: $('#Country').val()
+                        }
+                    }
+                },
+                getCreatePartyRequest: function () {
+
+                    // Serialize the form into JSON
+                    var form = $('#view-createparty form').serializeObject();
+                    var isVirtualParty = $("#virtualParty").is(':checked');
+                    form.EventStartDate = new Date(form.EventStartDate + " " + startTimeString);
+                    var startDay = form.EventStartDate.getDate() + 30;
+                    var startMonth = form.EventStartDate.getMonth();
+                    var startYear = form.EventStartDate.getFullYear();
+                    var startHours = form.EventStartDate.getHours();
+                    var startMinutes = form.EventStartDate.getMinutes();
+                    form.EventEndDate = new Date(startYear,startMonth,startDay,startHours,startMinutes);
+                    // Get the host's information
+                    var host           = helpers.getSelectedHost();
+                    form.HostID        = host.CustomerID;
+                    form.HostFirstName = host.FirstName;
+                    form.HostLastName  = host.LastName;
+                    form.HostEmail     = host.Email;
+                    form.HostPhone     = host.Phone;
+                    form.HostAddress1  = host.Address1;
+                    form.HostAddress2  = host.Address2;
+                    form.HostCity      = host.City;
+                    form.HostState     = host.State;
+                    form.HostZip       = host.Zip;
+                    form.HostCountry   = host.Country;
+
+                    // Get the location
+                    if (!isVirtualParty) {
+                        var location  = helpers.getSelectedLocation();
+                        form.Address1 = location.Address1;
+                        form.Address2 = location.Address2;
+                        form.City     = location.City;
+                        form.State    = location.State;
+                        form.Zip      = location.Zip;
+                        form.Country  = location.Country;
+                    }
+
+                    // Determine if had a previously saved host ID from a failed attempt
+                    if(form.HostID == 0 && previouslyCreatedHostID != 0) {
+                        form.HostID = previouslyCreatedHostID;
+                    }
+                    form.WhereDisplay = "";
+                    // Return the modified form as a JSON object
+                    return form;
+
+                }
+            };
+
+
+            function init() {
+                registerEventHandlers();
+
+
+                var $typeahead = $("#HostID-container .typeahead");
+
+                $typeahead.typeahead({
+                    minLength: 3,
+                    highlight: true
+                },
+                {
+                    name: 'hosts',
+                    displayKey: 'text',
+                    source: actions.getHosts()
+                });
+
+                $typeahead.on('typeahead:selected typeahead:autocompleted', function(event, option) {
+
+                    // Toggle the new host content wrapper
+                    if (option.CustomerID == 0) {
+                        $('#newhostwrapper').slideDown('fast');
+                        $("#hostaddresswrapper .addresstext").html("<strong>Host Address</strong>");
+                    }
+                    else {
+                        $('#newhostwrapper').slideUp('fast');
+
+                        // Populate address of selected user
+                        actions.populateSelectedAddress(option);
+                    }
+                    $("[name='request.HostID']").val(option.CustomerID);
+                });
+            }
+
+            init();
+        })();
+
+
+    </script>
+}

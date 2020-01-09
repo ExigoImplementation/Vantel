@@ -1,0 +1,168 @@
+﻿<div class="cart-preview" id="cart-preview">
+    @*here loads the cart preview*@
+    <div class="row">
+        <div class="col-12 cart-preview-box">
+            <div class="card-body mb-4">
+                <div class="text-center"><img src="~/Content/images/loading/circle-64.gif" /></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="cartpreview-template" type="text/x-handlebars-template">
+    <div class="top-cart-container">
+        <div class="top-cart-title">
+            <h4 class="float-left">@Resources.Common.ShoppingCart</h4>                
+        </div>
+        <div class="top-cart-items">
+            {{#if hasOrder }}
+            <h6 class="mr-auto">@Resources.Common.Order</h6>
+            {{#each OrdersShoppingCart}}
+            <div class="top-cart-item clearfix">
+                <div class="top-cart-item-image">
+                    <a href="{{Url}}"><img src="{{Img}}" alt="{{ItemDescription}}" /></a>
+                </div>
+                <div class="top-cart-item-desc">
+                    <a href="{{Url}}">{{ItemDescription}}</a>
+                    <span class="top-cart-item-price">{{Price}}</span>
+                    <span class="top-cart-item-quantity">x {{Quantity}}</span>
+                </div>
+            </div>
+            {{/each}}
+            {{#if hasAutoOrder}}
+                <hr />
+            {{/if}}
+            {{/if}}
+
+            {{#if hasAutoOrder}}
+            <h6 class="mr-auto mt-2">@Resources.Common.AutoOrder</h6>
+            {{#each AutoOrdersShoppingCart}}
+            <div class="top-cart-item clearfix">
+                <div class="top-cart-item-image">
+                    <a href="{{Url}}"><img src="{{Img}}" alt="{{ItemDescription}}" /></a>
+                </div>
+                <div class="top-cart-item-desc">
+                    <a href="{{Url}}">{{ItemDescription}}</a>
+                    <span class="top-cart-item-price">{{Price}}</span>
+                    <span class="top-cart-item-quantity">x {{Quantity}}</span>
+                </div>
+            </div>
+            {{/each}}
+            {{/if}}
+
+            {{#if cartEmpty}}
+            <small class="text-muted">@Resources.Common.NoItemsInCart</small>
+            {{/if}}
+        </div>
+        <div class="top-cart-action clearfix">
+            <span class="float-left top-checkout-price">{{#money total}}{{/money}}</span>
+            {{#if cartEmpty}}{{else}}<a href="@Url.Action("Cart","Shopping")" class="btn btn-primary btn-sm float-right">@Resources.Common.ViewCart</a>{{/if}}
+        </div>
+    </div>
+</script>
+
+<script>
+    require(['jquery', 'ajax', 'app', 'handlebars'], function ($, ajax, app, handlebars) {
+
+        document.addEventListener('scroll', function() {
+            document.documentElement.dataset.scroll = window.scrollY;
+        });
+
+
+        $(function () {
+            var actions = {
+                UpdateCart: function () {
+                    $('body').trigger('Shopping.UpdateCart');
+                    console.log(window.location.pathname);
+                    console.log(app.path("shopping/cart"));
+                    if (window.location.pathname == app.path(webalias+"/cart")) {
+                        location.reload();
+                    }
+                }
+            }
+
+            $('body').on('Shopping.UpdateCart', function(){
+                ajax.json({
+                    url: '@Url.Action("CartPreview", "Shopping")',
+                    success: function (response) {
+                        if (response.success) {
+                            var source = $("#cartpreview-template").html();
+                            var template = handlebars.compile(source);
+                            var html = template(response);
+                            $('#cart-preview').html(html);
+                            $('#PreviewCart_ItemCount').html(response.itemTotal);
+                        } else {
+                            console.log('Error loading Cart Preview', response);
+                        }
+                    }
+                });
+            });
+
+            $('#cart-preview').addClass('populated'); // so it doesnt call update cart when opening the cart preview because its already loaded
+            $('body').trigger('Shopping.UpdateCart');
+
+            @*var hiddenCart = true;
+            var hiddenLogin = true;
+
+            $(document).mouseup('click', function (e) {
+                var triggerId = $(e.target).parent().attr('id');               
+                
+                if (triggerId === 'top-cart-trigger') {
+                    $('#login-preview').slideUp(function () {
+                        hiddenCart = ($("#cart-preview:visible").length == 0);
+                        if ($(e.target).parents('#top-cart').length > 0 || $(e.target).parents('#cartclosebutton').length > 0) {
+                            if (hiddenCart) {
+                                var isPopulated = $('#cart-preview').hasClass('populated');
+                                if (!isPopulated) {
+                                    $('#cart-preview').addClass('populated');
+                                    actions.UpdateCart();
+                                }
+
+                                if ($(window).width() > 991.98) {
+                                    $('#cart-preview').slideDown();
+                                }
+                                else {
+                                    window.location.href = "@Url.Action("Cart","Shopping")";
+                                }
+                            } else if (!hiddenCart && $(e.target).parents('#top-cart-trigger').length > 0) {
+                                $('#cart-preview').slideUp();
+                            } else if ($(e.target).parents('#top-cart').length > 0) {
+                                return;
+                            } else {
+                                $('#cart-preview').slideUp();
+                            }
+                        } else if (!hiddenCart && $(e.target).parents('#cart-preview').length == 0) { // if visible && click is not preview close
+                            hiddenCart = true;
+                            $('#cart-preview').slideUp();
+                        }
+                    });
+                } else if (triggerId === 'top-login-trigger') {
+                    $('#cart-preview').slideUp(function () {
+                        hiddenLogin = ($("#login-preview:visible").length == 0);
+                        if (hiddenLogin) {
+                            if ($(window).width() > 991.98) {
+                                $('#login-preview').slideDown();
+                            }
+                            else {
+                                window.location.href = "@Url.Action("Login","Account")";
+                            }
+                        } else if (!hiddenLogin && $(e.target).parents('#top-login-trigger').length > 0) {
+                            $('#login-preview').slideUp();
+                        } else if ($(e.target).parents('#top-login').length > 0) {
+                            return;
+                        } else {
+                            $('#login-preview').slideUp();
+                        }
+                    });
+                } else {
+                    if (hiddenLogin && $(e.target).parents('#top-login').length == 0) {
+                        $('#login-preview').slideUp();
+                    }
+                    if (hiddenCart && $(e.target).parents('#cart-preview').length == 0) {
+                        $('#cart-preview').slideUp();
+                    }
+                }
+            });*@
+        });
+    });
+</script>

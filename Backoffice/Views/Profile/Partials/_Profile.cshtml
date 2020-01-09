@@ -1,0 +1,302 @@
+﻿@model ProfileViewModel
+@{
+    var isCurrentIdentity = Model.Customer.CustomerID == Identity.Current.CustomerID;
+    var isPersonallyEnrolled = ((Model.Customer.EnrollerID == Identity.Current.CustomerID) || Model.IsInEnrollerTree);
+    var canSeePersonalInfo = (isCurrentIdentity || isPersonallyEnrolled);
+
+    var contextID = Guid.NewGuid();
+    Model.Token = Security.Encrypt(Model.Customer.CustomerID);
+}
+<div id="view-profile-@contextID" class="tabbeddetails">
+    <div class="row">
+        <div class="col-md-2">
+            <img src="@Url.Avatar(Model.Customer.CustomerID, AvatarType.Large)" class="avatar rounded-circle" />
+            @if (isCurrentIdentity)
+            {
+                <div class="text-center">
+                    <small><a href="@Url.Action("ManageAvatar", "Account")">@Resources.Common.EditAvatar</a></small>
+                </div>
+            }
+        </div>
+        <div class="col-md-10">
+            <h3>
+                <strong>@Model.Customer.FullName</strong> <small class="text-muted">#@Model.Customer.CustomerID</small><br />
+                <small class="text-muted">@Model.Customer.CustomerTypeDescription @Resources.Common.since <strong>@Model.Customer.CreatedDate.ToShortDateString()</strong></small><br />
+                <small class="text-muted">@Resources.Common.LifetimeRank: <strong>@CommonResources.Ranks(Model.Customer.RankID)</strong></small>
+            </h3>
+        </div>
+    </div>
+    <div class="space-30"></div>
+    <ul class="nav nav-pills">
+        <li class="nav-item"><a class="nav-link active" href="#tab-1-@contextID" data-toggle="tab">@Resources.Common.General</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-2-@contextID" data-action="@Url.Action("activity", "profile", new { id = Model.Customer.CustomerID })" data-toggle="tab">@Resources.Common.Activity</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-3-@contextID" data-action="@Url.Action("rankadvancement", "profile", new { id = Model.Customer.CustomerID })" data-toggle="tab">@Resources.Common.Next @Resources.Common.Rank</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-4-@contextID" data-action="@Url.Action("volumeslist", "profile", new { id = Model.Customer.CustomerID })" data-toggle="tab">@Resources.Common.Volumes</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-5-@contextID" data-action="@Url.Action("orderslist", "profile", new { id = Model.Customer.CustomerID })" data-toggle="tab">@Resources.Common.Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-6-@contextID" data-action="@Url.Action("autoorderslist", "profile", new { id = Model.Customer.CustomerID })" data-toggle="tab">@Resources.Common.AutoOrders</a></li>
+    </ul>
+    <div class="space-30"></div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab-1-@contextID">
+            @if (canSeePersonalInfo)
+            {
+                <div class="row row-eq-height">
+                    <div class="col-md-6">
+                        <div class="card bg-white">
+                            <div class="card-header">
+                                <label>@Resources.Common.ContactInformation</label>
+                            </div>
+                            <div class="card-body">
+                                <div class="row pb-3">
+                                    <div class="col-4 col-sm-3 col-md-2">
+                                        <i class="fa fa-phone"></i>
+                                    </div>
+                                    <div class="col-8 col-sm-9 col-md-10">
+                                        <div class="row">
+                                            <div class="col-12 content">@Format.Phone(Model.Customer.PrimaryPhone)</div>
+                                            <div class="col-12 xsmall">@Resources.Common.Phone</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pb-3">
+                                    <div class="col-4 col-sm-3 col-md-2">
+                                        <i class="fa fa-envelope"></i>
+                                    </div>
+                                    <div class="col-8 col-sm-9 col-md-10">
+                                        <div class="row">
+                                            <div class="col-12 content">@Format.Email(Model.Customer.Email)</div>
+                                            <div class="col-12 xsmall">@Resources.Common.Email</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pb-3">
+                                    <div class="col-4 col-sm-3 col-md-2">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <div class="col-8 col-sm-9 col-md-10">
+                                        <div class="row">
+                                            <div class="col-12 content">@Model.Customer.LoginName</div>
+                                            <div class="col-12 xsmall">@Resources.Common.Username</div>
+                                        </div>
+                                    </div>
+                                </div>                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-white">
+                            <div class="card-header">
+                                <label>@Resources.Common.Placement</label>
+                            </div>
+                            <div class="card-body">
+                                <div class="row pb-sm-3">
+                                    <div class="col-6 content">
+                                        <strong>
+                                            @Resources.Common.Enroller
+                                        </strong>
+                                    </div>
+                                    <div class="col-6 content">
+                                        @if (Model.Customer.Enroller.CustomerID == Identity.Current.CustomerID || ExigoDAL.IsCustomerInlDownline(Identity.Current.CustomerID, Model.Customer.Enroller.CustomerID))
+                                        {
+                                            <a data-profile="modal" data-id="@Model.Customer.Enroller.CustomerID" data-token="@Security.Encrypt(Model.Customer.Enroller.CustomerID, Identity.Current.CustomerID)" style='cursor: pointer; text-decoration: none;'>@Model.Customer.Enroller.FullName (@Model.Customer.Enroller.CustomerID)</a>
+                                        }
+                                        else
+                                        {
+                                            <span>@Model.Customer.Enroller.FullName (@Model.Customer.Enroller.CustomerID)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row pb-sm-3">
+                                        @if (Model.Customer.Sponsor != null)
+                                        {
+                                    <div class="col-6 content">
+                                        <strong>
+                                            @Resources.Common.Sponsor
+                                        </strong>
+                                    </div>
+                                            <div class="col-6 content">
+                                                @if (Model.Customer.Sponsor.SponsorID == Identity.Current.CustomerID || ExigoDAL.IsCustomerInlDownline(Identity.Current.CustomerID, Model.Customer.Sponsor.CustomerID))
+                                                {
+                                                    <a data-profile="modal" data-id="@Model.Customer.Sponsor.CustomerID" data-token="@Security.Encrypt(Model.Customer.Sponsor.CustomerID, Identity.Current.CustomerID)" style='cursor: pointer; text-decoration: none;'>@Model.Customer.Sponsor.FullName (@Model.Customer.Sponsor.CustomerID)</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>@Model.Customer.Sponsor.FullName (@Model.Customer.Sponsor.CustomerID)</span>
+                                                }
+                                            </div>
+                                        }
+                                </div>
+                                <div class="row pb-sm-3">
+                                    <div class="col-6 content">
+                                        <strong>
+                                            @Resources.Common.JoinDate
+                                        </strong>
+                                    </div>
+                                    <div class="col-6 content">@Model.Customer.CreatedDate.ToShortDateString()</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-15"></div>
+            }
+        <div class="row row-eq-height">
+            @if (canSeePersonalInfo)
+            {
+                <div class="col-md-6">
+                    <div class="card bg-white">
+                        <div class="card-header">
+                            <label>@Resources.Common.Addresses</label>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.Customer.Addresses.Any())
+                            {
+                                foreach (var address in Model.Customer.Addresses)
+                                {
+                                    <div class="row pb-3">
+                                        <div class="col-4 col-sm-3 col-md-2">
+                                            <i class="fa fa-home"></i>
+                                        </div>
+                                        <div class="col-8 col-sm-9 col-md-10">
+                                            <div class="row">
+                                                <div class="col-12 content">@Format.Address(address)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p>@Resources.Common.NoAddressesOnFile</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.Customer.Sponsor != null)
+            {
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <label>@Resources.Common.Actions</label>
+                        </div>
+                        <div class="card-body">
+                            @{ string tree = GlobalSettings.Exigo.UseBinary ? "BinaryTreeViewer" : "UnilevelTreeViewer";}
+                            <a href="@Url.Action(tree, "Organization", new {  token = Model.Token})">@Resources.Common.ViewGraphicalDownline</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
+            <div class="space-15"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-white">
+                        <div class="card-header">
+                            <label>@Resources.Common.Volumes</label>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var volArray = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }; //Spin Up Instruction: Volume Buckets - Unilevel SETUP var volArray = new int[] { 200,199,198,197,196,195,194,193,192,191,190,189,188,187,182,181,178 }; //Spin Up Instruction: Volume Buckets - Binary SETUP
+
+                                <div class="row">
+                                    <div class="col-12 content">
+
+                                        @foreach (int thisVol in volArray)
+                                        {
+
+                                            var thisVolVal = (decimal)Model.Volumes.GetType().GetProperty("Volume" + thisVol).GetValue(Model.Volumes);
+                                            <div class="row">
+                                                <div class="col-6">@CommonResources.Volumes(thisVol)</div>
+                                                @if (thisVol == volArray[0])
+                                                {
+                                                    <div class="col-6">@Format.Boolean(Convert.ToBoolean(thisVolVal))</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-6 text-success">@thisVolVal.ToString("N0")</div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/x-handlebars-template" id="tab-template">
+            <div class="tab-pane" id="{{id}}">
+                <div class="space-30"></div>
+                <div class="text-center">
+                    <img src="@Url.Content("~/Content/images/loading/circle-64.GIF")" /><br />
+                    <div class="loading-status">@Resources.Common.Loading</div>
+                </div>
+            </div>
+        </script>
+    </div>
+</div>
+<script>
+    require(["jquery", "ajax", "handlebars", "bootstrap"], function ($, ajax, Handlebars) {
+
+        // Settings
+        var context = "#view-profile-@contextID",
+            $context = $(context);
+
+        // Event Handlers
+        function registerEventHandlers() {
+            $('a[data-toggle="tab"]').on('show.bs.tab', function (event) {
+                var $tablink = $(event.target),
+                    tabSelector = $tablink.attr('href'),
+                    $tab = $(context + ' ' + tabSelector);
+
+                if ($tab.length == 0) {
+                    var source = $("#tab-template", $context).html();
+                    var template = Handlebars.compile(source);
+                    var _context = { id: tabSelector.replace('#', '') }
+                    var html = template(_context);
+
+                    $(context).find('.tab-pane:last').after(html);
+
+                    var action = $tablink.data('action');
+                    $tablink.tab('show');
+                    actions.loadTab(tabSelector, action);
+                }
+            });
+        }
+
+
+        // Actions
+        var actions = {
+            loadTab: function (selector, url) {
+                ajax.html({
+                    url: url,
+                    interval: 3000,
+                    maxAttempts: 10,
+                    success: function (response) {
+                        var $tab = $(selector, $context);
+
+                        $(selector, $context).html(response);
+                    },
+                    repeat: function (attempts) {
+                        if (attempts == 5) {
+                            $(selector, $context).find('.loading-status').html("@Resources.Common.CalculationTakingLonger");
+                        }
+                    },
+                    fail: function () {
+                        $(selector, $context).html("@Resources.Common.LoadingFailed");
+                    }
+                });
+            }
+        };
+
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+        }
+        init();
+
+    });
+</script>

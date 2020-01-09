@@ -1,0 +1,26 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid().ToString();
+}
+
+<div id="view-accounttype-@contextID">
+    
+    <div class="form-group">
+        <div class="radio">
+            <label for="AccountType_Distributor">
+                <input type="radio" id="AccountType_Distributor" name="AccountTypePreference" value="0" checked />
+                @Resources.Common.IndividualDistributor
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">     
+        <div class="radio">
+            <label for="AccountType_Customer">
+                <input type="radio" id="AccountType_Customer" name="AccountTypePreference" value="1" />
+                @Resources.Common.BusinessEntityDistributor
+            </label>
+        </div>
+    </div>
+
+</div>

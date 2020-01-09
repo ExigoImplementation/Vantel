@@ -1,0 +1,46 @@
+﻿@model VolumeCollection
+
+@{
+    int[] volumes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int[] booleanVolumes = new int[] { 1 };
+    Func<int, decimal> getVolumeValue = (volume) =>
+    {
+        var value = Model
+            .GetType()
+            .GetProperty("Volume" + volume)
+            .GetValue(Model);
+
+        return (decimal)value;
+    };
+}
+@if (Model != null)
+{
+    <div class="card-metric wrapper">
+        @foreach (int volume in volumes)
+        {
+                decimal value = getVolumeValue(volume);
+                <div class="volume-item"
+                     data-volume="@CommonResources.VolumeDescriptions(volume)"
+                     data-title="@CommonResources.Volumes(volume)"
+                     data-toggle="modal"
+                     data-target="#volume-modal">
+                    <span class="rank-value">
+                        @if (booleanVolumes.Contains(volume))
+                        {
+                            @Format.Boolean(Convert.ToBoolean(value))
+                        }
+                        else
+                        {
+                            @(value.ToString("N0"));
+                        }
+                    </span>
+                    @{string title = CommonResources.Volumes(volume);}
+                    <div class="description" data-placement="bottom" data-container="body">@title</div>
+                </div>   
+        }
+    </div>
+}
+else
+{
+    <p>@Resources.Common.CardFailedToLoad</p>
+}

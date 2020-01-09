@@ -1,0 +1,350 @@
+﻿@model PartySummaryViewModel
+@{
+    var title = Model.Party.Description;
+    ViewBag.Title = title;
+    ViewBag.ActiveLink = Resources.Common.Summary;
+
+    var justCreatedParty = HttpContext.Current.Request.QueryString["new"] == "1";
+    var partyUrl = Model.Party.PartyUrl;
+    var partyID = Model.Party.PartyID;
+    var isHostess = Identity.Current.IsHostess();
+
+    var canCloseParty = Model.Orders.Any(c => c.CustomerID == Model.Party.HostID) && Model.Party.CustomerID == Identity.Current.CustomerID;
+}
+
+<div id="view-partysummary">
+    <h1>@Model.Party.Description @Resources.Common.Summary</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Summary -->
+            <dl>
+                <dt>@Model.Party.PartyOwner.CustomerTypeDescription</dt>
+                <dd>
+                    @Model.Party.PartyOwner.FirstName @Model.Party.PartyOwner.LastName
+                    <br />
+                    <a href="mailto:@Model.Party.PartyOwner.Email;">@Model.Party.PartyOwner.Email</a>
+                    <br />
+                    @Common.Resources.Models.MobilePhone: @Model.Party.PartyOwner.MobilePhone
+                    <br />
+                    <a href="@Url.Action("replicatedsiteredirect", "app", new { customerID = Model.Party.CustomerID })"  target="_blank">@Resources.Common.VisitWebsite</a>
+                </dd>
+                <dt>@Resources.Common.Title</dt>
+                <dd>@title</dd>
+
+                <dt>@Resources.Common.Host</dt>
+                <dd>@Model.Party.HostName</dd>
+
+                @if (Model.Party.Address.IsComplete)
+                {
+                    var address = Model.Party.Address.Address1 + ((!string.IsNullOrEmpty(Model.Party.Address.Address2)) ? ", " + Model.Party.Address.Address2 : string.Empty);
+                    address = string.Join(", ", address, Model.Party.Address.City, Model.Party.Address.State + " " + Model.Party.Address.Zip, Model.Party.Address.Country);
+
+                    <dt>@Resources.Common.Location</dt>
+                    <dd>
+                        @address
+                    </dd>
+                }
+                <dt>@Resources.Common.Date</dt>
+                @{
+                    var rawStartDate = Convert.ToDateTime(Model.Party.StartDate);
+                    var rawEventStart = Convert.ToDateTime(Model.Party.EventStart);
+
+                    var startDate = new DateTime(rawStartDate.Year, rawStartDate.Month, rawStartDate.Day, rawEventStart.Hour, rawEventStart.Minute, rawEventStart.Second);  }
+                <dd>@startDate.ToString("dddd, MMMM d, yyyy h:mmtt") - @Convert.ToDateTime(Model.Party.EventEnd).ToString("h:mmtt")</dd>
+
+                @if (Model.ParentBookingParty != null)
+                {
+                    <dt>Booked from Party:</dt>
+                    <dd>@Model.ParentBookingParty.HostDisplayName - #@Model.ParentBookingParty.PartyID - @Model.ParentBookingParty.Description </dd>
+                }
+            </dl>
+
+
+            @if (canCloseParty)
+            {
+                <div class="alert alert-info">@Resources.Common.PartyReadyClosed.</div>
+                
+                if (Model.Party.CloseDate != null && Model.Party.CloseDate.Value.AddDays(60) > DateTime.Now)
+                {
+                    <a class="btn btn-primary" href="@Url.Action("createparty", "parties", new { partyID = partyID })"><i class="fa-plus"></i> @Resources.Common.BookAnotherParty</a>
+                }
+            }
+            else
+            {
+                if (isHostess)
+                {
+                    <a class="btn btn-primary" href="@Url.Action("hostorder", "shopping", new { partyID = Model.Party.PartyID, hostID = Model.Party.HostID })" title="@Resources.Common.PartyWillCloseCompleteHostessOrder">@Resources.Common.CreateHostersOrder &amp; @Resources.Common.CloseParty</a>
+
+                }
+                else
+                {
+                    <a class="btn btn-primary" href="@Url.Action("editparty", "parties", new { partyID = partyID })"><i class="fa-pencil"></i> @Resources.Common.EditParty</a>
+                    <a class="btn btn-info" href="@Url.Action("createparty", "parties", new { partyID = partyID })"><i class="fa-plus"></i> @Resources.Common.BookAnotherParty</a>
+                }
+            }
+        </div>
+        <div class="col-md-8">
+            <a href="@Url.Action("openparties")" class="text-right">
+                <i class="fa-chevron-left"></i>  @Resources.Common.BackToOpenParties
+            </a>
+            <div class="space-20"></div>
+
+            <div id="party-guest-container">
+                <h3>@Resources.Common.PartyGuests</h3>
+                <p>@Resources.Common.ClickCreateOrderBehalfOfCurrentGuest</p>
+                @if (Model.Guests.Count() > 0)
+                {
+                    <div id="party-guest-table-container">
+                        @Html.Partial("partials/partyguesttable", Model)
+                    </div>
+                }
+                else
+                {
+                    <strong>@Resources.Common.HaveNotInvited</strong>
+                }
+
+                @if (!canCloseParty)
+                {
+                    <a class="btn btn-info" href="@Url.Action("newguest", new { partyID = Model.Party.PartyID })">@Resources.Common.AddGuest</a>
+
+                    if (!isHostess)
+                    {
+                        <a class="btn btn-primary" href="@Url.Action("existingguestlist", new { partyID = Model.Party.PartyID })">@Resources.Common.AddExistingCustomer</a>
+                    }
+
+                    if (Model.Guests.Count() > 0 && Model.Guests.Any(g => g.AllowEmail && !g.HasSentInvite))
+                    {
+                        <a class="btn btn-info" data-role="invite-guests">@Resources.Common.SendInvitations</a>
+                    }
+                }
+            </div>
+
+            <h3>@Resources.Common.PartyOrders</h3>
+
+            <!-- Party Orders Report -->
+            <table class="table table-bordered table-teal" id="party-table">
+                <tr>
+                    <th>@Resources.Common.Customer</th>
+                    <th>@Resources.Common.OrderID</th>
+                    <th>@Resources.Common.OrderDate</th>
+                    <th>@Resources.Common.OrderTotal</th>
+                    <th>@Resources.Common.CommissionableVolume</th>
+                    @if (!canCloseParty)
+                    {
+                        <th>&nbsp;</th>
+                    }
+                </tr>
+
+                @if (Model.Orders.Count() == 0 || Model.Orders.Where(o => o.Total > 0).Count() == 0)
+                {
+                    <tr id="no-parties-row">
+                        <td colspan="5">
+                            @Resources.Common.NoCurrentOrdersParty
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var order in Model.Orders.Where(o => o.Total > 0))
+                    {
+                        @Html.Partial("Partials/PartyOrderTableRow", order, new ViewDataDictionary { { "CanCloseParty", canCloseParty } })
+                    }
+                    <tfoot>
+                        <tr id="totals-row">
+                            <td colspan="2">&nbsp;</td>
+                            <td>Totals</td>
+                            <td class="text-right">@Model.Orders.Sum(o => o.Total).ToString("C")</td>
+                            <td class="text-right">@Model.Orders.Sum(o => o.CVTotal).ToString("C")</td>
+                            @if (!canCloseParty)
+                            {
+                                <td>&nbsp;</td>
+                            }
+
+                        </tr>
+
+                    </tfoot>
+                }
+            </table>
+            <!-- End Party Orders Report -->
+            @if (canCloseParty)
+            {
+                <a class="btn btn-success btn-lg" href="@Url.Action("finalizeparty", new { partyID = Model.Party.PartyID })" title="">@Resources.Common.CloseSubmitParty</a>
+            }
+            else
+            {
+                <a class="btn btn-success btn-lg" href="@Url.Action("hostorder", "shopping", new { partyID = Model.Party.PartyID, hostID = Model.Party.HostID })" title="@Resources.Common.OnceCreatedHostessOrderMessage">@Resources.Common.CreateHostersOrder</a>
+            }
+
+            <div class="space-50"></div>
+        </div>
+
+        <div id="invitation-modal-container"></div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+        require(["ajax", "toastr"], function (ajax, toastr) {
+            var messageCode = "@Request.QueryString["msg"]",
+                context = "#view-partysummary",
+                $context = $(context),
+                deleteGuestUrl = "@Url.Action("deleteguest")",
+                cancelOrderUrl = "@Url.Action("cancelorder")",
+                getInviteModalUrl = "@Url.Action("getinvitemodal")",
+                sendInvitationUrl = "@Url.Action("sendpartyinvitations")",
+                createAttendanceUrl = "@Url.Action("CreateAttendanceRecord")",
+                partyID = parseInt("@Model.Party.PartyID"),
+                loadingHtml = "<div class='text-center'><img src='@Url.Content("~/content/images/loading/circle-32.gif")' /></div>";
+
+            function registerEventHandlers() {
+                $context.on("click", '[data-role="delete-guest"]', function () {
+                    var guestID = $(this).data("guestid");
+                    var deletePrompt = confirm("@Resources.Common.AreYouSureDeleteGuest");
+                    if (deletePrompt) {
+                        actions.deleteGuest(guestID);
+                    }
+                });
+
+                $('[data-role="invite-guests"]').on("click", function () {
+                    actions.triggerInvitationModal();
+                });
+
+                $("body").on("click", "#btnSendInvites", function () {
+                    actions.sendInvitations();
+                });
+
+                $context.on("click", '[data-role="set-guest-attendance"]', function () {
+                    var $this = $(this),
+                        guestID = $this.data('guestid');
+
+                    actions.setGuestAttendance(guestID);
+                });
+
+                $context.on("click", '[data-remove]', function () {
+                    var $this = $(this),
+                        orderID = $this.data('remove');
+
+                    var removeOrder = confirm("@Resources.Common.AreYouSureCancelOrder");
+                    if (removeOrder) {
+                        actions.cancelOrder(orderID);
+                    }
+                });
+            }
+
+            // Actions
+            var actions = {
+                handleSuccessMessaging: function () {
+                    if (messageCode.length > 0) {
+                        var message = "";
+
+                        switch (messageCode) {
+                            case "guestcreated":
+                                message = "@Resources.Common.NewGuestCreated";
+                                break;
+                            case "guestupdated":
+                                message = "@Resources.Common.GuestUpdatedSuccessfully";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        toastr.success(message, "Success");
+                    }
+                },
+                deleteGuest: function (guestID) {
+                    ajax.json({
+                        url: deleteGuestUrl,
+                        data: { guestID: guestID, partyID: partyID },
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success("@Resources.Common.GuestRemovedFromList");
+                                $('[data-guestrow="{0}"]'.format(guestID)).hide();
+                            } else {
+                                console.log("delete guest failed", response);
+                            }
+                        }
+                    });
+                },
+                cancelOrder: function (orderID) {
+                    ajax.json({
+                        url: cancelOrderUrl,
+                        data: { orderID: orderID },
+                        success: function (response) {
+                            if (response.success) {
+                                window.location = window.location;
+                            } else {
+                                console.log("cancel order failed", response);
+                            }
+                        }
+                    });
+                },
+                triggerInvitationModal: function () {
+                    $("#invitation-modal-container").html("");
+
+                    ajax.json({
+                        url: getInviteModalUrl,
+                        data: { partyID: partyID },
+                        success: function (response) {
+                            if (response.success) {
+                                $("#invitation-modal-container").html(response.html);
+
+                                $("#invitation-modal-container .modal").modal("show");
+                            } else {
+                                console.log("get invite modal failed", response);
+                            }
+                        }
+                    });
+                },
+                sendInvitations: function () {
+                    $("#party-guest-table-container").html(loadingHtml);
+
+                    ajax.json({
+                        url: sendInvitationUrl,
+                        data: { partyID: partyID },
+                        success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                $("#party-guest-table-container").html(response.html);
+
+                                $("#modal-partyinvite").modal("hide");
+
+                                // Hide the Send Invitations button since we have just successfully sent out the Invitations
+                                $('[data-role="invite-guests"]').hide();
+                            } else {
+                                console.log("send invitations failed", response);
+                            }
+                        }
+                    });
+                },
+                setGuestAttendance: function (guestID) {
+                    var $container = $("#party-guest-table-container");
+                    $container.html(loadingHtml);
+
+
+                    ajax.json({
+                        url: createAttendanceUrl,
+                        data: { partyID: partyID, guestID: guestID },
+                        success: function (response) {
+                            if (response.success) {
+                                $container.html(response.html);
+                                toastr.success("@Resources.Common.GuestAttendanceUpdated");
+                            } else {
+                                console.log("Create Attendance Failed: ", response);
+                            }
+                        }
+                    });
+                }
+            };
+
+
+            function _init() {
+                registerEventHandlers();
+
+                actions.handleSuccessMessaging();
+            }
+            _init();
+        })();
+    </script>
+}

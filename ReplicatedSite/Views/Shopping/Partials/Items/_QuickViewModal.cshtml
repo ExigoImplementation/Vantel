@@ -1,0 +1,83 @@
+﻿@model Item
+@{
+    var contextID = Guid.NewGuid();
+}
+
+<div class="modal-content" id="quick-view-@contextID">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">@Model.ItemDescription</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="clearfix">
+            <div class="col_half nobottommargin">
+                <div class="product-image">
+                    <img src="@Model.LargeImageUrl" class="w-100 h-auto" alt="@Model.ItemDescription">
+                </div>
+            </div>
+            <div class="col_half nobottommargin col_last product-desc">
+                <div class="product-price"><ins>@Model.Price.ToString("C")</ins></div>
+                <div class="clear"></div>
+                <div class="line"></div>
+
+                <div class="quantity clearfix options mb-2">
+                    <input type="button" value="-" class="minus">
+                    @Html.TextBoxFor(c => Model.Quantity, new
+                            {
+                                type = "number",
+                                @class = "qty",
+                                data_itemcode = Model.ItemCode,
+                                data_id = Model.ID,
+                                data_price = Model.Price,
+                                data_type = Model.Type.ToString(),
+                                Value = Convert.ToInt32(Model.Quantity).ToString("0"),
+
+                            })
+                    <input type="button" value="+" class="plus">
+                </div>
+
+                <input type="hidden" name="ItemDescription" value="@Model.ItemDescription" />
+                <input type="hidden" name="ItemCode" value="@Model.ItemCode" />
+                <input type="hidden" name="Type" value="@Model.Type" />
+                <button type="button" class="add-to-cart btn btn-primary btn-block" data-role="item.addtoorder">@Resources.Common.AddToCart</button>
+                @if (Model.AllowOnAutoOrder)
+                {
+                    <div class="text-divider">
+                        <h5>@Resources.Common.or</h5>
+                    </div>
+
+                    <button type="button" class="add-to-cart btn btn-outline-primary btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder"><i class="fa-refresh"></i> @Resources.Common.AddToAutoShip</button>
+                }
+                <div class="clear"></div>
+                <div class="line"></div>
+
+                <!--Long Detail 2-->
+                @Html.Raw(Model.LongDetail2)
+                <!-- End Long Detail 2 -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    require(['jquery', 'shopping', 'ajax', 'toastr'], function ($, shopping, ajax, toastr) {
+        var context = '#quick-view-@contextID',
+            addItemUrl = '@Url.Action("additemtocart","shopping")',
+            $context = $(context);
+            shopping.bind(context);
+
+        $('.minus').on('click', function () {
+            var $item = $('[name="Quantity"]', $(this).parent());
+            var quantity = (parseInt($item.val()) - 1);
+            $item.val(quantity == 0 ? 1 : quantity);
+        });
+
+        $('.plus').on('click', function () {
+            var $item = $('[name="Quantity"]', $(this).parent());
+                $item.val(parseInt($item.val()) + 1);
+        });
+    });
+</script>

@@ -1,0 +1,164 @@
+﻿@model ResourceListViewModel
+@{
+    ViewBag.Title = "_ResourceList";
+
+    var filteredCategory = (Model.SelectedCategoryID == null || Model.SelectedCategoryID == Guid.Empty) ? Model.ResourceCategories.Where(c => c.ParentID == Guid.Empty) : Model.ResourceCategories.Where(c => c.CategoryID == Model.SelectedCategoryID);
+    var currentCulture = System.Globalization.CultureInfo.GetCultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name);
+    var filterResources = Model.ResourceList.ToList();
+
+    var manage = Model.IsResourceManager;
+    if (!manage)
+    {
+        filterResources = filterResources.Where(c => c.StatusID == ExigoDAL.ResourceStatuses.Active && (c.PostDate <= DateTime.Now.ToCST() || c.PostDate == null)).ToList();
+    }
+}
+
+@foreach (var category in filteredCategory)
+{
+    var subcategories = Model.ResourceCategories.Where(c => c.ParentID == category.CategoryID).ToList().Select(t => t.CategoryID);
+    <div class="card mb-3">
+        <div class="card-body category-detail" data-id="@category.CategoryID">
+            <h5>@category.CategoryDescription</h5>
+            <div class="table-responsive table-resource">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-active">
+                        <tr>
+                            @if (manage)
+                            {
+                                <th><i class="fa fa-arrows"></i></th>
+                            }
+                            <th>@Resources.Common.Thumbnail</th>
+                            <th>@Resources.Common.Type</th>
+                            <th>@Resources.Common.Description</th>
+                            <th>@Resources.Common.Src</th>
+                            <th>@Resources.Common.Language</th>
+                            <th date-sort>
+                                @Resources.Common.Date
+                                <span class="carret-up"></span>
+                                <span class="carret-down"></span>
+                            </th>
+                            @if (manage)
+                            {
+                                <th>@Resources.Common.Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody data-sort-group="@CustomSortGroups.ResourceItems"
+                           data-parent-id="@category.CategoryID"
+                           data-save-url="@Url.Action("SaveResourceItemSort","CustomSort")">
+                        @if (Model.CategoryItemList.Where(r => r.CategoryID == category.CategoryID || subcategories.Contains(r.CategoryID)).Count() > 0)
+                        {
+                            var totalresources = 0;
+                            foreach (var categoryItem in Model.CategoryItemList.Where(r => r.CategoryID == category.CategoryID || subcategories.Contains(r.CategoryID)))
+                            {
+                                var resource = filterResources.FirstOrDefault(c => c.ItemID == categoryItem.ItemID);
+                                if (resource != null)
+                                {
+                                    var isPending = resource.StatusID != ExigoDAL.ResourceStatuses.Active ? "Pending" : "";
+                                    var TypeName = Model.Types.Where(t => t.TypeID == resource.TypeID).FirstOrDefault().TypeDescription;
+                                    <tr data-id="@resource.ItemID" data-sort-node="@categoryItem.ItemID">
+                                        @if (manage)
+                                        {
+                                            <td><i class="fa fa-bars sortable-handle"></i></td>
+                                        }
+                                        <td class="pop-over">
+                                            @if (resource.UrlThumbnail.IsNotNullOrEmpty())
+                                            {
+                                                <div class="pop-over-content"><img src='@resource.UrlThumbnail' class='img-thumbnail' /></div>
+                                                <img src="@resource.UrlThumbnail" />
+                                            }
+                                            else
+                                            {
+                                                <div class="pop-over-content"><img src="~/Content/images/Resources/@(TypeName).jpg" class='img-thumbnail' /></div>
+                                                <img src="~/Content/images/Resources/@(TypeName).jpg" />
+                                            }
+                                        </td>
+                                        <td>@TypeName</td>
+                                        <td>@resource.Title <span class="badge badge-secondary">@isPending</span></td>
+                                        <td><a href="@resource.Url" target="_blank">@GlobalUtilities.DescriptionFormatter(resource.Url, 20)</a></td>
+                                        <td>@CommonResources.Languages(resource.LanguageID)</td>
+                                        <td>@resource.CreatedDate.ToString(currentCulture)</td>
+                                        @if (manage)
+                                        {
+                                            <td>
+                                                <a href="@Url.Action("resourceitems", "resources", new { editItemID = @resource.ItemID})" data-id="@resource.ItemID" title="@Resources.Common.Edit"><i class="fa-pencil-square"></i></a>
+                                                <a delete-resource data-id="@resource.ItemID" title="@Resources.Common.Delete"><i class="fa-times-circle"></i></a>
+                                            </td>
+                                        }
+                                    </tr>
+                                    totalresources++;
+                                }
+                            }
+                            if (totalresources == 0)
+                            {
+                                <tr><td colspan="6"><p>@Resources.Common.NoResourcesSaved</p></td></tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6"><p>@Resources.Common.NoResourcesSaved</p></td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (manage)
+            {
+                <button class="btn btn-success float-right" data-sort-target="@category.CategoryID">@Resources.Common.SaveSortOrder </button>
+            }
+        </div>
+    </div>
+}
+@if (Model.UnassignedResources.Count() > 0 && manage)
+{
+    <div class="card mb-3">
+        <div class="card-body category-detail" data-id="@Guid.Empty">
+            <h5>@Resources.Common.UnassignedResources</h5>
+            <div class="table-responsive table-resource">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-active">
+                        <tr>
+                            <th>@Resources.Common.Thumbnail</th>
+                            <th>@Resources.Common.Type</th>
+                            <th>@Resources.Common.Description</th>
+                            <th>@Resources.Common.Src</th>
+                            <th date-sort>@Resources.Common.Date</th>
+                            <th>@Resources.Common.Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var categoryItem in Model.UnassignedResources)
+                        {
+                            var resource = Model.UnassignedRsourceList.FirstOrDefault(c => c.ItemID == categoryItem.ItemID);
+                            if (resource != null)
+                            {
+                                var TypeName = Model.Types.Where(t => t.TypeID == resource.TypeID).FirstOrDefault().TypeDescription;
+                                <tr>
+                                    <td class="pop-over">
+                                        @if (resource.UrlThumbnail.IsNotNullOrEmpty())
+                                        {
+                                            <div class="pop-over-content"><img src='@resource.UrlThumbnail' class='img-thumbnail' /></div>
+                                            <img src="@resource.UrlThumbnail" />
+                                        }
+                                        else
+                                        {
+                                            <div class="pop-over-content"><img src="~/Content/images/Resources/@(TypeName).jpg" class="img-thumbnail" /></div>
+                                            <img src="~/Content/images/Resources/@(TypeName).jpg" />
+                                        }
+                                    </td>
+                                    <td>@TypeName</td>
+                                    <td>@resource.Title</td>
+                                    <td><a href="@resource.Url" target="_blank">@GlobalUtilities.DescriptionFormatter(resource.Url, 20)</a></td>
+                                    <td>@resource.CreatedDate.ToString(currentCulture)</td>
+                                    <td>
+                                        <a href="@Url.Action("resourceitems", "resources", new { editItemID = @resource.ItemID})" class="bigger-icon" data-id="@resource.ItemID" title="@Resources.Common.Edit"><i class="fa-pencil-square"></i></a>
+                                        <a delete-resource data-id="@resource.ItemID" title="@Resources.Common.Delete"><i class="fa-times-circle"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

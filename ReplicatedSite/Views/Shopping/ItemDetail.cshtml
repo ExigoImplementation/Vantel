@@ -1,0 +1,222 @@
+﻿@model ItemDetailViewModel
+@{
+    ViewBag.Title = Model.Item.ItemDescription;
+
+    var hasError = !Request.QueryString["message"].IsNullOrEmpty() || (ViewBag.PartyInvalid != null && ViewBag.PartyInvalid == true);
+    var partyInvalidMessage = hasError ? "The Party you are trying to shop under is no longer valid. Don't worry, you can still shop and you may choose another party on the final page before order submission." : "";
+    var hasOpenParties = ViewBag.OpenParties != null;
+    List<Party>
+    OpenParties = hasOpenParties ? ViewBag.OpenParties : new List<Party>
+        ();
+    var canChooseOpenParty = ViewBag.ActiveParty == null && hasOpenParties && OpenParties.Count() > 0;
+
+    bool hasLongDescriptions = !string.IsNullOrWhiteSpace(Model.Item.LongDetail1) || !string.IsNullOrWhiteSpace(Model.Item.LongDetail2) || !string.IsNullOrWhiteSpace(Model.Item.LongDetail3) || !string.IsNullOrWhiteSpace(Model.Item.LongDetail4);
+    bool hasAdditionalShortDetails = !string.IsNullOrWhiteSpace(Model.Item.ShortDetail2) || !string.IsNullOrWhiteSpace(Model.Item.ShortDetail3) || !string.IsNullOrWhiteSpace(Model.Item.ShortDetail4);
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+    <div data-widget="item" id="view-item" class="view-item view-item-detail">
+        @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+        <div class="content-wrap pt-5">
+            <div class="container clearfix">
+                @* Party Info Bar *@
+                @if (ViewBag.ActiveParty != null)
+                {
+                    Party ActiveParty = ViewBag.ActiveParty;
+
+                    @Html.DisplayFor(c => ActiveParty, "PartyDetailBar")
+                }
+                else if (canChooseOpenParty)
+                {
+                    <div class="party-link">Should a hostess get credit for this order? <a data-role="find-party-modal">click here</a></div>
+
+                    @Html.Partial("Partials/_PartyHostModal", OpenParties)
+                }
+                @* End Party Info Bar*@
+                <div class="row">
+                            <div class="col-md-5 offset-1">
+                                <div class="images">
+                                    <div class="image">
+                                        <img src="@Model.Item.LargeImageUrl" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="details">
+                                    <div class="price"><h3>@Model.Item.Price.ToString("C")</h3></div>
+                                </div>
+                                <div class="addto">
+                                    @switch (Model.Item.ItemTypeID)
+                                    {
+                                        case ItemTypes.Standard:
+                                            if (Model.Item.IsGroupMaster)
+                                            {
+                                                @:@Html.Partial("Partials/Items/Details/GroupedItem", Model.Item)
+                                            }
+                                            else
+                                            {
+                                                @:@Html.Partial("Partials/Items/Details/StandardItem", Model.Item)
+                                            }
+                                            break;
+                                        case ItemTypes.StaticKit:
+                                            @:@Html.Partial("Partials/Items/Details/StaticKitItem", Model.Item)
+                                            break;
+                                        case ItemTypes.DynamicKit:
+                                            @:@Html.Partial("Partials/Items/Details/DynamicKitItem", Model.Item)
+                                            break;
+                                        default:
+                                            @: Item type @Model.Item.ItemTypeID not supported
+                                            break;
+                                    }
+                                </div>
+                                <div class="summary">
+                                    <p>@Html.Raw(Model.Item.ShortDetail1)</p>
+                                    @* If extra short details are available, display collapse functionality for displaying them. -Brian B *@
+                                    @if (hasAdditionalShortDetails)
+                                    {
+                                        <div class="addDetailsContainer">
+                                            <a class="addDetails" data-toggle="collapse" data-target="#details">
+                                                <i id="moredetails" class="fa-plus-circle"></i> @Resources.Common.AdditionalDetails
+                                            </a>
+
+                                            <div id="details" class="collapse addDetailsSub">
+                                                @if (!string.IsNullOrWhiteSpace(Model.Item.ShortDetail2))
+                                                {
+                                                    <p>- @Html.Raw(Model.Item.ShortDetail2)</p>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.Item.ShortDetail3))
+                                                {
+                                                    <p>- @Html.Raw(Model.Item.ShortDetail3)</p>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.Item.ShortDetail4))
+                                                {
+                                                    <p>- @Html.Raw(Model.Item.ShortDetail4)</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tabbed Details -->
+             <div class="container clearfix mt-5">
+                        @* If extra Long details are available, display their tabs, and content for the tabs.*@
+                        <div class="row">
+                            <div class="col-12">
+                                @if (hasLongDescriptions)
+                        {
+                            <div class="tabbeddetails">
+                                <ul class="nav nav-pills nav-fill">
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail1))
+                                    {
+                                        <li name="longDetailTab" class="nav-item"><a href="#tab01" class="nav-link" data-toggle="tab">@Resources.Common.ProductDescription</a></li>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail2))
+                                    {
+                                        <li name="longDetailTab" class="nav-item"><a href="#tab02" class="nav-link" data-toggle="tab">@Resources.Common.ProductDescription2</a></li>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail3))
+                                    {
+                                        <li name="longDetailTab" class="nav-item"><a href="#tab03" class="nav-link" data-toggle="tab">@Resources.Common.ProductDescription3</a></li>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail4))
+                                    {
+                                        <li name="longDetailTab" class="nav-item"><a href="#tab04" class="nav-link" data-toggle="tab">@Resources.Common.ProductDescription4</a></li>
+                                    }
+                                </ul>
+                                <hr />
+                                <div class="tab-content mt-4 px-lg-5">
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail1))
+                                    {
+                                        <div class="tab-pane" id="tab01" name="longDetailContent">
+                                            @Html.Raw(Model.Item.LongDetail1)
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail2))
+                                    {
+                                        <div class="tab-pane" id="tab02" name="longDetailContent">
+                                            @Html.Raw(Model.Item.LongDetail2)
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail3))
+                                    {
+                                        <div class="tab-pane" id="tab03" name="longDetailContent">
+                                            @Html.Raw(Model.Item.LongDetail3)
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Model.Item.LongDetail4))
+                                    {
+                                        <div class="tab-pane" id="tab04" name="longDetailContent">
+                                            @Html.Raw(Model.Item.LongDetail4)
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section scripts
+{
+    <script>
+
+        require(["jquery", "ajax", "shopping", "toastr", "extensions", "pubsub"], function ($, ajax, shopping, toastr) {
+            shopping.bind('#view-item');
+
+        // Parties
+            var hasError = @hasError.ToString().ToLower(),
+                partyErrorMessage = '@partyInvalidMessage';
+
+                // Parties
+                if (hasError && partyErrorMessage.length > 0) {
+                    toastr.error(partyErrorMessage, 'Oops! Something went wrong.');
+                }
+
+            var itemDescription = '@Model.Item.ItemDescription',
+                hasAdditionalShortDetails = @hasAdditionalShortDetails.ToString().ToLower(),
+                hasLongDescriptions = @hasLongDescriptions.ToString().ToLower(),
+                addItemToCartUrl = '@Url.Action("additemtocart")';
+
+            if (hasAdditionalShortDetails) {
+                $('[data-target="#details"]').on('click', function() {
+                    $('#moredetails').toggleClass('fa-minus-circle').toggleClass('fa-plus-circle');
+                });
+            }
+
+            if (hasLongDescriptions) {
+                // set first visible long detail tab and content to active
+                $('[name="longDetailTab"]').first().find('.nav-link').addClass('active');
+                $('[name="longDetailContent"]').first().addClass('active');
+            }
+
+            @*window.on('item.addtoorder', function (item) {
+                ajax.json({
+                    url: addItemToCartUrl,
+                    data: {
+                        item: item
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(("<strong>{0}</strong> " + "@Resources.Common.HasBeenAddedToOrder").format(itemDescription));
+                            $("#cartCount").html(parseInt($("#cartCount").html()) + item.Quantity);
+                            $('#cartCountContainer').not(':contains("(0)")').fadeIn();
+                        }
+                    }
+                });
+            });*@
+        });
+
+    </script>
+}

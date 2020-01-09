@@ -1,0 +1,175 @@
+.item-container {
+    padding: 15px;
+}
+
+#view-enrollment {
+
+    li {
+        i {
+            width: 30px;
+            font-size: 20px;
+            line-height: 20px;
+        }
+    }
+}
+
+#view-packs {
+    .pack-list {
+        margin: 0;
+        padding: 0;
+
+        .col-sm-6:first-child {
+            padding-left: 0;
+        }
+
+        .pack {
+            width: 100%;
+            display: inline-block;
+
+            header {
+                font-weight: 400;
+                font-size: 25px;
+                padding: 10px 0;
+                background: #5d656b;
+                color: #fff;
+            }
+
+            article {
+                border: 1px solid transparent;
+                border-top: none;
+                background-color: #fff;
+                padding: 10px 0 0 0;
+                min-height: 450px;
+                box-shadow: 0 2px 2px rgba(0,0,0,.05);
+
+                .item-details {
+                    &.auto-order {
+                        height: 400px;
+                    }
+
+                    h4, .pv {
+                        color: #7E7E7E;
+                        margin-left: 20px;
+                    }
+
+                    h4 {
+                        font-size: 27px;
+                        font-weight: bold;
+                        margin-top: 5px;
+                        margin-right: 10px;
+                        margin-bottom: 0;
+                    }
+
+                    .pv {
+                        font-size: 15px;
+                        display: block;
+                    }
+
+                    img:not(.item-added-img) {
+                        display: block;
+                        margin: 0 auto;
+                        max-width: 95%;
+                        max-height: 250px;
+                        margin-bottom: 5px;
+                    }
+
+                    .shortdescription {
+                        overflow: auto;
+                        display: block;
+                        padding: 0 20px;
+                        color: #7E7E7E;
+                        font-size: 12px;
+                        font-weight: bold;
+                        text-align: center;
+                        text-transform: capitalize;
+                        min-height: 100px;
+
+                        strong {
+                            color: #000;
+                            font-size: 14px;
+                        }
+
+                        ul {
+                            margin: 0;
+
+                            li {
+                                text-align: left;
+                                padding: 0 0 5px 0;
+                            }
+                        }
+                    }
+                }
+
+                select {
+                    height: 25px;
+                }
+
+                .details {
+                    label, span {
+                        font-size: 12px;
+                        margin: 0;
+                    }
+
+                    .qualifies-you-for {
+                        font-size: 14px !important;
+                        margin: 20px 0 30px 0;
+
+                        li {
+                            text-transform: uppercase;
+                            font-size: 14px;
+                            color: #ccc;
+                            border-bottom: 2px solid #CCC;
+                            padding: 0 0 6px 0;
+                            font-weight: bold;
+
+                            &:first-of-type {
+                                font-weight: bolder;
+                                font-size: 15px;
+                                padding: 0 0 8px 0;
+                            }
+
+                            [class*=glyphicon-] {
+                                font-size: 30px;
+                                position: relative;
+                                top: 7px !important;
+                                margin: 0 10px 0 0;
+                            }
+                        }
+                    }
+
+                    .addtoorder-container {
+                        .add-confirm {
+                            display: none;
+
+                            [class*=fa-] {
+                                color: #ccc;
+                                font-size: 23px;
+                                position: relative;
+                                top: 2px;
+                            }
+
+                            small {
+                                position: relative;
+                                top: -4px;
+                                right: -7px;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+                }
+            }
+
+            &.order {
+                .shortdescription {
+                    min-height: 295px;
+                }
+            }
+
+            &.auto-order {
+                .shortdescription {
+                    min-height: 135px;
+                }
+            }
+        }
+    }
+}

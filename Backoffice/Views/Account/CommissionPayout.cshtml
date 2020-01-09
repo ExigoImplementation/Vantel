@@ -1,0 +1,84 @@
+﻿@model Backoffice.Models.CommissionPayout.CommissionPayout
+@{
+    ViewBag.Title = Resources.Common.DirectDeposit;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "directdeposit"
+    };
+}
+
+<div id="view-accountoverview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-info d-none" id="directdeposit-alert" role="alert">
+                        <h4 class="success-header">@Resources.Common.Success</h4>
+
+                        <p class="success-content">@Resources.Common.UpdatedDDInfo</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if (Model.IsComplete)
+                            {
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="list-group">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span class="text-muted">@Resources.Common.BankName</span>
+                                                <span class="lead">@Model.BankName</span>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span class="text-muted">@Resources.Common.NameOnAccount</span>
+                                                <span class="lead">@Model.NameOnAccount</span>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span class="text-muted">@Resources.Common.AccountEndingIn</span>
+                                                <span class="lead">@Model.AccountNumber</span>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span class="text-muted">@Resources.Common.RoutingNumber</span>
+                                                <span class="lead">@Model.RoutingNumber</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer text-right">
+                                        <a href="@Url.Action("managecommissionpayout", "account")" class="btn btn-info">@Resources.Common.Edit</a>
+                                    </div>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="list-group">
+                                    <div class="list-group-item"> 
+                                        <h6 class="text-center text-muted mb-4 pt-3">@Resources.Common.DontHaveDDText</h6>
+                                        <div class="text-right">
+                                            <a href="@Url.Action("managecommissionpayout", "account")" class="btn btn-info">@Resources.Common.Create</a>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    require(["jquery", "urls"], function ($, url) {
+        if (url.query("success") && url.query("success") == "True") {
+            $("#directdeposit-alert").removeClass("d-none");
+        }
+    });
+</script>

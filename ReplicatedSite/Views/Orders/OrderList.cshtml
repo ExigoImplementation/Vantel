@@ -1,0 +1,146 @@
+﻿@model GetCustomerOrdersResponse
+@{
+    ViewBag.Title = Resources.Common.OrderHistory;
+
+    var rowCount = Model.RowCount;
+    var action = ViewContext.RouteData.Values["action"].ToString().ToLower();
+    var page = Model.Page;
+    var isSearch = ViewBag.IsSearch != null && ViewBag.IsSearch == true && action == "searchorderslist";
+
+    var hasPreviousPage = page > 1;
+    var hasNextPage = rowCount < Model.OrderCount;
+    var hasPagination = hasPreviousPage || hasNextPage;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "orders"
+    };
+}
+
+    <div id="view-orderlist">
+        @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+        <div class="content-wrap">
+            <div class="container">
+                <nav class="navbar shadow mb-3 bg-white rounded border" role="navigation">
+                    <div class="form-inline" role="search">
+                        <label class="control-label"> @Resources.Common.Order # &nbsp; </label>
+                        <input type="search" id="searchordersfilter" value="@ViewContext.RouteData.Values["id"]" class="form-control mr-sm-2" />
+                        <button id="searchorders" class="btn btn-primary">@Resources.Common.Search.ToUpper() @Resources.Common.Orders.ToUpper()</button>
+                        @if (isSearch)
+                        {
+                            <a href="@Url.Action("orderlist", "orders", new { page = 1 })" class="btn btn-light border ml-2">@Resources.Common.Clear</a>
+                        }
+                    </div>
+                    @if (hasPagination)
+                    {
+                        <div class="pagination-container">
+                            @Html.Partial("Partials/_OrderListPagination", Model)
+                        </div>
+                    }
+                </nav>
+
+                <div class="space-10"></div>
+                <ul class="nav nav-pills">
+                    <li class="nav-item"><a class="nav-link @((action == "openorderslist") ? "active" : "")" href="@Url.Action("openorderslist", new { page = 1 })">@Resources.Common.OpenOrders</a></li>
+                    <li class="nav-item"><a class="nav-link @((action == "shippedorderslist") ? "active" : "")" href="@Url.Action("shippedorderslist", new { page = 1 })">@Resources.Common.ShippedOrders</a></li>
+                    <li class="nav-item"><a class="nav-link @((action == "declinedorderslist") ? "active" : "")" href="@Url.Action("declinedorderslist", new { page = 1 })">@Resources.Common.DeclinedOrders</a></li>
+                    <li class="nav-item"><a class="nav-link @((action == "cancelledorderslist") ? "active" : "")" href="@Url.Action("cancelledorderslist", new { page = 1 })">@Resources.Common.CancelledOrders</a></li>
+                    <li class="nav-item"><a class="nav-link @((action == "returnedorderslist") ? "active" : "")" href="@Url.Action("returnedorderslist", new { page = 1 })">@Resources.Common.ReturnedOrders</a></li>
+                    <li class="nav-item"><a class="nav-link @((action == "orderlist") ? "active" : "")" href="@Url.Action("orderlist", new { page = 1 })">@Resources.Common.AllOrders</a></li>
+
+                    @if (isSearch)
+                    {
+                        <li class="nav-item"><a class="nav-link @((action == "searchorderslist") ? "active" : "")" href="@Url.Action("searchorderslist")">@Resources.Common.SearchResults</a></li>
+                    }
+                </ul>
+                <div class="space-10"></div>
+
+
+
+                @if (isSearch)
+                {
+                    <h4>@Model.Orders.Count() @Resources.Common.OrdersFound.ToLower()</h4>
+                }
+
+                <div class="order-list-container">
+                    @Html.Partial("Partials/_OrderListRows", Model)
+                </div>
+
+
+                @if (hasPagination)
+                {
+                    <div class="pagination-container">
+                        @Html.Partial("Partials/_OrderListPagination", Model)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+@section scripts
+{
+    <script>
+        require(['jquery', 'ajax', 'bootstrap'], function ($, ajax) {
+
+            var context = '#view-orderlist',
+                $context = $(context),
+                orderCount = parseInt('@Model.OrderCount'),
+                page = parseInt('@Model.Page');
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('#searchordersfilter').on('keypress', function (event) {
+                    if (event.which == 13) {
+                        event.preventDefault();
+                        actions.searchOrder($('#searchordersfilter').val());
+                    }
+                });
+                $('#searchorders').on('click', function () {
+                    actions.searchOrder($('#searchordersfilter').val());
+                });
+
+                $context.on('click', '[data-page-action]', function () {
+                    var action = $(this).data('page-action'),
+                        page = $(this).data('page');
+
+                    $(this).button('loading');
+
+                    ajax.json({
+                        url: action,
+                        success: function (response) {
+                            if (response.success) {
+                                // Populate the pagination and Order rows sections
+                                $('.pagination-container').each(function () {
+                                    $(this).html(response.pagination);
+                                });
+                                $('.order-list-container').html(response.orderNodes);
+                            } else {
+                                console.log('get orders failed', response);
+                            }
+                        }
+                    });
+                });               
+            }
+
+
+            // Actions
+            var actions = {
+                searchOrder: function (id) {
+                    if (id == '' || isNaN(id)) window.location = '@Url.Action("orderlist")';
+                    else window.location = '@Url.Action("searchorderslist", new { id = 0 })'.replace('0', '') + id;
+                }
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+
+    </script>
+}

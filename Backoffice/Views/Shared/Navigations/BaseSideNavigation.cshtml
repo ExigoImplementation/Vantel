@@ -1,0 +1,24 @@
+﻿@model string
+
+@using System.Collections.Generic
+@{
+    var sitemap = Settings.SiteMap.Current.Items.Single(c => c.ID == Model) as NavigationSiteMapNode;
+    var nodes = (sitemap.Children.Any()) ? sitemap.Children : new List<NavigationSiteMapNode>() { sitemap };
+}
+
+<nav class="view-navigation">
+    <div class="panel panel-default">
+        <div class="list-group">
+            @foreach (var item in nodes.Where(c => c.IsVisible()).Where(c => c is NavigationSiteMapNode).Cast<NavigationSiteMapNode>())
+            {
+                <a href="@item.Url" target="@item.Target" class="list-group-item @item.DeviceVisibilityCssClass @(item.IsActive() ? "active" : "")">
+                    @if (item.HasIcon)
+                    {
+                        <i class="@item.Icon"></i>
+                    }
+                    @item.Label
+                </a>
+            }
+        </div>
+    </div>
+</nav>

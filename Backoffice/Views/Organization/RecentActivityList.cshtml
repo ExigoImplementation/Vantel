@@ -1,0 +1,43 @@
+﻿@model RecentActivityListViewModel
+
+@{
+    ViewBag.Title = Resources.Common.YourTeamsRecentActivity;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "recentactivity"
+    };
+}
+
+<div id="view-recentactivity">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    @ViewBag.Error
+
+                    @if (Model.RecentActivities.Count == 0)
+                    {
+                        <p class="text-muted text-center">@Resources.Common.NoRecentActivity</p>
+                    }
+                    <ul class="list-group">
+                        @foreach (var activity in Model.RecentActivities)
+                        {
+                            <li class="list-group-item">
+                                @activity.Text<br />
+                                <small>@Format.SocialDate(activity.EntryDate)</small>
+                            </li>
+                        }
+                    </ul>
+                    <p>
+                        @ViewBag.ActivityDefault
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

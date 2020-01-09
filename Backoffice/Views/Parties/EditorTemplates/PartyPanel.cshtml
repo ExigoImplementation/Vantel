@@ -1,0 +1,63 @@
+﻿@model CreatePartyViewModel
+@{
+    var request = Model.CreatePartyRequest;
+    request.SalesGoal = 100;
+    var now = DateTime.Now;
+
+    var eventStartTime = (request.PartyID > 0) ? request.EventStartDate : new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0).AddMinutes(now.Minute % 15 == 0 ? 0 : 15 - now.Minute % 15);
+    var eventEndTime = (request.PartyID > 0) ? request.EventEndDate : new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0).AddMinutes(now.Minute % 15 == 0 ? 0 : 15 - now.Minute % 15);
+    var startDateValue = (request.PartyID > 0) ? request.EventStartDate : DateTime.Now;
+    var endDateValue = (request.PartyID > 0) ? request.EventEndDate : DateTime.Now.EndOfMonth();
+}
+
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a data-toggle="tab">Party Info</a>
+    </li>
+</ul>
+<div class="space-20"></div>
+
+<div class="row margin-6 form-inline">
+    <div class="col-lg-5">
+        <div class="form-group">
+            <label class="party-form-label">@Resources.Common.StartDate:</label>
+            @Html.TextBoxFor(c => request.EventStartDate, new { @class = "form-control form-date-picker start-date-picker", Value = startDateValue.ToShortDateString(), data_type = "date" })
+        </div>
+        <div class="space-20"></div>
+        <div class="form-group">
+            <label class="party-form-label">Close Date:</label>
+            <input id="EndDate" placeholder="" class="form-control form-date-picker end-date-picker inline-block" type="text" value="@endDateValue.ToString("M/dd/yyyy")" disabled="disabled" />
+            <input type="hidden" name="@Html.NameFor(c => request.EventEndDate)" value="@endDateValue.ToString("M/dd/yyyy")" />
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="form-group">
+            <label class="party-form-label">@Resources.Common.Time: </label>
+       
+            <input id="StartTime" name="request.EventStartTime" placeholder="" data-type="timepicker" class="form-control form-time-picker inline-block" type="text" value="@eventStartTime.ToString("t")" />
+            <label id="to-label">to</label>
+            <input id="EndTime" name="request.EventEndTime" placeholder="" data-type="timepicker" class="form-control form-time-picker inline-block" type="text" value="@eventEndTime.ToString("t")" />
+        </div>
+
+        <div class="space-20"></div>
+        <div class="form-group">
+            <label class="party-form-label">Party Title:</label>
+            @Html.TextBoxFor(c => request.Description, new { @class = "form-control" })
+        </div>
+        <div class="space-20"></div>
+        @*<div class="row">
+                <div class="col-lg-2 no-padding">
+                    <label style="min-width:100px;">Sales Goal:</label>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">$</span>
+                        @Html.TextBoxFor(c => request.SalesGoal, new { @class = "form-control quantity" })
+                        @Html.ValidationMessageFor(c => request.SalesGoal)
+                        <span class="input-group-addon">.00</span>
+                    </div>
+                </div>
+            </div>*@
+    </div>
+</div>

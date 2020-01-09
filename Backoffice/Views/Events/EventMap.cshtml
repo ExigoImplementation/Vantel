@@ -1,0 +1,81 @@
+﻿@model CalendarEvent
+@{
+    ViewBag.Title = Model.Title;
+    var language = GlobalUtilities.GetSelectedLanguage(this.Context);
+    var currentCulture = language.CultureCode;
+}
+
+<section id="view-event-map">
+    <aside class="col-12 col-md-4 col-lg-3 col-xl-3">
+        <header>
+            <h2>@ViewBag.Title</h2>
+        </header>
+        <nav>
+            @Html.Navigation()
+        </nav>
+    </aside>
+    <section class="col-12 col-md-8 col-lg-9 col-xl-9">
+        <div id="map" data-widget="map" style="min-height: 500px"></div>
+    </section>
+</section>
+
+@section scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@GlobalSettings.Google.Maps&language=@currentCulture" defer></script>
+    <script>
+        var eventMapOverview;
+        require(["jquery", "toastr"], function($, toastr) {
+            eventMapOverview = (function() {
+                @* Settings *@
+                var context = "#view-event-map",
+                    address = "@Model.Location.ToString()",
+                    geocoder = new google.maps.Geocoder(),
+                    map;
+
+                @* Actions *@
+
+                @* Helpers *@
+                var helpers = {
+                    initializeMap: function() {
+                        map = new google.maps.Map(document.getElementById('map'), {
+                            center: { lat: -34.397, lng: 150.644 },
+                            zoom: 12
+                        });
+
+                        helpers.geoCode(map);
+                    },
+                    geoCode: function(mapOutput) {
+                        geocoder.geocode({ 'address': address }, function(results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                map.setCenter(results[0].geometry.location);
+                                var marker = new google.maps.Marker({
+                                    map: mapOutput,
+                                    position: results[0].geometry.location
+                                });
+                            } else {
+                                toastr.error("@Resources.Common.CouldntFindAddress" + status);
+                            }
+                        });
+                    }
+                };
+
+
+                @* Event Handlers *@
+                function registerEventHandlers() {
+
+                };
+
+                @* Initialization *@
+                function init() {
+                    registerEventHandlers();
+                    helpers.initializeMap();
+                };
+
+                init();
+
+                return {
+                    initializeMap: helpers.initializeMap
+                }
+            })();
+        });
+    </script>
+}

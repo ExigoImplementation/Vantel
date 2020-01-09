@@ -1,0 +1,93 @@
+﻿@model IEnumerable<IPaymentMethod>
+@{
+    ViewBag.Title = Resources.Common.YourCreditCards;
+
+    var availablePaymentMethods = Identity.Current.Market.AvailablePaymentTypes;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultBreadcrumbLinkSitemapID = "paymentmethods",
+        DefaultParentLinkSitemapID = "account"
+    };
+}
+
+<div id="view-paymentmethodslist">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+
+            @if (availablePaymentMethods.Any(p => p.CanBeParsedAs<CreditCard>()))
+            {
+                <div class="row">
+
+                    @foreach (var method in Model.Where(c => c is CreditCard))
+                    {
+                        var card = method as CreditCard;
+
+                        <div class="col-md-4">
+
+                            @if (card.Type == CreditCardType.Primary)
+                            {
+                                <strong>@Resources.Common.Primary</strong>
+                                if (card.IsUsedInAutoOrders)
+                                {
+                                    <strong> / @Resources.Common.AutoOrderCreditCard</strong>
+                                    <a data-toggle="popover"
+                                       data-title="@Resources.Common.AutoOrderCard"
+                                       data-content="@Resources.Common.CreditCardUsedAsAutoOrderPaymentMethod.FormatWith(card.AutoOrderIDs.Count())"
+                                       data-trigger="hover"><i class="fa-question-circle"></i></a><br />
+                                }
+                            }
+                            else
+                            {
+                                <strong>@Resources.Common.Secondary</strong>
+                            }
+
+                            <p>
+                                @if (card.IsExpired)
+                                {<span class="badge badge-danger">@Resources.Common.Expired</span><br />}
+                                @card.NameOnCard<br />
+                                @Resources.Common.CardEndingIn @card.CardNumber<br />
+                                @Resources.Common.Expires: @card.ExpirationDate.ToString("M/yyyy")<br />
+                            </p>
+
+                            <div class="btn-group">
+                                <a href="@Url.Action("ManageCreditCard", new { type = card.Type })" class="btn btn-secondary"><i class="fa-pencil"></i></a>
+                                @if (card.IsUsedInAutoOrders)
+                                {
+                                    <a class="btn btn-secondary" data-toggle="popover" data-title="@Resources.Common.UnableToDelete" data-trigger="hover" data-content="@Resources.Common.AutoOrderCreditCardCannotBeDeleted" data-trigger="hover"><i class="fa-trash-o"></i></a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("DeleteCreditCard", new { type = card.Type })" class="btn btn-secondary"><i class="fa-trash-o"></i></a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if (Model.Where(c => c is CreditCard).Count() < 2)
+                    {
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <a href="@Url.Action("AddCreditCard")" class="text-muted">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <i class="fa-plus" style="font-size: 48px;"></i><br />
+                                            @Resources.Common.AddNewCreditCard
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (availablePaymentMethods.Count() > 1)
+            {
+                <div class="space-100"></div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+﻿@model GetCustomerOrdersResponse
+
+
+@foreach (var order in Model.Orders.OrderByDescending(c => c.OrderDate).Take(10))
+{
+    var currencyCode = order.CurrencyCode;
+    var currencyCultureCode = new System.Globalization.CultureInfo(GlobalUtilities.GetCultureCodeFormatBasedOnCurrency(currencyCode, Identity.Customer.Country));
+
+    <div class="ordersummary">
+        <div class="card my-3">
+            <div class="card-body">
+                <div class="row m-0">
+                    <div class="col-md-3">
+                        <div class="p-2">
+                            <div>@order.OrderDate.ToString("MMMM d, yyyy")</div>
+
+                            <p>
+                                @Resources.Common.Order <a href="@Url.Action("orderinvoice", "orders", new { token = Common.Services.Security.Encrypt(order.OrderID, Identity.Customer.CustomerID) })">#@order.OrderID</a>
+                            </p>
+
+
+                            <dl class="dl">
+                                <dt>@Resources.Common.Total</dt>
+                                <dd><span class="text-danger">@order.Total.ToString("C", currencyCultureCode)</span></dd>
+
+                                @if (!order.IsVirtualOrder)
+                                {
+                                    <dt class="mt-2">@Resources.Common.ShippingAddress</dt>
+                                    <dd>
+                                        @Html.DisplayFor(c => order.Recipient, "ShippingAddress")
+                                    </dd>
+                                }
+                            </dl>
+
+
+                            <div class="mt-2">
+                                <a href="@Url.Action("orderinvoice", "orders", new { token = Common.Services.Security.Encrypt(order.OrderID, Identity.Customer.CustomerID) })" class="btn btn-outline-primary btn-block">@Resources.Common.ViewInvoice</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-9 items-container">
+                        <div class="p-2">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div>
+                                        <span class="text-info">@order.OrderStatusDescription</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    @if (order.HasTrackingNumbers && order.TrackingURL.IsNotNullOrEmpty())
+                                    {
+                                    <a href="@order.TrackingURL@order.TrackingNumbers.First()" class="btn btn-primary btn-block" title="@order.TrackingNumbers.First()" target="_blank">@Resources.Common.TrackYourOrder</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="p-2">
+                            @foreach (var detail in order.Details)
+                            {
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col-md-2 col-3">
+                                            <div>
+                                                <a href="@Url.Action("itemdetail", "shopping", new { itemcode = detail.ItemCode })"><img src="@GlobalUtilities.GetProductImagePath(detail.ImageUrl)" class="img-responsive" /></a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-10 col-9">
+                                            <a href="@Url.Action("itemdetail", "shopping", new { itemcode = detail.ItemCode })" class="block">@detail.ItemDescription</a>
+                                            <br />
+                                            <small class="text-muted">@Resources.Common.SKU: <a href="@Url.Action("itemdetail", "shopping", new { itemcode = detail.ItemCode })">#@detail.ItemCode</a></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (order.Details.Count() == 0)
+                            {
+                                <div class="text-muted">
+                                    * @Resources.Common.NoItemsPurchasedInOrder *
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+@if (Model.Orders.Count() == 0)
+{
+    <hr />
+    <p class="text-center text-muted">* @Resources.Common.NoOrdersFound *</p>
+}

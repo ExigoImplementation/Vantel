@@ -1,0 +1,67 @@
+﻿@model int
+@{
+    ViewBag.Title = "Existing Guests";
+    var partyID = Model;
+}
+
+<h1>Add an Existing Customer to your Party</h1>
+
+<a href="@Url.Action("summary", new { id = partyID })" class="btn btn-primary"><i class="fa-arrow-left"></i> Back to Party Summary</a>
+
+<div class="space-20"></div>
+
+<div id="grid"></div>
+
+
+@section scripts
+{
+<script src="~/Scripts/jquery-2.2.1.min.js"></script>
+    <script>
+        require(["kendogrids", "ajax", "toastr"], function (kendoGrid, ajax, toastr) {
+
+            var cultureCode = "@Identity.Current.Market.CultureCode",
+                addGuestUrl = "@Url.Action("addexistingguest")",
+                partyID = parseInt("@partyID");
+            kendo.culture(cultureCode);
+
+
+            kendoGrid.create("#grid", {
+
+                columns: [
+                    { field: "CustomerID", title: "ID", width: 100 },
+                    { field: "FirstName", title: "@Resources.Common.FirstName", width: 150 },
+                    { field: "LastName", title: "@Resources.Common.LastName", width: 150 },
+                    { field: "Email", title: "@Resources.Common.Email", template: "<a href='mailto:#:Email#'>#:Email#</a>" },
+                    { field: "Phone", title: "@Resources.Common.Phone" },
+                    { field: "CreatedDate", title: "@Resources.Common.StartDate", type: "date", format: "{0:d}", attributes: { "class": "text-right" } },
+                    { field: "CustomerIDToken", title: "Action", template: "<a data-role='add-guest' data-customertoken='#:CustomerIDToken#' class='btn btn-info'>Add Guest</a>", filterable: false, sortable: false, width: 150, attributes: { "class": "text-center" } }
+                ]
+            });
+
+            function registerEventHandlers() {
+                $("#grid").on("click", "[data-role='add-guest']", function () {                    
+                    var $this = $(this),
+                        token = $this.data("customertoken");
+
+                    ajax.json({
+                        url: addGuestUrl,
+                        data: { customerToken: token, partyID: partyID },
+                        success: function (response) {
+                            if (response.success) {
+                                $this.replaceWith("<i class='text-success fa-check'></i>");
+                                toastr.success(response.message, "Success");
+                            } else {
+                                console.log("add guest failed", response);
+                            }
+                        }
+                    });
+                });
+            }
+
+            function _init() {
+                registerEventHandlers();
+            }
+            _init();
+        });
+    </script>
+}

@@ -1,0 +1,468 @@
+﻿@model EnrollmentReviewViewModel
+@{
+    ViewBag.Title = Resources.Common.ReviewYourOrder;
+
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var orderItems = Model.Items.Where(c => c.Type == ShoppingCartItemType.Order || c.Type == ShoppingCartItemType.EnrollmentPack);
+    var autoOrderItems = Model.Items.Where(c => c.Type == ShoppingCartItemType.AutoOrder || c.Type == ShoppingCartItemType.EnrollmentAutoOrderPack);
+    var hasItems = (Model.Items != null && Model.Items.Count() > 0);
+    var hasOrderItems = (orderItems != null && orderItems.Count() > 0);
+    var hasAutoOrderItems = (autoOrderItems != null && autoOrderItems.Count() > 0);
+    var submitLoadingImageContainerVisibility = (Model.PropertyBag.IsSubmitting) ? "inline" : "none";
+    var submitButtonVisibility = (Model.PropertyBag.IsSubmitting) ? "none" : "block";
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.EnrollmentPack, UrlPath = Url.Action("Packs", "Enrollment") },
+            new BreadcrumbItem { Description = Resources.Common.Replicated_EnrolleeInfo_EnrollmentInformation, UrlPath = Url.Action("EnrolleeInfo", "Enrollment") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-orderreview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container">
+            <p>@Resources.Common.ByPlacingYourOrder_Formatted.FormatWith(Resources.Common.CompanyName)</p>
+            <div class="row mb-2">
+                <div class="col-lg-7 col-md-12">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <h5>@Resources.Common.ShippingAddress</h5>
+                                    @Html.DisplayFor(c => c.PropertyBag.ShippingAddress)
+
+                                    <div class="space-10"></div>
+                                    <a href="@Url.Action("enrolleeinfo")"><i class="fa-edit"></i>@Resources.Common.Change</a>
+                                </div>
+                                <div class="col-sm-4">
+                                    <h5>@Resources.Common.PaymentMethod</h5>
+                                    @Html.DisplayFor(c => c.PropertyBag.PaymentMethod, "PaymentMethod")
+
+                                    <div class="space-10"></div>
+                                    <a href="@Url.Action("enrolleeinfo")"><i class="fa-edit"></i>@Resources.Common.Change</a>
+                                </div>
+                                <div class="col-sm-4">
+                                    @if (hasItems)
+                                    {
+                                        if (Model.ShipMethods != null && Model.ShipMethods.Count() > 0)
+                                        {
+                                            <h5>@Resources.Common.ChooseShippingMethod:</h5>
+                                            <div id="shipmethods">
+
+                                                @using (Html.BeginForm("setshipmethodid", controller))
+                                                {
+                                                    foreach (var shipMethod in Model.ShipMethods.OrderBy(c => c.Price))
+                                                    {
+                                                        <div class="radio">
+                                                            <label>
+                                                                @Html.RadioButton("ShipMethodID", shipMethod.ShipMethodID, shipMethod.Selected)
+                                                                @shipMethod.ShipMethodDescription <small class="text-muted">@shipMethod.Price.ToString("C")</small>
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    @Html.AntiForgeryToken()
+                                                }
+
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    @if (!hasItems)
+                    {
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <p>@Resources.Common.CartContainsNoItems</p>
+                                <div class="space-10"></div>
+                                <a class="btn btn-primary btn-sm" href="@Url.Action("checkout", "enrollment")">@Resources.Common.ContinueShopping</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        if (hasOrderItems)
+                        {
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    <h5 class="card-title">@Resources.Common.YouArePurchasing:</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row margin-10 text-uppercase text-muted" style="font-size: .7em;">
+                                        <div class="col-6 col-sm-8">@Resources.Common.Items</div>
+                                        <div class="col-4 col-sm-2">@Resources.Common.Price</div>
+                                        <div class="col-2 col-sm-2 text-center d-none d-sm-none d-md-block">@Resources.Common.Quantity</div>
+                                        <div class="col-2 col-sm-2 text-center d-block d-md-none">@Resources.Common.QTY</div>
+                                    </div>
+                                    <div class="space-10"></div>
+
+                                    @foreach (var item in orderItems)
+                                    {
+                                        <div class="row margin-10">
+                                            <div class="col-6 col-sm-8">
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <div class="image">
+                                                            <img src="@item.SmallImageUrl" class="img-responsive" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-10">
+                                                        <div class="itemdescription">@item.ItemDescription</div>
+                                                        <small class="text-muted">@Resources.Common.SKU: @item.ItemCode</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 col-sm-2">
+                                                @item.Price.ToString("C")
+                                            </div>
+                                            <div class="col-2 col-sm-2 text-center">
+                                                <div class="" data-itemcode="@item.ItemCode" data-type="@item.Type">
+                                                    <input type="hidden" name="ItemCode" value="@item.ItemCode" />
+                                                    <input type="hidden" name="Type" value="@item.Type" />
+
+                                                    <span>
+                                                        @item.Quantity.ToString("0")
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="space-10"></div>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <div class="text-right">@Resources.Common.Subtotal (@orderItems.Sum(c => c.Quantity).ToString("N0") items): <strong>@Model.Totals.Subtotal.ToString("C")</strong></div>
+                                </div>
+                            </div>
+                        }
+                        if (hasAutoOrderItems)
+                        {
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">@Resources.Common.YourAutoOrder:</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row margin-10 text-uppercase text-muted text-xs">
+                                        <div class="col-6 col-sm-8">@Resources.Common.Items</div>
+                                        <div class="col-4 col-sm-2">@Resources.Common.Price</div>
+                                        <div class="col-2 col-sm-2 d-none d-sm-none d-md-block">@Resources.Common.Quantity</div>
+                                        <div class="col-2 col-sm-2 d-block d-md-none">@Resources.Common.QTY</div>
+                                    </div>
+                                    <div class="space-10"></div>
+
+                                    @foreach (var item in autoOrderItems)
+                                    {
+                                        <div class="row margin-10">
+                                            <div class="col-6 col-sm-8">
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <div class="image">
+                                                            <img src="@item.SmallImageUrl" class="img-responsive" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-10">
+                                                        <div class="itemdescription">@item.ItemDescription</div>
+                                                        <small class="text-muted">@Resources.Common.SKU: @item.ItemCode</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 col-sm-2">
+                                                @item.Price.ToString("C")
+                                            </div>
+                                            <div class="col-2 col-sm-2 text-center">
+                                                <div class="" data-itemcode="@item.ItemCode" data-type="@item.Type">
+                                                    <input type="hidden" name="ItemCode" value="@item.ItemCode" />
+                                                    <input type="hidden" name="Type" value="@item.Type" />
+
+                                                    <span>
+                                                        @item.Quantity.ToString("0")
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="space-10"></div>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <div class="text-right">@Resources.Common.Subtotal (@autoOrderItems.Sum(c => c.Quantity).ToString("N0") @Resources.Common.Items): <strong>@autoOrderItems.Sum(c => c.Price * c.Quantity).ToString("C")</strong></div>
+                                </div>
+                            </div>
+                        }
+                        <div class="space-20"></div>
+                        <a class="btn btn-primary" href="@Url.Action("ProductList")">@Resources.Common.AddMoreItems</a>
+                    }
+                    <div class="space-30"></div>
+                </div>
+                <div class="col-lg-5 col-md-12">
+                    <div id="summary-container" class=" mb-3">
+                        <!-- Dynamically Injected -->
+                    </div>
+
+                    <button id="submit" style="width:100%;display: @submitButtonVisibility" class="btn btn-success 3d fright">@Resources.Common.CompleteEnrollment.ToUpper()</button>
+
+                    <div id="submit-loading" style="display: @submitLoadingImageContainerVisibility">
+                        <p class="text-center">
+                            <img src="~/Content/images/loading/circle-32.gif" />
+                        </p>
+                        <p>@Resources.Common.EnrollmentSubmittingMessage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.Raw(GlobalUtilities.DebuggerJSON(Model))
+    </div>
+</div>
+
+
+    @section scripts
+{
+        <script>
+        require(["jquery", "ajax", "app", "debug", "toastr", "pubsub", "extensions"], function ($, ajax, app, debug, toastr) {
+
+            // Settings
+            var context = "#view-orderreview",
+                $context = $(context),
+                removeItemsURL = '@Url.Action("deleteitemfromcart", "enrollment")',
+                updateItemSummaryURL = '@Url.Action("updateitemsummary", "enrollment")',
+                updateItemsURL = '@Url.Action("updateitemquantity", "enrollment")',
+                submitCheckoutUrl = '@Url.Action("SubmitCheckout")',
+                enrollmentCompleteUrl = '@Url.Action("EnrollmentComplete", "Enrollment")',
+                checkOrderSubmissionStatusUrl = '@Url.Action("CheckOrderSubmissionStatus")',
+                isSubmitting = ('@Model.PropertyBag.IsSubmitting' == "True") ? true : false;
+
+            // Settings
+            var state = {
+                originalItemQuantity: 0
+            };
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('#submit', $context).on('click', function () {
+                    actions.submit();
+                });
+
+                // Save the original value of this box in state
+                $('.quantity-box', $context).on('focus', function () {
+                    var $this = $(this),
+                        originalquantity = $this.val();
+
+                    state.originalItemQuantity = originalquantity;
+                    $this.val("");
+                });
+
+                // If a value was entered, submit the change. Else restore the original value from state
+                $('.quantity-box', $context).on('blur', function () {
+                    var $item = $(this),
+                        $itemParent = $item.parents('.item-container'),
+                        itemType = $itemParent.data('type'),
+                        itemCode = $itemParent.data('itemcode'),
+                        quantity = $item.val();
+
+                    if (quantity == "") {
+                        $item.val(state.originalItemQuantity);
+                        return;
+                    }
+                    else {
+                        actions.updateCart(itemCode, itemType, state.originalItemQuantity, quantity);
+                    }
+                });
+
+                // Prevent the entering of anything but 1-9
+                $('.quantity-box').on('keypress', function (event) {
+
+                    var regex = new RegExp("^[0-9]$");
+                    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+
+                    if (!regex.test(key)) {
+                        event.preventDefault();
+                        return false;
+                    }
+                });
+
+                // Remove item button
+                $context.on('click', '[data-role="removeitem"]', function () {
+                    var $this = $(this),
+                        $itemParent = $this.parents('tr'),
+                        itemcode = $itemParent.data('itemcode'),
+                        itemtype = $itemParent.data('itemtype'),
+                        $item = $('[data-itemcode="' + itemcode + '"][data-itemtype="' + itemtype + '"]').serializeObject();
+
+                    actions.removeItem($item);
+                });
+
+                $('[name="ShipMethodID"]', $context).on('change', function () {
+                    $(this).parents('form')[0].submit();
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                updateItemSummary: function () {
+                    var $container = $('#summary-container');
+
+                    ajax.json({
+                        url: updateItemSummaryURL,
+                        data: {
+                            "hideControls" : true
+                        },
+                        beforeSend: function () {
+                            $container.html('<p class="text-center"><strong>@Resources.Common.Loading</strong></p>');
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $container.html(response.html);
+                            }
+                            else {
+                                console.log("failed");
+                            }
+                        },
+                        error: function (xhr, error, status) {
+                            console.log("Error: ", xhr);
+                        }
+                    });
+                },
+                updateCart: function (itemcode, type, originalQuantity, newQuantity) {
+                    originalQuantity = parseInt(originalQuantity);
+                    newQuantity = parseInt(newQuantity);
+
+                    var $item = {
+                        ItemCode: itemcode,
+                        Type: type,
+                        Quantity: newQuantity
+                    };
+
+                    if (originalQuantity > 0 && newQuantity === 0) {
+                        actions.removeItem($item);
+                    }
+                    else if (originalQuantity > 0 && newQuantity > 0) {
+                        actions.updateItem($item);
+                    }
+                },
+                removeItem: function ($item) {
+                    ajax.json({
+                        url: removeItemsURL,
+                        data: {
+                            itemcode: $item.ItemCode,
+                            type: $item.Type
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                window.location = window.location;
+                            }
+                            else {
+                                console.log("failed");
+                            }
+                        },
+                        error: function (xhr, error, status) {
+                            console.log("Error: ", xhr);
+                        }
+                    });
+                },
+                updateItem: function ($item) {
+                    ajax.json({
+                        url: updateItemsURL,
+                        data: {
+                            itemcode: $item.ItemCode,
+                            type: $item.Type,
+                            quantity: $item.Quantity
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                actions.updateItemSummary();
+                            }
+                            else {
+                                console.log("failed");
+                            }
+                        },
+                        error: function (xhr, error, status) {
+                            console.log("Error: ", xhr);
+                        }
+                    });
+                },
+                submit: function () {
+                    var $submitButton = $('#submit'),
+                    $orderProcessingContainer = $("#submit-loading");
+
+                    if (isSubmitting == false) {
+                        isSubmitting = true;
+                        $submitButton.hide();
+                        $orderProcessingContainer.show();
+
+                        ajax.json({
+                            url: submitCheckoutUrl,
+                            success: function (response) {
+                                if (response.success) {
+                                    var redirectUrl = enrollmentCompleteUrl + "?token=" + response.token;
+
+                                    window.location = redirectUrl;
+                                }
+                                else {
+                                    isSubmitting = false;
+                                    $submitButton.show();
+                                    $orderProcessingContainer.hide();
+                                    toastr.error(response.message);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                checkOrderStatus: function () {
+                    ajax.json({
+                        url: checkOrderSubmissionStatusUrl,
+                        success: function (response) {
+                            if (response.success) {
+                                var redirectUrl = enrollmentCompleteUrl + "?token=" + response.token;
+
+                                window.location = redirectUrl;
+                            }
+                            else {
+                                if (response.orderHadException) {
+                                    var $submitButton = $('#submit'),
+                                        $orderProcessingContainer = $("#submit-loading");
+
+                                    $submitButton.show();
+                                    $orderProcessingContainer.hide();
+
+                                    toastr.error(response.exceptionMessage);
+                                }
+                                else {
+                                    setTimeout(actions.checkOrderStatus(), 3000);
+                                }
+                            }
+                        }
+                    });
+                }
+            };
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                // if the user refreshed the page during submission, check to see repeatedly if the order has been placed or had an error
+                if (isSubmitting) {
+                    actions.checkOrderStatus();
+                }
+
+                actions.updateItemSummary();
+
+                debug.ControlPanelControls(context);
+            }
+
+            init();
+        });
+        </script>
+    }

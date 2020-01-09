@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = Resources.Common.YourOrganization;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<ol class="breadcrumb">
+    <li><a href="#"><i class="fa-home"></i></a></li>
+    <li class="active">@ViewBag.Title</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">@Resources.Common.Reports</h4>
+            </div>
+            <div class="list-group">
+                <a href="javascript:;" class="list-group-item active">@Resources.Common.Action</a>
+                <a href="javascript:;" class="list-group-item">@Resources.Common.Action</a>
+                <a href="javascript:;" class="list-group-item">@Resources.Common.Action</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+
+        @Resources.Common.ComingSoon
+
+    </div>
+</div>

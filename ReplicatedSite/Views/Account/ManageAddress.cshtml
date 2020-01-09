@@ -1,0 +1,91 @@
+﻿@model Address
+@{    
+    switch (Model.AddressType)
+    {
+        case AddressType.New:
+            ViewBag.Title = Resources.Common.AddNewAddress;
+            break;
+        case AddressType.Main:
+            ViewBag.Title = Resources.Common.Global_EditMainAddress;
+            break;
+        case AddressType.Mailing:
+            ViewBag.Title = Resources.Common.Global_EditMailingAddress;
+            break;
+        case AddressType.Other:
+            ViewBag.Title = Resources.Common.Global_EditOtherAddress;
+            break;
+    }
+
+    var address = Model;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Addresses, UrlPath = Url.Action("AddressList", "Account") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-addressoverview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    @using (Html.BeginForm("saveaddress", "account"))
+                    {
+                        <div class="card card-body mb-3">
+                            @Html.EditorFor(model => model, "Address")
+                            @Html.HiddenFor(model => model.AddressType)
+
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                        <a href="@Url.Action("AddressList")" class="btn btn-link">@Resources.Common.Cancel</a>
+
+                        if (Model.AddressType != AddressType.New && Model.AddressType != AddressType.Main)
+                        {
+                            <span class="float-right">
+                                <a href="@Url.Action("DeleteAddress", new { type = Model.AddressType })" class="btn btn-secondary">@Resources.Common.Delete</a>
+                            </span>
+                        }
+
+                        @Html.AntiForgeryToken()
+                    }
+                </div>
+            </div>
+            <div class="space-20"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <script>
+        require(["jquery", "forms", "bootstrap"], function ($, forms) {
+
+            // Settings
+            var context = "#view-addressoverview",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $("[type='submit']").loadingClickEvent();
+            }
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}

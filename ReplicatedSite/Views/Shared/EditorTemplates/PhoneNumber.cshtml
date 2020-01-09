@@ -1,0 +1,14 @@
+﻿@model String
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+
+    var market = Utilities.GetCurrentMarket();
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    {
+        @class              = "form-control",
+        type                = "tel",
+        role                = "textbox" 
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)

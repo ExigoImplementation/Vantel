@@ -1,0 +1,16 @@
+#view-orderinvoice {
+    span.lead {
+        font-size: 1.50rem;
+        font-weight: 400
+    }
+}
+
+#view-orderlist {
+    .items-container {
+        min-height: 140px;
+
+        @media(min-width: 768px) {
+            border-left: 1px dotted #ddd;
+        }
+    }
+}

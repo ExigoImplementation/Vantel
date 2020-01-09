@@ -1,0 +1,12 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    ViewBag.Title = Resources.Common.UnexpectedError;
+    Layout = "~/Views/Shared/_ErrorLayout.cshtml";
+}
+
+<div id="view-error">
+    <div class="content-wrap">
+        @Html.Raw(Resources.Common.Replicated_Error_UnexpectedError)
+    </div>
+</div>
+

@@ -1,0 +1,560 @@
+﻿@model ManageAutoOrderViewModel
+@{
+    ViewBag.Title = (Model.IsExistingAutoOrder) ? Resources.Common.Global_ManageAutoOrder : Resources.Common.Global_CreateAutoOrder;
+
+    var canChoosePaymentMethod = (Model.AvailablePaymentMethods != null && Model.AvailablePaymentMethods.Count() > 0);
+    // Flag that determines if item additions/updates/deletions trigger shipping costs to recalculate.
+    bool liveCalculate = false;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.YourAutoOrders , UrlPath = Url.Action("AutoOrderList", "AutoOrders") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-manage-autoorder">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container">
+
+            @if (ViewData.ModelState.Keys.Contains("Result"))
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationMessage("Result")
+                </div>
+            }
+
+            @using (Html.BeginForm())
+            {
+                @Html.HiddenFor(model => model.AutoOrder.CustomerID)
+                @Html.HiddenFor(model => model.AutoOrder.AutoOrderID)
+                @Html.HiddenFor(model => model.AutoOrder.CurrencyCode)
+                @Html.HiddenFor(model => model.AutoOrder.WarehouseID)
+                @Html.HiddenFor(model => model.AutoOrder.AutoOrderProcessTypeID)
+                @Html.HiddenFor(model => model.AutoOrder.Notes)
+
+        <!-- Date -->
+        <section class="form-section">
+            <div class="row">
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-section-header">
+                        <h2 class="form-section-title">@Resources.Common.AutoOrderDate</h2>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-8">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="@Html.IdFor(model => model.AutoOrder.StartDate)" class="col-form-label">@((Model.IsExistingAutoOrder) ? Resources.Common.FrequencyChoice : Resources.Common.FrequencyChoice )</label>
+                            <br />
+                            <select class="form-control form-control-inline" name="@Html.NameFor(c => c.AutoOrder.FrequencyTypeID)" id="frequencyList">
+                                @foreach (var item in Identity.Customer.Market.AvailableAutoOrderFrequencyTypes.OrderBy(i => i))
+                                {
+                                    var selected = Model.AutoOrder.FrequencyTypeID == ExigoDAL.GetFrequencyTypeID(item) ? "selected" : "";
+                                    <option value="@ExigoDAL.GetFrequencyTypeID(item)" @selected>@CommonResources.FrequencyTypes(ExigoDAL.GetFrequencyTypeID(item))</option>
+                                }
+                            </select>
+
+                            <div class="space-10"></div>
+                            <label for="@Html.IdFor(model => model.AutoOrder.StartDate)" class="col-form-label">@((Model.IsExistingAutoOrder) ? Resources.Common.AutoOrderStartDate : Resources.Common.AutoOrderStartDate )</label>
+
+                                    <div class="space-10"></div>
+                                    @Html.DropDownListFor(model => model.AutoOrder.StartDate, Model.AvailableStartDates.Select(date => new SelectListItem()
+                                   {
+                                       Value = date.ToString(),
+                                       Text = date.Day.AsOrdinal()
+                                   }).ToList(), new { @class = "form-control form-control-inline" })
+                                    @*<div class="form-control-static form-control-inline">@Resources.Common.OfEachMonth</div>*@
+                                    @Html.ValidationMessageFor(model => model.AutoOrder.StartDate)
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </section>
+
+        <!-- Products -->
+        <section class="form-section view-autoorder-products">
+            <div class="row">
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-section-header">
+                        <h2 class="form-section-title">@Resources.Common.Products</h2>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8">
+                    <fieldset>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">@Resources.Common.Item</th>
+                                        <th class="text-right text-nowrap">@Resources.Common.QV</th>
+                                        <th class="text-right text-nowrap">@Resources.Common.Price</th>
+                                        <th>&nbsp;</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var items = Model.AvailableProducts.ToList();
+
+                                                for (var i = 0; i < items.Count(); i++)
+                                                {
+                                                    var item = items[i];
+                                                    var cartItem = Model.AutoOrder.Details.FirstOrDefault(c => c.ItemCode == item.ItemCode);
+                                                    var quantity = (cartItem != null) ? cartItem.Quantity : 0;
+
+                                            <tr class="product product-row">
+                                                <td>
+                                                    <div class="product-image" data-toggle="productdetail">
+                                                        <img src="@item.SmallImageUrl" class="img-fluid" />
+                                                    </div>
+                                                </td>
+                                                <td class="product-content">
+                                                    <div class="product-title">
+                                                        <a class="clickable" data-toggle="productdetail">@item.ItemDescription</a>
+                                                    </div>
+                                                    <div class="product-description" hidden>
+                                                        @Html.Raw(item.LongDetail1)
+                                                    </div>
+                                                </td>
+                                                <td class="text-right text-nowrap qv" data-qv="@item.CV">@item.CV.ToString("N2")</td>
+                                                <td class="text-right text-nowrap">@item.Price.ToString("C")</td>
+                                                <td class="product-quantity">
+                                                    <select class="form-control view-quantity invisible" name="AutoOrder.Details[@i].Quantity">
+                                                        @for (var q = 0; q <= 10; q++)
+                                                        {
+                                                            var selectedHtml = (q == quantity) ? " selected='selected'" : "";
+                                                            <option value="@q" @selectedHtml>@q</option>
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td class="product-options">
+                                                    <button type="button" class="btn btn-add btn-outline-dark btn-block">@Resources.Common.Add</button>
+                                                    <input type="hidden" name="AutoOrder.Details[@i].ItemCode" value="@item.ItemCode" />
+                                                    <input type="hidden" name="AutoOrder.Details[@i].Type" value="@ShoppingCartItemType.AutoOrder" />
+                                                    @if (cartItem != null)
+                                                    {
+                                                        <input type="hidden" name="AutoOrder.Details[@i].PriceEachOverride" value="@cartItem.PriceEachOverride" />
+                                                        <input type="hidden" name="AutoOrder.Details[@i].BVEachOverride" value="@cartItem.BVEachOverride" />
+                                                        <input type="hidden" name="AutoOrder.Details[@i].CVEachOverride" value="@cartItem.CVEachOverride" />
+                                                        <input type="hidden" name="AutoOrder.Details[@i].TaxableEachOverride" value="@cartItem.TaxableEachOverride" />
+                                                        <input type="hidden" name="AutoOrder.Details[@i].ShippingPriceEachOverride" value="@cartItem.ShippingPriceEachOverride" />
+                                                        <input type="hidden" name="AutoOrder.Details[@i].Reference1" value="@cartItem.Reference1" />
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-product-detail" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><!-- Title --></h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <img class="modal-object img-responsive" src="" alt="" />
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="modal-body-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shipping -->
+                                        <section class="form-section">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4">
+                                                    <div class="form-section-header">
+                                                        <h2 class="form-section-title">@Resources.Common.ShippingAddress</h2>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-8">
+                                                    <fieldset>
+                                                        @Html.EditorFor(model => model.AutoOrder.ShippingAddress)
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+                                        </section>
+
+        <!-- Ship Method -->
+                                        <section class="form-section">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4">
+                                                    <div class="form-section-header">
+                                                        <h2 class="form-section-title">@Resources.Common.ShippingMethod</h2>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-8">
+                                                    <h5>@Resources.Common.ChooseShippingMethod:</h5>
+                                                    <div id="shipmethods">
+                                                        @foreach (var shipMethod in Model.AvailableShipMethods)
+                                                        {
+                                                            <div class="custom-control custom-radio">
+                                                                    @Html.RadioButtonFor(c => c.AutoOrder.ShipMethodID, shipMethod.ShipMethodID, new { @class= "custom-control-input" })
+                                                                <label class="custom-control-label" for="@Html.IdFor(c => c.AutoOrder.ShipMethodID)">
+                                                                    @shipMethod.ShipMethodDescription <small class="text-muted">(@Resources.Common.EstimatedCost @shipMethod.Price.ToString("C"))</small>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    </div>
+
+                            <div class="space-10"></div>
+                            <a data-role="calculate" data-loading-text="@Resources.Common.Calculating" class="btn btn-info">@Resources.Common.CalculateEstimatedShipping</a>
+                        </div>
+                    </div>
+                </section>
+
+
+
+        <!-- Payment -->
+                                        <section class="form-section last">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4">
+                                                    <div class="form-section-header">
+                                                        <h2 class="form-section-title">@Resources.Common.Payment</h2>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-8">
+                                                    <fieldset>
+                                                        <div class="form-group">
+                                                            @{
+                                                                var labelText = (canChoosePaymentMethod) ? Resources.Common.PayAutoOrderHow : Resources.Common.EnterYourCreditCardInformation;
+                                                            }
+                                                            <label for="@Html.IdFor(model => model.AutoOrder.AutoOrderPaymentTypeID)" class="control-label">@labelText</label>
+                                                            <br />
+                                                            @if (canChoosePaymentMethod)
+                                                            {
+                                                                var paymentMethodSelectListItems = Model.AvailablePaymentMethods.Select(pm =>
+                                                                {
+                                                                    var item = new SelectListItem();
+
+                                            int value = 0;
+                                            string text = string.Empty;
+
+                                            var card = pm as CreditCard;
+                                            if (card != null)
+                                            {
+                                                value = (card.Type == CreditCardType.Primary) ? AutoOrderPaymentTypes.PrimaryCreditCardOnFile : AutoOrderPaymentTypes.SecondaryCreditCardOnFile;
+                                                text = Resources.Common.CreditCardEndingIn.FormatWith(card.CardNumber);
+                                            }
+
+                                            item.Value = value.ToString();
+                                            item.Text = text;
+                                            item.Selected = Model.AutoOrder.AutoOrderPaymentTypeID == value;
+
+                                            return item;
+                                        }).ToList();
+
+                                        // Add new card option
+                                        if (Model.AvailablePaymentMethods.Count() < 2)
+                                        {
+                                            paymentMethodSelectListItems.Add(new SelectListItem() { Value = "0", Text = Resources.Common.AddNewCard });
+                                        }
+
+
+                                        @Html.DropDownListFor(model => model.AutoOrder.AutoOrderPaymentTypeID, paymentMethodSelectListItems, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AutoOrder.AutoOrderPaymentTypeID)
+
+                                        if (Model.AvailablePaymentMethods.Count() >= 2)
+                                        {
+                                            <div class="space-10"></div>
+                                            <p>@Resources.Common.ToManageYourAutoOrderPaymentMethods <a href="@Url.Action("PaymentMethodList", "Account")">@Resources.Common.ClickHere</a></p>
+                                        }
+                                    }
+                                    @{
+                                        var display = (canChoosePaymentMethod) ? Resources.Common.None : Resources.Common.Block;
+                                    }
+                                    <div id="newCardContainer" style="display: @display">
+                                        <div class="space-20"></div>
+                                        @Html.EditorFor(c => c.NewCreditCard)
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </section>
+
+                                        <nav class="form-nav">
+                                            <a data-role="submit-autoorder" class="btn btn-primary btn-lg">@((Model.IsExistingAutoOrder) ? Resources.Common.SaveChanges : Resources.Common.CreateYourAutoOrder)</a>
+
+                                            <div class="space-30"></div>
+                                            <div class="row text-muted">
+                                                <div class="col-md-8 offset-md-2">
+                                                    <p>
+                                                        @Html.Raw(@Resources.Common.AnyQuestionsCallCustomerService.FormatWith(Resources.Common.CompanyName, Resources.Common.CompanyPhone, Resources.Common.CompanyEmail))
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </nav>
+                                                                }
+</div>
+    </div>
+</div>
+<script type="text/x-handlebars-template" id="shipmethods-template">
+    {{#each shipmethods}}
+    <div class="custom-control custom-radio">
+        <input id="AutoOrder_ShipMethodID" name="AutoOrder.ShipMethodID" class="custom-control-input" type="radio" value="{{ShipMethodID}}" {{#if Selected}} checked="checked" {{/if}} />
+        <label class="custom-control-label" for="AutoOrder.ShipMethodID">
+            {{ShipMethodDescription}} <small class="text-muted">(@Resources.Common.EstimatedCost {{money Price}})</small>
+        </label>
+    </div>
+    {{/each}}
+</script>
+<script src="@Url.Action("TokenEx", "App")"></script>
+<script>
+    require(["jquery", "ajax", "toastr", "handlebars"], function ($, ajax, toastr) {
+        var context = "#view-manage-autoorder",
+            $context = $(context),
+            $autoorderProducts = $(".view-autoorder-products", $context),
+            $modal = $("#modal-product-detail", $context),
+            calculateOrderUrl = "@Url.Action("CalculateAutoOrder")",
+            liveCalculate = @liveCalculate.ToString().ToLower(),
+            canChoosePaymentMethod = @canChoosePaymentMethod.ToString().ToLower();
+
+            var windowWidth = $(window).width();
+                var ccFieldWidth = "90%";
+                if (windowWidth < 330) {
+                    ccFieldWidth = "90%";
+                } else if (windowWidth < 576) {
+                    ccFieldWidth = "92%";
+                } else if (windowWidth < 767) {
+                    ccFieldWidth = "80%";
+                } else if (windowWidth < 1095) {
+                    ccFieldWidth = "80%";
+                }
+
+            var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                styles: {
+                    base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;transition: border-color .15s ease-in -out, box-shadow .15s ease-in -out;margin: 0;font-family: inherit;",
+                    focus: "color: #495057;border: 1px solid #f6cac3;outline:none;",
+                    error: "@Resources.Common.CardIsInvalid"
+                }
+            });
+
+
+        function registerEventHandlers() {
+            $('input', $context).on("keypress", function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                }
+            });
+
+            $('[data-role="calculate"]').on('click', function () {
+                actions.calculateAutoOrder();
+            });
+
+            // Toggle the item's state.
+            $autoorderProducts.on("click", ".btn-add", function () {
+                var product = helpers.getProduct(this);
+
+
+                if (product.quantity() === 0) {
+                    product.$quantity.val(1);
+                } else {
+                    product.$quantity.val(0);
+                }
+
+                actions.syncAutoOrderProducts(product);
+                if (liveCalculate) {
+                    actions.calculateAutoOrder();
+                }
+            });
+
+            // Sync the item when the quantity changes.
+            $autoorderProducts.on("change", '[name$=".Quantity"]', function () {
+                var product = helpers.getProduct(this);
+
+                actions.syncAutoOrderProducts(product);
+                if (liveCalculate) {
+                    actions.calculateAutoOrder();
+                }
+            });
+
+            // Toggle display of the new credit card form
+            $context.on("change", '#AutoOrder_AutoOrderPaymentTypeID', function () {
+                var val = $(this).val(),
+                    $cardForm = $('#newCardContainer');
+
+                if (val == "0") {
+                    $cardForm.slideDown();
+                    $('#NewCreditCard_NameOnCard').focus();
+                }
+                else {
+                    $cardForm.slideUp();
+                }
+            });
+
+            // Form Submission
+            $('[data-role="submit-autoorder"]').on('click', function () {
+                var hasItemsSelected = helpers.hasItemsSelected();
+
+                if (!hasItemsSelected) {
+                    toastr.error("@Resources.Common.SelectItemsBeforeAutoOrder");
+                    return;
+                }
+
+                var hasShipMethod = $('#shipmethods input:checked').length > 0;
+
+                if (!hasShipMethod) {
+                    toastr.error("@Resources.Common.SelectShipMethBeforeSaving");
+                    actions.calculateAutoOrder();
+                    return;
+                }
+
+                var $form = $('#view-manage-autoorder form');
+
+                // Handle Credit Card tokens for new Cards
+                if ($('#AutoOrder_AutoOrderPaymentTypeID').val() == 0 || !canChoosePaymentMethod) {
+
+                    if ($form.valid()) {
+
+                        // Form is valid, so we need to get a token now
+                        tokenizer.tokenize({
+                            success: function (data) {
+                                debugger;
+                                $(".creditcard-token").val(data.token);
+
+                                // Clear the name so the CC Number is not submitted
+                                $("#@Html.IdFor(c => c.NewCreditCard.CardNumber)").attr('name', '');
+
+                                $form.submit();
+                            },
+                            failure: function (errorMessage) {
+                                toastr.error(errorMessage);
+                                $(this).button("reset");
+                                return;
+                            }
+                        });
+                    } else {
+                        return;
+                    }
+                } else {
+                    // Using Card on File
+                    $form.submit();
+                }
+            });
+        }
+
+
+        var actions = {
+            calculateAutoOrder: function () {
+                if (helpers.hasItemsSelected()) {
+
+                    $('[data-role="calculate"]').button('loading');
+                    var formData = $('#view-manage-autoorder form').serializeObject();
+                    //console.log('formData', formData);
+
+                    ajax.json({
+                        url: calculateOrderUrl,
+                        data: formData,
+                        success: function (response) {
+                            if (response.success) {
+                                var source = $("#shipmethods-template").html();
+                                var template = Handlebars.compile(source);
+                                var html = template(response);
+                                $('#shipmethods').html(html);
+                            } else {
+                                console.log("@Resources.Common.CalculateAutoOrderFailed", response);
+                            }
+                        },
+                        complete: function () {
+                            $('[data-role="calculate"]').button('reset');
+                        }
+                    });
+                }
+            },
+            syncAutoOrderProducts: function (products) {
+                if (!products) {
+                    products = helpers.getProduct();
+                }
+                if (!Array.isArray(products)) {
+                    products = [products];
+                }
+
+
+                for (var i = 0, max = products.length; i < max; i++) {
+                    (function (product) {
+
+                        if (product.quantity() === 0) {
+                            product.$quantity
+                                .addClass('invisible');
+                            product.$product
+                                .removeClass('active')
+                                .find('.btn-add')
+                                    .removeClass('active btn-primary')
+                                    .html("Add");
+                        } else {
+                            product.$quantity
+                                .removeClass('invisible');
+                            product.$product
+                                .addClass('active')
+                                .find('.btn-add')
+                                    .addClass('active btn-primary')
+                                    .html('<i class="fa-check"></i>');
+                        }
+                    })(products[i]);
+                }
+            }
+        };
+
+
+        var helpers = {
+            getProduct: function (el) {
+
+                function getCollection(element) {
+                    if (!(element instanceof jQuery)) element = $(element);
+
+                    var $product = element.closest(".product"),
+                        $quantity = $('[name$=".Quantity"]', $product),
+                        $itemCode = $('[name$=".ItemCode"]', $product);
+
+                    return {
+                        $product: $product,
+                        $quantity: $quantity,
+                        quantity: function () { return Number($quantity.val()); },
+                        $itemCode: $itemCode,
+                        itemCode: function () { return $itemCode.val(); }
+                    };
+                }
+
+                if (!el) {
+                    return $('[name$=".ItemCode"]', $autoorderProducts).map(function () {
+                        return getCollection(this);
+                    }).toArray();
+                }
+                else if (!(el instanceof jQuery)) el = $(el);
+
+                return getCollection(el);
+            },
+            hasItemsSelected: function () {
+                return $autoorderProducts.find(':input[name$=".Quantity"]').filter(function (index, el) {
+                    return Number($(el).val()) !== 0;
+                }).length > 0;
+            }
+        };
+
+
+        function init() {
+            registerEventHandlers();
+
+            actions.syncAutoOrderProducts();
+        }
+        init();
+
+    });
+</script>

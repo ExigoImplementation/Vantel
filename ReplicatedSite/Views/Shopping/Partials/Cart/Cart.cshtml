@@ -1,0 +1,212 @@
+﻿@model IEnumerable<Item>
+@{
+    var contextID = Guid.NewGuid();
+    var hideControls = (ViewData["HideControls"] != null && ViewData["HideControls"].CanBeParsedAs<bool>()) ? (bool)ViewData["HideControls"] : false;
+}
+
+<div data-widget="cart" id="view-cart-@contextID" class="view-cart">
+    @if (Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            var itemCodeForDetail = (item.GroupMasterItemCode.IsNotNullOrEmpty()) ? item.GroupMasterItemCode : item.ItemCode;
+
+            <div class="container cart_item" data-id="@item.ID">
+                <div class="row mb-3">
+                    <div class="col-4 col-sm-3 cart-product-thumbnail text-center">
+                        <a href="@Url.Action("itemdetail", new { itemcode = itemCodeForDetail })"><img width="100" height="100" src="@item.SmallImageUrl" class="img-responsive" alt="@itemCodeForDetail" /></a>
+                    </div>
+                    <div class="col-5 col-sm-7">
+                        <div class="row">
+                            <div class="col-12 cart-product-name mb-2">
+                                <a href="@Url.Action("itemdetail", new { itemcode = itemCodeForDetail })">@item.ItemDescription</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @if (hideControls)
+                            {
+                                <div class="col-12">
+                                    <span>@Resources.Common.Quantity: @item.Quantity.ToString("0")</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-4 col-sm-6 cart-product-quantity">
+                                    <div class="quantity clearfix d-flex">
+                                        <input type="button" value="-" class="minus" data-id="@item.ID">
+                                        @Html.TextBoxFor(c => item.Quantity, new
+                                        {
+                                            type = "number",
+                                            @class = "qty",
+                                            data_role = "cart.updateitemquantity",
+                                            data_id = item.ID,
+                                            data_price = item.Price,
+                                            data_type = item.Type.ToString(),
+                                            Value = Convert.ToInt32(item.Quantity).ToString("0"),
+
+                                        })
+                                        <input type="button" value="+" class="plus" data-id="@item.ID">
+                                    </div>
+
+                                </div>
+                            }
+                            @if (!hideControls)
+                            {
+                                <div class="col-md-4 col-sm-6 cart-product-remove" @*style="border-left: 1px solid #c3c3c3;"*@>
+                                    <a data-role="cart.removeitemfromcart" data-id="@item.ID" class="remove text-danger" title="Remove this item"><i class="fa fa-trash"></i> @Resources.Common.Remove</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-3 col-sm-2 cart-product-price">
+                        <span class="amount">@item.Price.ToString("C")</span>
+                    </div>
+                </div>
+            </div>
+
+            foreach (var staticKitChild in item.StaticKitChildren)
+            {
+                <div class="container cart_item static_kit_child" data-id="@item.ID">
+                    <div class="row mb-3">
+                        <div class="col-4 col-sm-3 cart-product-thumbnail text-right">
+                            <a href="@Url.Action("itemdetail", new { itemcode = itemCodeForDetail })"><img src="@staticKitChild.TinyImageUrl" class="img-responsive static_kit_child-img" alt="@itemCodeForDetail"/></a>
+                        </div>
+                        <div class="col-8 col-sm-7 pl-4">
+                            <div class="row">
+                                <div class="col-12 cart-product-name mb-2">
+                                    <a href="@Url.Action("itemdetail", new { itemcode = itemCodeForDetail })">@staticKitChild.ItemDescription</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8">
+                                    @Resources.Common.Quantity: <span class="static_kit_child_Quantity">@item.Quantity.ToString("0")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            if (item.Children != null && item.Children.Any())
+            {
+                foreach (var child in item.Children.OrderBy(c => c.CategoryID).ThenBy(c => c.ItemCode))
+                {
+                    var category = item.DynamicKitCategories.FirstOrDefault(cat => cat.DynamicKitCategoryID == child.CategoryID);
+                    if (category == null) { continue; }
+                    var catItem = category.Items.FirstOrDefault(ci => ci.ItemCode == child.ItemCode);
+                    if (catItem == null) { continue; }
+
+                    <div class="container cart_item" data-id="@catItem.ID">
+                        <div class="row mb-3">
+                            <div class="col-4 col-sm-3 cart-product-thumbnail text-center">
+                                <a href="@Url.Action("itemdetail", new { itemcode = itemCodeForDetail })"><img width="100" height="100" src="@catItem.TinyImageUrl" class="img-responsive" alt="@itemCodeForDetail" /></a>
+                            </div>
+                            <div class="col-5 col-sm-7">
+                                <div class="row">
+                                    <div class="col-12 cart-product-name mb-2">
+                                        <a href="@Url.Action("itemdetail", new { itemcode = itemCodeForDetail })">@catItem.ItemDescription</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        <span>@Resources.Common.Quantity: @catItem.Quantity.ToString("0")</span>
+                                    </div>
+                                    @if (!hideControls)
+                                    {
+                                        <div class="col-md-4 col-sm-6 cart-product-remove" @*style="border-left: 1px solid #c3c3c3;"*@>
+                                            <a data-role="cart.removeitemfromcart" data-id="@item.ID" class="remove text-danger" title="Remove this item"><i class="fa fa-trash"></i> @Resources.Common.Remove</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-3 col-sm-2 cart-product-price">
+                                <span class="total">@((catItem.Quantity * catItem.Price).ToString("C"))</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    }
+    else
+    {
+        <div class="cart_item">
+            <span>
+                @Resources.Common.NoItemsInCart
+            </span>
+        </div>
+    }
+</div>
+
+@using (Html.BeginPartialScript())
+{
+    <script>
+        require(["jquery", "shopping", "pubsub"], function ($, shopping) {
+
+            // Settings
+            var context = "#view-cart-@contextID",
+                $context = $(context);
+
+            shopping.bind(context);
+
+            $('body').on('cart.itemremoved', function (event, id) {
+                var $row = $('.cart_item[data-id="{0}"]'.format(id), $context);
+                $row.hide('fast');
+                $row.remove();
+            });
+
+            $('.minus', $context).on('click', function () {
+                var $item = $('[name="item.Quantity"]', $(this).parent());
+
+                var item = {
+                    ID: $item.data('id'),
+                    Type: $item.data('type'),
+                    Quantity: $item.val()
+                };
+
+                actions.UpdateCart(item, -1);
+                var quantity = parseInt($item.val()) - 1;
+                $item.val(quantity);
+                var totalPrice = (quantity * $item.data('price'));
+                $(this).parents('tr').find('.cart-product-subtotal .total').text(totalPrice.format("C"));
+                var $row = $('.static_kit_child[data-id="'+$item.data('id')+'"] .static_kit_child_Quantity', $context);
+                $row.text(quantity);
+            });
+
+            $('.plus', $context).on('click', function () {
+                var $item = $('[name="item.Quantity"]', $(this).parent());
+                var item = {
+                    ID: $item.data('id'),
+                    Type: $item.data('type'),
+                    Quantity: $item.val()
+                };
+
+                actions.UpdateCart(item, 1);
+                var quantity = parseInt($item.val()) + 1;
+                $item.val(quantity);
+                var totalPrice = (quantity * $item.data('price'));
+                $(this).parents('tr').find('.cart-product-subtotal .total').text(totalPrice.format("C"));
+                var $row = $('.static_kit_child[data-id="'+$item.data('id')+'"] .static_kit_child_Quantity', $context);
+                $row.text(quantity);
+            });
+
+            $('.qty', $context).on("blur", function () {
+                var quantity = parseInt($(this).val());
+                var totalPrice = (quantity * $(this).data('price'));
+                $(this).parent().parent().parent().find('.cart-product-subtotal .total').text(totalPrice.format("C"));
+            });
+
+            actions = {
+                UpdateCart: function (item, qty) {
+
+                    // Quantity checking
+                    item.Quantity = item.Quantity || 0;
+                    if (isNaN(item.Quantity)) item.Quantity = 0;
+                    else item.Quantity = parseFloat(item.Quantity) + qty;
+
+                    $('body').trigger('cart.updateitemquantity', item);
+                }
+            };
+        });
+    </script>
+}

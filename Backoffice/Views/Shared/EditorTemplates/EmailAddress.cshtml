@@ -1,0 +1,13 @@
+﻿@model String
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    { 
+        @class              = "form-control",
+        type                = "email",
+        role                = "textbox"        
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)

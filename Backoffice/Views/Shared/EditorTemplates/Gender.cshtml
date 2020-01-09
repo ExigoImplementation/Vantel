@@ -1,0 +1,16 @@
+﻿@model Common.Api.ExigoWebService.Gender
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    { 
+        @class = "form-control"
+    });
+}
+
+@Html.DropDownListFor(c => c, new List<SelectListItem>()
+{
+    new SelectListItem { Text = Resources.Common.PreferNotToSay, Value = "U" },
+    new SelectListItem { Text = Resources.Common.Male, Value = "M" },
+    new SelectListItem { Text = Resources.Common.Female, Value = "F" }
+}, htmlAttributes)

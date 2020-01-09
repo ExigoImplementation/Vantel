@@ -1,0 +1,135 @@
+﻿@model EnrollmentConfigurationViewModel
+@{
+    ViewBag.Title = Resources.Common.EnrollmentConfiguration;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div id="view-enrollment-configuration">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container">
+            @using (Html.BeginForm(
+                controllerName: "Enrollment",
+                actionName: "EnrollmentConfiguration",
+                method: FormMethod.Post,
+                htmlAttributes: new { id = "enroller-form" }))
+            {
+                <input type="hidden" id="market-country-code" name="MarketName" />
+                @Html.HiddenFor(m => m.UseShoppingItems)
+
+                <!-- Choose Enroller -->
+                if (Identity.Owner.CustomerID == GlobalSettings.ReplicatedSites.DefaultAccountID)
+                {
+                    @Html.Raw(Resources.Common.Replicated_EnrollmentConfiguration_ChooseEnroller)
+                }
+
+                <!-- Choose Market -->
+                var markethiddenClass = (GlobalSettings.Markets.AvailableMarkets.Count > 1) ? "" : "d-none";
+                <div class="@markethiddenClass mb-3">
+                    <h5><strong>@Resources.Common.SelectYourMarket</strong></h5>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(c => c.MarketName, Model.MarketSelectList,
+                                htmlAttributes: new
+                                {
+                                    @class = "form-control",
+                                    data_role = "Country"
+                                })
+                        </div>
+                    </div>
+                </div>
+
+                <button id="enrollment-join" type="button" class="btn btn-primary">@Resources.Common.JoinNow</button>
+
+                <!-- Enroller Search Modal -->
+                <div class="modal fade" id="distributorSearchModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">@Resources.Common.FindYourReferrer</h4>
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">@Resources.Common.Close</span></button>
+                            </div>
+                            <div class="modal-body">
+                                @Html.Partial("_EnrollerModal")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Keep Items Modal-->
+                @Html.Raw(Resources.Common.Replicated_EnrollmentConfiguration_KeepItemsModal)
+
+                @Html.AntiForgeryToken()
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "forms", "bootstrap", "extensions", "pubsub"], function ($, forms) {
+            var ItemsInShoppingCart = '@Model.ItemsInShoppingCart' === '@true';
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('#enroller-search').on('click', function () {
+                    $('#distributorSearchModal').modal();
+                });
+
+                $('[data-role="Country"]').on('click', function () {
+                    $('#market-country-code').val($('[data-role="Country"]').val());
+                });
+
+                $('[data-role="UseCartItems"]').on('click', function () {
+                    $('#UseShoppingItems').val($(this).data("val"));
+                    $('#keepItemsModal').modal('hide');
+                    $("#enroller-form").submit();
+                });
+
+                $('[data-role="corporatesignup"]').on('click', function () {
+                    window.trigger("enrollment.showenrollerinfo", "corporate");
+                });
+
+                $('#enrollment-join').on('click', function () {
+                    if (ItemsInShoppingCart === true)
+                        $('#keepItemsModal').modal();
+                    else {
+                        $('#UseShoppingItems').val('false');
+                        $("#enroller-form").submit();
+                    }
+                });
+
+                // Pubsub events
+                window.on('enrollment.showenrollerinfo', function (enroller) {
+                    var message = "";
+
+                    if (enroller == "corporate") {
+                        message = "@Resources.Common.NoDistributorMessage";
+                    }
+                    else {
+                        message = "@Resources.Common.EnrollerChosenMessage".format(enroller.FullName, enroller.CustomerID);
+                    }
+
+                    $('#distributorSearchModal').modal('hide');
+                    $('#search-message .message').html(message);
+                    $('#search-message').show();
+                    $('button[type="submit"]').attr("disabled", false);
+                });
+            }
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                $('#market-country-code').val($('[data-role="Country"]').val());
+            }
+
+            init();
+        });
+    </script>
+}

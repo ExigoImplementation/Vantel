@@ -1,0 +1,42 @@
+// Mixins
+@import "mixins/_mixins";
+
+// Settings
+@import "settings/_colors";
+ 
+// Components
+@import "components/_products.scss";
+@import "components/_utilities";
+
+//@import "components/_style";
+@import "components/_swiper";
+@import "components/_dark";
+@import "components/_animate";
+@import "components/_magnific-popup";
+@import "components/_site";
+@import "components/_checkout";
+@import "components/_cart-preview";
+@import "components/_passwords";
+
+
+// Vendor Styles
+@import "vendor/_fontawesome";
+@import "vendor/_timepicker";
+@import "vendor/_typeahead";
+@import "vendor/_sumoselect";
+
+// Views
+@import "views/_navigation"; 
+@import "views/_home";
+@import "views/_enrollment";
+@import "views/_orders";
+@import "views/_shopping";
+@import "views/_autoship";
+@import "views/_account";
+@import "views/_items";
+
+
+//Responsive Desings from Theme Leave at bottom
+@import "components/_responsive";
+
+

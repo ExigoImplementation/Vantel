@@ -1,0 +1,115 @@
+﻿@model AccountRegistrationViewModel
+@{
+    ViewBag.Title = Resources.Common.CreateAnAccount;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+    <div id="view-account-registration">
+        @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+        <div class="content-wrap">
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div class="col-sm-6">
+
+                        @if (Model.HasError)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <strong>@Resources.Common.Error</strong>
+                                @Model.ErrorMessage
+                            </div>
+                        }
+
+                        <div class="card mb-5">
+                            <div class="card-body">
+                                @using (Html.BeginForm())
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(c => c.ReturnUrl)
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Customer.FirstName, new { @class = "control-label" })
+                                        @Html.EditorFor(c => c.Customer.FirstName, new { @class = "form-control mb-3" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Customer.LastName, new { @class = "control-label" })
+                                        @Html.EditorFor(c => c.Customer.LastName, new { @class = "form-control mb-3" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Customer.Email, new { @class = "control-label" })
+                                        @Html.EditorFor(c => c.Customer.Email, new { @class = "form-control mb-3" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Customer.LoginName, new { @class = "control-label" })
+                                        @Html.EditorFor(c => c.Customer.LoginName, new
+                                           {
+                                               @class = "form-control mb-3",
+                                               role = "textbox",
+                                               data_restrict_input = "loginname"
+                                           })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.Password, new { @class = "control-label" })
+                                        @Html.EditorFor(c => c.Password)
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(c => c.ConfirmPassword, new { @class = "control-label" })
+                                        @Html.EditorFor(c => c.ConfirmPassword, new
+                                           {
+                                               @class = "form-control mb-4",
+                                               role = "textbox",
+                                               data_restrict_input = "password"
+                                           })
+                                    </div>
+                                    <div class="form-group">
+                                        <!-- Opt In -->
+                                        <div class="checkbox">
+                                            <label for="@Html.IdFor(c => c.Customer.IsOptedIn)">
+                                                @Html.CheckBoxFor(c => c.Customer.IsOptedIn, new { @class = "checkbox-small" })
+                                                <label class="control-label">  @Resources.Common.IWouldLikeToRecieveEmails</label>
+                                            </label>
+                                        </div>
+                                        <button type="submit" id="submit" class="btn btn-primary mt-3" data-loading-text="@Resources.Common.Loading">@Resources.Common.SubmitRegistration</button>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "forms", "bootstrap", "extensions"], function ($) {
+            // Settings
+            var context = "#view-register",
+                $context = $(context);
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $("[type='submit']").loadingClickEvent();
+            }
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}

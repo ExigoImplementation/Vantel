@@ -1,0 +1,114 @@
+﻿@model ManagePartyViewModel
+@{
+    ViewBag.Title = Resources.Common.Index;
+}
+@* Temp styles until this feature starts to take shape - Mike M.*@
+<style>
+    #party-module-container #party-table th { padding: 20px 15px 10px 15px; }
+    #party-module-container #party-table td { padding: 20px 15px 10px 15px; }
+    #party-module-container #party-description-header { font-weight: bold; font-size: 23px; }
+</style>
+
+<div id="party-module-container">
+    <h2>@Resources.Common.PartyManager</h2>
+
+    <div class="space-20"></div>
+
+    <!-- General Party Info -->
+    <div id="party-description-header">
+        <div class="row">
+            <div class="col-md-6">
+                @Model.Party.Description
+            </div>
+            <div class="col-md-6 text-right">
+                @Resources.Common.StartDate: @Convert.ToDateTime(Model.Party.StartDate).ToShortDateString()
+            </div>
+        </div>
+        <a class="btn btn-success btn-lg" data-toggle="modal" data-target="#invite-modal">@Resources.Common.Invite</a>
+</div>
+    
+    <div class="space-40"></div>
+
+    <h3>@Resources.Common.OpenParties</h3>
+
+    <!-- Parties Report -->
+    <table class="table table-bordered" id="party-table">
+        <tr>
+            <th>@Resources.Common.Customer</th>
+            <th>@Resources.Common.OrderID</th>
+            <th>@Resources.Common.OrderDate</th>
+            <th>@Resources.Common.Items</th>
+            <th>@Resources.Common.Subtotal</th>
+        </tr>
+        @if (Model.Orders.Count() == 0)
+        {
+            <tr id="no-parties-row">
+                <td colspan="5">
+                    @Resources.Common.NoCurrentOrdersParty
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var order in Model.Orders)
+            {
+                @Html.Partial("Partials/PartyOrderTableRow", order)
+            }
+        }
+    </table>
+</div>
+
+@Html.Partial("Partials/NewPartyInviteModal")
+
+
+<link href="~/Content/scripts/vendor/kendo/styles/kendo.common-bootstrap.css" rel="stylesheet" />
+<link href="~/Content/scripts/vendor/kendo/styles/kendo.bootstrap.css" rel="stylesheet" />
+<script>
+    var inviteModule = {};
+    require(['ajax', "kendo"], function (ajax, kendo) {
+        var culture = '@UICulture';
+
+        function registerEventHandlers() {
+            $("#btnCreateParty").on("click", function () {
+                $("#new-party-modal form").submit();
+            });
+
+            $("[data-bind='start-date']").kendoDatePicker({
+                culture: culture,
+                parseFormats: ["MM/dd/yyyy h:mm tt"]
+            }).on("focus click", function () {
+                $(this).data("kendoDatePicker").open();
+            });
+        }
+
+        // Set up our ajax event handler for the new party modal
+        inviteModule = {
+            success: function (response) {
+                console.log("create party response", response);
+
+                if (response.success) {
+                    // Ensure we get rid of the no parties message, for first time users
+                    if ($("#no-parties-row").length > 0) {
+                        $("#party-table").html("");
+                    }
+
+                    // Append the new party row to the report before the modal closes
+                    $("#party-table").append(response.html);
+
+                    toastr.success("@Resources.Common.Success", "@Resources.Common.PartyCreated");
+                    $("#new-party-modal").modal("hide");
+                } else {
+                    toastr.error("@Resources.Common.PartyCreationFailed", response.message);
+                }
+            },
+            failure: function (response) {
+                toastr.error("@Resources.Common.PartyCreationFailed", response);
+            }
+        };
+
+        function _init() {
+            registerEventHandlers();
+        }
+        _init();
+    });
+</script>

@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = Resources.Common.MyCustomers;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "mycustomers"
+    };
+}
+
+<div id="view-mycustomers">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+        require(["kendogrids"], function (kendoGrid) {
+
+            var cultureCode = "@Identity.Current.Market.CultureCode";
+            kendo.culture(cultureCode);
+
+            kendoGrid.create("#grid", {
+            columns: [
+                { field: "CustomerID", width: 35, title: " ", type: "string", template: "<a data-profile='modal' data-id='#:CustomerID#' data-token='#:CustomerIDToken#' style='cursor: pointer;'><img src='/Content/images/contactcard.png' /></a>", sortable: false, filterable: false },
+                { field: "CustomerID", title: "@Resources.Common.ID", type: "string", width: 50 },
+                { field: "FirstName", title: "@Resources.Common.FirstName", type: "string", width: 150 },
+                { field: "LastName", title: "@Resources.Common.LastName", type: "string", width: 150 },
+                { field: "Email", title: "@Resources.Common.Email", width: 150, template: "<a href='mailto:#:Email#'>#:Email#</a>" },
+                { field: "Phone", title: "@Resources.Common.Phone", width: 100 },
+                { field: "CustomerTypeDescription", title: "@Resources.Common.CustomerType", width: 150 },
+                { field: "CreatedDate", title: "@Resources.Common.StartDate", width: 100, type: "date", format: "{0:d}", attributes: { "class": "text-right" } }
+                ],
+                toolbar: ["excel"],
+                excel: {
+                    allPages: true,
+                    fileName: 'MyCustomersList.xlsx'
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,496 @@
+﻿@model EnrollmentPropertyBag
+@{
+    
+    ViewBag.Title = Resources.Common.Replicated_EnrolleeInfo_EnrollmentInformation;
+    var enroller = Model.Customer.Enroller;
+    var market = Utilities.GetCurrentMarket();
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem { Description = Resources.Common.EnrollmentPack, UrlPath = Url.Action("Packs", "Enrollment") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+@Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+<div id="view-enrollment">
+    <div class="content-wrap">
+        <div class="container">
+            @using (Html.BeginForm())
+            {
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    @Resources.Common.PersonalInformation
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.EditorForModel("PersonalInformation")
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    @Resources.Common.YourAddress
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.EditorForModel("HomeAddress")
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.YourPersonalWebsiteAndLogin</h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.EditorForModel("LoginInformation")
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.ShippingInformation</h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.EditorForModel("ShippingInformation")
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.BillingPayment</h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.EditorForModel("Billing")
+                            </div>
+                        </div>
+
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.TermsAndConditions</h3>
+                            </div>
+                            <div class="card-body">
+                                @Html.EditorForModel("TermsAndConditions")
+                            </div>
+                        </div>
+
+                        <a id="btnSubmitEnrollment" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading">@Resources.Common.Continue</a>
+                        <div class="space-30"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div id="view-enrollmentsummary" class="mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        @Resources.Common.YourEnroller
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="media">
+                                        <div class="float-left">
+                                            <img class="media-object" src="@Url.Avatar((int)enroller.CustomerID)" style="max-width: 50px;" />
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <strong class="media-heading">@enroller.FullName</strong><br />
+                                            <a href="mailto:@enroller.Email" target="_blank">@enroller.Email</a><br />
+                                            @enroller.PrimaryPhone
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="summary-container" class="mb-3">
+                            <!-- Dynamically Injected -->
+                        </div>
+
+                        <a href="@Url.Action("productlist", "enrollment")" class="btn btn-primary btn-block">@Resources.Common.ContinueShopping</a>
+
+
+                        <div class="space-15"></div>
+
+                        @Html.Raw(GlobalUtilities.DisplayDebugControlPanel())
+
+                    </div>
+                </div>
+
+                <input type="text" id="page_is_dirty" class="d-none" name="page_is_dirty" value="0" />
+
+                @Html.AntiForgeryToken()
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts
+{
+    <style>
+        #cc-wrapper {
+            max-height: 40px;
+        }
+    </style>
+
+    <script src="@Url.Action("TokenEx", "App")"></script>
+    <style>
+        .control-label.required:after {
+            content: " *";
+            color: #C80000;
+        }
+    </style>
+    <script>
+
+        var paymentoverview;
+
+        require(["jquery", "ajax", "app", "debug", "forms", "toastr", 'mask', "extensions"], function ($, ajax, app, debug, forms, toastr, mask) {
+
+
+            paymentoverview = (function () {
+                // Settings
+                var context = "#view-enrollment",
+                    $context = $(context),
+                    $pageIsDirty = $("#page_is_dirty"),
+                    updateItemSummaryURL = '@Url.Action("updateitemsummary", "enrollment")';
+
+                // State
+                var state = {
+                    validated: false
+                };
+
+                var windowWidth = $(window).width();
+                var ccFieldWidth = "90%";
+                if (windowWidth < 330) {
+                    ccFieldWidth = "90%";
+                } else if (windowWidth < 576) {
+                    ccFieldWidth = "92%";
+                } else if (windowWidth < 767) {
+                    ccFieldWidth = "80%";
+                } else if (windowWidth < 1095) {
+                    ccFieldWidth = "80%";
+                }
+
+                var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                    styles: {
+                        base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;font-weight: 400;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !default;",
+                        focus: "color: #495057;background-color: #fff;border-color: #80bdff;outline:none;box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);",
+                        error: "@Resources.Common.CardIsInvalid"
+                    }
+                });
+
+                // Event Handlers
+                function registerEventHandlers() {
+
+                    // Remove item button
+                    $context.on('click', '[data-role="removeitem"]', function () {
+                        var $this = $(this),
+                            $itemParent = $this.parents('tr'),
+                            itemcode = $itemParent.data('itemcode'),
+                            itemtype = $itemParent.data('itemtype'),
+                            $item = $('[data-itemcode="' + itemcode + '"][data-itemtype="' + itemtype + '"]').serializeObject();
+
+                        actions.removeItem($item);
+                    });
+
+                    $('#btnSubmitEnrollment').on('click', function () {
+                        $('#loading-spinner').show();
+                        actions.submitForm();
+                    });
+
+                    // Decorate all required fields
+                    $('[data-val-required]').each(function () {
+                        $('.control-label[for="{0}"]'.format($(this).attr('id'))).addClass('required');
+                    });
+
+                    debug.ControlPanelControls(context);
+                }
+
+
+                // Actions
+                var actions = {
+                    updateItemSummary: function () {
+                        var $container = $('#summary-container');
+
+                        ajax.json({
+                            url: updateItemSummaryURL,
+                            data: { hideControls: true },
+                            beforeSend: function () {
+                                $container.html('<p class="text-center"><strong>@Resources.Common.Loading</strong></p>');
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    $container.html(response.html);
+                                }
+                                else {
+                                    console.log("failed");
+                                }
+                            },
+                            error: function (xhr, error, status) {
+                                console.log("Error: ", xhr);
+                            }
+                        });
+                    },
+                    submitForm: function () {
+
+                        if (actions.validateForm() == false) {
+                            $('#loading-spinner').hide();
+                            return false;
+                        }
+                        var model = helpers.getFilteredModel();
+
+
+                        // Logic to handle fetching Token
+                        if (model.PaymentMethod.PaymentMethodType == "ExigoService.CreditCard") {
+                            // Fetch Credit Card Token and submit form
+                            var tokenizeResult = actions.submitCreditCardForm(model);
+
+                            if (tokenizeResult == false) {
+                                $('#loading-spinner').hide();
+                                toastr.error("Error on tokenizing the cc");
+                                return;
+                            }
+                        } else {
+
+                            var formdata = {};
+                            (function recurse(obj, current) {
+                                for (var key in obj) {
+                                    var value = obj[key];
+                                    var newKey = (current ? current + "." + key : key);  // joined key with dot
+                                    if (value && typeof value === "object") {
+                                        recurse(value, newKey);  // it's a nested object, so do it again
+                                    } else {
+                                        formdata[newKey] = value;  // it's not an object, so set the property
+                                    }
+                                }
+                            })(model);
+
+                            var data = formdata;
+
+                            ajax.post({
+                                url: "@Url.Action("enrolleeinfo")",
+                                data: data,
+                                success: function (response) {
+                                    window.location = "@Url.Action("checkout")";
+                                    console.log("Success: ", response);
+
+                                },
+                                error: function (xhr, error, status) {
+                                    $('#loading-spinner').hide();
+                                    toastr.error(error);
+                                    console.log("Error: ", xhr);
+                                }
+                            });
+                        }
+                    },
+                    submitCreditCardForm: function (model) {
+                      var paymentMethod = model.PaymentMethod;
+
+                        tokenizer.tokenize({
+                            success: function (data) {
+                                console.log('tokenized success', data);
+
+                                var token = data.token;
+                                 paymentMethod.Token = token;
+                                $(".creditcard-token").val(data.token);
+
+                                var cardDisplay = token.substr(token.length - 4);
+                                $(".creditcard-display").val(cardDisplay);
+
+                                paymentMethod.Display = cardDisplay;
+                                console.log("After result", data.token);
+                                paymentMethod.CardNumber = "";
+
+                                model.PaymentMethod = paymentMethod;
+
+                            var formdata = {};
+                            (function recurse(obj, current) {
+                                for (var key in obj) {
+                                    var value = obj[key];
+                                    var newKey = (current ? current + "." + key : key);  // joined key with dot
+                                    if (value && typeof value === "object") {
+                                        recurse(value, newKey);  // it's a nested object, so do it again
+                                    } else {
+                                        formdata[newKey] = value;  // it's not an object, so set the property
+                                    }
+                                }
+                            })(model);
+
+                            var data = formdata;
+
+                            ajax.post({
+                                url: "@Url.Action("enrolleeinfo")",
+                                data: data,
+                                success: function (response) {
+                                    window.location = "@Url.Action("checkout")";
+                                    console.log("Success: ", response);
+
+                                },
+                                error: function (xhr, error, status) {
+                                    $("#btnSubmitEnrollment").button("reset");
+                                    toastr.error(error);
+                                    console.log("Error: ", xhr);
+                                }
+                            });
+
+                                return true;
+                            },
+                            error: function (data) {
+                                console.log("get cc token failed", data);
+                                toastr.error(data);
+                                $this.button("reset");
+                                return false;
+                            }
+                        });
+
+                    },
+                    validateForm: function () {
+
+                        if (!$('form:first', $context).valid()) {
+
+                            var scrollToTop = 0;
+                            var $firstElemWithError = $('input.input-validation-error:first');
+                            if ($firstElemWithError.length > 0) {
+                                $firstElemWithError.focus();
+                            }
+                            return false;
+                        }
+
+
+                        var $password = $('#Customer_Password').val(),
+                            $confirmPassword = $('#confirm-password').val(),
+                            $hint = $('#passwordHint').val();
+
+                        $termsChecked = $("#terms-checkbox:checked").length > 0;
+
+                        if ($termsChecked === false) {
+                            toastr.error("@Resources.Common.YouMustAcceptTermsAndConditions")
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    disableCountrySelection: function () {
+                        var $countrySelections = $('[data-role="hidecountry"] [data-role="Country"]');
+
+                        $countrySelections.each(function () {
+                            $(this).parents('.form-group:first').hide();
+                        });
+                    }
+                };
+
+
+                // Helpers
+                var helpers = {
+                    getModel: function (selector) {
+                        // Serialize the form
+                        selector = selector || 'form';
+                        var $form = $(selector, $context);
+                        var o = {};
+                        var a = $form.find(':input').serializeArray();
+                        $.each(a, function () {
+                            if (o[this.name] !== undefined) {
+                                o[this.name] = o[this.name] || '';
+                            } else {
+                                o[this.name] = this.value || '';
+                            }
+                        });
+
+
+                        // Deeply convert it into our model.
+                        var model = {}, j, d;
+                        for (var m in o) {
+                            d = m.split(".");
+                            var startOfObj = model;
+                            for (j = 0; j < d.length  ; j += 1) {
+
+                                if (j == d.length - 1) {
+                                    startOfObj[d[j]] = o[m];
+                                }
+                                else {
+                                    startOfObj[d[j]] = startOfObj[d[j]] || {};
+                                    startOfObj = startOfObj[d[j]];
+                                }
+                            }
+                        }
+
+
+                        return model;
+                    },
+                    getFilteredModel: function () {
+
+                        var model = helpers.getModel();
+
+                        //console.log('unfiltered model', model);
+
+                        // Commission Settings
+                        model.DirectDeposit = helpers.getModel('[data-bind="@Html.NameFor(c => c.Customer.PayableTypeID)"]:visible').DirectDeposit;
+
+                        // Payment Method
+                        model.PaymentMethod = helpers.getModel('[data-bind="@Html.NameFor(c => c.PaymentTypeID)"]:visible').PaymentMethod;
+
+                        return model;
+                    },
+                    getRandomString: function (length) {
+                        length = length || 7;
+                        var text = "";
+                        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+                        for (var i = 0; i < length; i++)
+                            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                        return text;
+                    },
+                    getRandomNumber: function (length) {
+                        length = length || 10;
+                        var text = "";
+                        var possible = "0123456789";
+
+                        for (var i = 0; i < length; i++)
+                            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                        return text;
+                    },
+                    applyMasks: function () {
+                        $('#Customer_PrimaryPhone').mask('@market.PhoneMask');
+                        $('#Customer_SecondaryPhone').mask('@market.PhoneMask'); 
+                        $('#Customer_MobilePhone').mask('@market.CellMask');
+                        $('#Customer_Fax').mask('@market.CellMask'); 
+					    $('#ShippingAddress_Phone').mask('@market.PhoneMask');  
+					    $('#Customer_TaxID').mask('@market.TaxMask');
+				    }
+                };
+
+
+                // Initialization
+                function init() {
+                    registerEventHandlers();
+                    actions.disableCountrySelection();
+                    actions.updateItemSummary();
+                    helpers.applyMasks();
+
+                    if ($pageIsDirty.val() == "1") {
+                        $("#shipping-checkbox").prop("checked", false);
+                    } else {
+                        $pageIsDirty.val("1");
+                    }
+                }
+
+                init();
+
+            })();// end payment overview
+        });
+    </script>
+
+}

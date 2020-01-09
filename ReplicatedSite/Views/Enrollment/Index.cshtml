@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Join {0}".FormatWith(Resources.Common.CompanyName);
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+    var nextEnrollmentAction = (!Identity.Owner.WebAlias.Equals(GlobalSettings.ReplicatedSites.DefaultWebAlias) && GlobalSettings.ReplicatedSites.SkipJoinEnroller) ? "SetEnroller" : "EnrollmentConfiguration";
+}
+
+@Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+<div id="view-enrollment">
+    <div class="content-wrap">
+        <div class="container">
+            @Html.Raw(Resources.Common.Replicated_Enrollment_JoinSection.FormatWith(Url.Action(nextEnrollmentAction)))
+        </div>
+    </div>
+</div>

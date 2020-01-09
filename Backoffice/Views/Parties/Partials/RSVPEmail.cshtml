@@ -1,0 +1,78 @@
+﻿@model RSVPModel
+@{
+    ViewBag.Title = Resources.Common.Index;
+
+    var eventStart = Convert.ToDateTime(Model.Party.EventStart);
+
+    var localHostReplicated = "http://localhost:59999"; // For testing locally with email links
+    var partyShopUrl = (Request.IsLocal ? localHostReplicated + "/test" : GlobalSettings.ReplicatedSites.GetFormattedUrl(Model.OwnerWebAlias)) + "/party/" + Model.PartyID + "/" + Model.Guest.GuestID;
+    var rsvpUrl = Request.IsLocal ? Model.PartyRSVPUrl.Replace(GlobalSettings.Company.BaseReplicatedUrl, localHostReplicated) : Model.PartyRSVPUrl;
+}
+
+<table align="center" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0" style="width: 532px;">
+    <tbody>
+        <!--title text--><!--title text end-->
+        <tr>
+            <td align="center" valign="top">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 528px;">
+                    <tbody>
+                        <tr>
+                            <td style="font-family: Tahoma, Arial; font-size: 16px; color: #3f3f3f; font-weight: normal; text-align: center; padding: 15px 20px 0px 20px;" width="460">
+                                <p style="text-align:center"><img alt="" height="150" src="https://exigopartydemo-bo.azurewebsites.net/Content/styles/theme/purecare/images/logo.png" width="600" /></p>
+
+                                <p style="text-align: left;"> </p>
+
+                                <p style="text-align: left;">@Resources.Common.Hey @Model.Guest.FirstName!</p>
+
+                                <p style="text-align: left;">@Resources.Common.YourInvitedOurParty</p>
+
+                                <p style="text-align: left;">@Resources.Common.ComeAndExperience @Resources.Common.CompanyName @Resources.Common.PartyHostedByYourFriend , @Model.Party.HostName!</p>
+
+                                <p style="text-align: left;">@Resources.Common.SaveTheDate</p>
+
+                                <p style="text-align: left;"> </p>
+
+                                <p style="text-align: left;"><strong>@Resources.Common.PartyDetails</strong></p>
+
+                                <p style="text-align: left;">@Resources.Common.What : @Model.Party.Description @Resources.Common.HostedBy @Model.Party.HostName</p>
+
+                                <p style="text-align: left;">@Resources.Common.Where :</p>
+                                @if (Model.Party.Address != null && Model.Party.Address.IsComplete)
+                                {
+
+                                    <p style="text-align: left;">@Model.Party.Address.Address1</p>
+
+                                    <p style="text-align: left;">@Model.Party.Address.Address2</p>
+
+                                    <p style="text-align: left;">@Model.Party.Address.City, @Model.Party.Address.State @Model.Party.Address.Zip</p>
+                                }
+                                else
+                                {
+                                    <p style="text-align:left;">@Resources.Common.Online</p>
+                                }
+
+                                <p style="text-align: left;">@Resources.Common.When : @eventStart.ToShortTimeString() @Resources.Common.On @eventStart.ToShortDateString()</p>
+
+                                <p style="text-align: left;">
+                                    RSVP: @Model.Party.HostName
+                                    @if (Model.HasPhone) { <text>/@Model.HostPhone</text> }
+                                    @if (Model.HasEmail) { <text>/@Model.HostEmail</text> }
+                                </p>
+
+                                <p style="text-align: left;">@Resources.Common.IfYouAreUnable <a href="@partyShopUrl">@Resources.Common.ShopOnlineHere</a>.</p>
+                            </td>
+                                
+                        </tr>
+
+                        <!--image columns start-->
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-family: Tahoma, 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 14px; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; line-height: 20px; background-color: #ffffff; width: 520px;">
+                <p><span style="font-family: helvetica; font-size: xx-small; color: #808080;">@Resources.Common.CompanyName, @GlobalSettings.Company.Address.AddressDisplay</span></p>
+            </td>
+        </tr>
+    </tbody>
+</table>

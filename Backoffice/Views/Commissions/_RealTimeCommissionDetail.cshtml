@@ -1,0 +1,109 @@
+﻿@model CommissionDetailViewModel
+@{
+    Layout = null;
+    var contextID = Guid.NewGuid().ToString();
+    var currencyCode = CurrencyCodes.DollarsUS;
+}
+<div id="view-commissiondetail-@contextID">
+    <div class="card">
+        @if (Model.Commissions.Count() == 0)
+        {
+            <div class="card-body">
+                <div class="text-center text-muted">
+                    @Resources.Common.YouHaveNotEarnedCommissions
+                </div>
+            </div>
+        }
+
+        @foreach (var commission in Model.Commissions)
+        {
+            var typedCommission = (RealTimeCommission)commission;
+            currencyCode = typedCommission.CurrencyCode.ToUpper();
+
+            <div class="card-body">
+                <h4>@typedCommission.Period.PeriodDescription @Resources.Common.Commissions</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="metric metric-sm">
+                            <div class="metric-body text-info">@Format.Currency(typedCommission.Total, typedCommission.CurrencyCode)</div>
+                            <div class="metric-title">
+                                @(Resources.Common.QualifyingAs): <strong>@CommonResources.Ranks(typedCommission.PaidRank.RankID, defaultDescription: typedCommission.PaidRank.RankDescription)</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <dl class="dl-metric">
+                                    <dt>@Resources.Common.Earnings</dt>
+                                    <dd>@Format.Currency(typedCommission.Total, typedCommission.CurrencyCode)</dd>
+                                    <dt>@CommonResources.Volumes(2)</dt>
+                                    <dd>@typedCommission.Volumes.Volume2.ToString("N0")</dd>
+                                    <dt>@CommonResources.Volumes(3)</dt>
+                                    <dd>@typedCommission.Volumes.Volume3.ToString("N0")</dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-6">
+                                <dl class="dl-metric">
+                                    <dt>@CommonResources.Volumes(11)</dt>
+                                    <dd>@typedCommission.Volumes.Volume11.ToString("N0")</dd>
+                                    <dt>@CommonResources.Volumes(12)</dt>
+                                    <dd>@typedCommission.Volumes.Volume12.ToString("N0")</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.Commissions.Count() != 0)
+        {
+        <!-- Bonuses -->
+            <div class="card-body p-0">
+                <div class="grid"></div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    require(["kendogrids"], function (kendoGrid) {
+
+        // Settings
+        var context = "#view-commissiondetail-@contextID";
+        var cultureCode = "@GlobalUtilities.GetCultureCodeFormatBasedOnCurrency(currencyCode, Identity.Current.Country)";
+        kendo.culture(cultureCode);
+
+
+        kendoGrid.create(context + " .grid", {
+            url: '@Url.Action("GetRealTimeBonusDetails", new { runid = ViewContext.RouteData.Values["runid"] })',
+            pageable: false,
+            columns: [
+                { field: "PeriodDescription", title: "@Resources.Common.Period", type: "string", hidden: true },
+                { field: "BonusID", title: "@Resources.Common.BonusID", type: "number", hidden: true },
+                { field: "BonusDescription", title: "@Resources.Common.Bonus", type: "string", hidden: true },
+                { field: "FromCustomerID", title: "@Resources.Common.From" + " " + "@Resources.Common.ID" + "#", type: "number", width: 80 },
+                { field: "FromCustomerName", title: "@Resources.Common.From", type: "string", width: 150 },
+                { field: "Level", title: "@Resources.Common.Level", type: "number", template: kendoGrid.templates.level("Level"), width: 80 },
+                { field: "PaidLevel", title: "@Resources.Common.PaidLevel", type: "number", template: kendoGrid.templates.level("PaidLevel"), width: 80 },
+                { field: "SourceAmount", title: "@Resources.Common.Source", format: "{0:C}", attributes: { "class": "text-right" }, width: 100 },
+                { field: "Percentage", title: "%", type: "number", format: "{0}%", attributes: { "class": "text-right" }, width: 80 },
+                { field: "CommissionAmount", title: "@Resources.Common.Earned", type: "number", format: "{0:C}", width: 100, attributes: { "class": "text-right" }, aggregates: ["sum"], groupFooterTemplate: "#= kendo.toString(sum, 'C') #" }
+            ],
+            dataSource: {
+                group: [
+                {
+                    field: "BonusDescription",
+                    aggregates: [
+                        { field: "CommissionAmount", aggregate: "sum" }
+                    ]
+                }]
+            },
+            toolbar: ["excel"],
+            excel: {
+                allPages: true,
+                fileName: 'RealTimeCommissions.xlsx'
+            }
+        });
+    });
+</script>

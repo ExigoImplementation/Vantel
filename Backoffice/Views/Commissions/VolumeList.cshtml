@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = Resources.Common.Volumes;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "commissions",
+        DefaultBreadcrumbLinkSitemapID = "page-volumes"
+    };
+}
+
+<div id="view-page-volumes">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "kendogrids"],
+            function ($, kendoGrid) {
+
+                kendoGrid.create("#grid",
+                {
+                    columns: [
+                        { field: "PeriodID", hidden: true, type: "number", width: 120 },
+                        {
+                            field: "PeriodDescription", title: "@Resources.Common.Period",
+                            sortable: false,
+                            filterable: false, width: 120
+                        },
+                        {
+                            field: "StartDate", title: "@Resources.Common.StartDate",
+                            type: "date",
+                            format: "{0:M/d/yyyy}", width: 120
+                        },
+                        { field: "EndDate", title: "@Resources.Common.EndDate", type: "date", format: "{0:M/d/yyyy}", width: 120 },
+                        { field: "PaidRankDescription", title: "@Resources.Common.PaidRank", width: 120 },
+                        @{
+                            var buckets = new int[] { 1,2,3 };
+                        }
+                        { field: "@("Volume" + buckets[0])", title: "@CommonResources.Volumes(buckets[0])", type: "number", format: "{0:N0}", attributes: { "class": "text-right" }, width: 120 },
+                        { field: "@("Volume" + buckets[1])", title: "@CommonResources.Volumes(buckets[1])", type: "number", format: "{0:N0}", attributes: { "class": "text-right" }, width: 120},
+                        { field: "@("Volume" + buckets[2])", title: "@CommonResources.Volumes(buckets[2])", type: "number", format: "{0:N0}", attributes: { "class": "text-right" }, width: 120},
+                    ],
+                    dataSource: {
+                        sort: {
+                            field: "PeriodID", dir:
+                            "desc"
+                        }
+                    },
+                    toolbar: ["excel"],
+                    excel: {
+                        allPages: true,
+                        fileName: 'VolumeList.xlsx'
+                    }
+                });
+            });
+    </script>
+}

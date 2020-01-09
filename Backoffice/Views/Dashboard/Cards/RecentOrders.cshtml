@@ -1,0 +1,70 @@
+﻿@model List<Order>
+
+@if (Model.Count() > 0)
+{
+    <ul class="list-group">
+        @foreach (var order in Model)
+        {
+            var currencyCode = order.CurrencyCode;
+            var currencyCultureCode = new System.Globalization.CultureInfo(GlobalUtilities.GetCultureCodeFormatBasedOnCurrency(currencyCode, Identity.Current.Country));
+            var fontAwesomeIcon = "";
+            var fontClassColor = "";
+
+            switch (order.OrderStatusID)
+            {
+                case OrderStatuses.Accepted:
+                    fontAwesomeIcon = "fa-check-circle";
+                    fontClassColor = "text-primary";
+                    break;
+
+                case OrderStatuses.Shipped:
+                case OrderStatuses.Printed:
+                    fontAwesomeIcon = "fa-truck";
+                    fontClassColor = "text-success";
+                    break;
+
+                case OrderStatuses.Cancelled:
+                    fontAwesomeIcon = "fa-times-circle ";
+                    fontClassColor = "text-danger";
+                    break;
+
+                case OrderStatuses.Incomplete:
+                case OrderStatuses.Pending:
+                default:
+                    fontAwesomeIcon = "fa-minus-circle";
+                    fontClassColor = "text-warning";
+                    break;
+            }
+
+            <li class="list-group-item media">
+                <div class="media-body">
+                    <div class="row">
+                        <div class="col-2 align-self-center">
+                            <i class="fas @fontAwesomeIcon icon font-size-31 @fontClassColor"></i>
+                        </div>
+                        <div class="col-6">
+                            <a class="text-decoration-none" href="@Url.Action("orderdetail", "orders", new {token = Security.Encrypt(order.OrderID, Identity.Current.CustomerID)})">
+                                <small class="text-dark font-weight-bold">@Resources.Common.Order #@order.OrderID</small>
+                            </a>
+                            <br />
+                            <small>@order.OrderDate.ToString("MMM d, yyyy hh:mm tt")</small>
+                        </div>
+                        <div class="col-4 align-self-center">
+                            <div class="text-right">
+                                <small class="text-black-50 font-weight-bold">@order.Total.ToString("C", currencyCultureCode)</small>
+                            </div>
+                            <div class="text-right">
+                                <small class="text-uppercase @fontClassColor">@CommonResources.OrderStatuses(order.OrderStatusID)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="ml-2">@Resources.Common.NoOrdersFound</p>
+}

@@ -1,0 +1,23 @@
+﻿@model Common.Models.Dashboard.CommissionCard
+
+@if (Model != null)
+{
+    if (Model.CommissionRunDescription.IsNullOrEmpty())
+    {
+        <p class="mt-2">@Resources.Common.NoAcceptedCommissions</p>
+    }
+    else
+    {
+        <h2 class="mb-0 hidden-value">
+            $X,XXX
+        </h2>
+        <h2 class="mb-0 collapse real-value">
+            @Format.Currency(Model.Total, Model.CurrencyCode)
+        </h2>
+        <div class="text-muted small">@Model.CommissionRunDescription</div>
+    }
+}
+else
+{
+    <p>@Resources.Common.CardFailedToLoad</p>
+}

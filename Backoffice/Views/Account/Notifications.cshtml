@@ -1,0 +1,119 @@
+﻿@model AccountNotificationsViewModel
+@{
+    ViewBag.Title = Resources.Common.Notifications;
+
+    var action = ViewContext.RouteData.Values["action"].ToString();
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "notifications"
+    };
+}
+
+<div id="view-accountnotifications">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    @if (Model.IsOptedIn)
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    @Resources.Common.NotificationStatus
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <p>@Resources.Common.CurrentlyReceivingNotificationsAt: <strong>@Model.Email</strong></p>
+                                <p><a href="@Url.Action("unsubscribe")" class="btn btn-primary btn-sm">@Resources.Common.Unsubscribe</a></p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center">
+                            @Resources.Common.NotificationSubscriptionInstructions
+                        </p>
+
+                        <form id="subscribeform">
+                            <div class="form-row d-flex align-items-center justify-content-center">                                
+                                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                    @Html.LabelFor(c => c.Email, new { @class = "control-label" })
+
+                                    <div class="input-group mb-5">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa-envelope"></i>
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(c => c.Email, new { @class = "form-control" })
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">@Resources.Common.Subscribe</button>
+                                </div>
+                            </div>                       
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <script>
+        require(["jquery", "ajax", "toastr", "bootstrap", "extensions"], function ($, ajax, toastr) {
+
+        // Settings
+        var context = "#view-accountnotifications",
+            $context = $(context);
+
+
+        // Event Handlers
+        function registerEventHandlers() {
+            $("#subscribeform button[type='submit']", $context).on('click', function (event) {
+                event.preventDefault();
+
+                actions.subscribe();
+            });
+        }
+
+
+        // Actions
+        var actions = {
+            subscribe: function () {
+                $("#subscribeform button[type='submit']", $context).buttonState('Subscribing');
+
+                ajax.json({
+                    url: '@Url.Action("sendemailverification")',
+                    data: $('#subscribeform').serializeObject(),
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success("@Resources.Common.SendVerificationEmailSuccess", "@Resources.Common.Success");
+                        } else {
+                            toastr.error("@Resources.Common.SendVerificationEmailFailure: " + response.error);
+                        }
+                    },
+                    complete: function() {
+                        $("#subscribeform button[type='submit']", $context).buttonState('reset');
+                    }
+                });
+            }
+        };
+
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+        }
+        init();
+    });
+    </script>
+}

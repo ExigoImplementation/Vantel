@@ -1,0 +1,14 @@
+﻿@model ProfileViewModel
+@{
+    ViewBag.Title = Resources.Common.Profile;
+
+    var isCurrentIdentity = Model.Customer.CustomerID == Identity.Current.CustomerID;
+    var isPersonallyEnrolled = Model.Customer.EnrollerID == Identity.Current.CustomerID;
+}
+
+
+<h2>@ViewBag.Title</h2>
+
+<div id="view-selectedprofile">
+    @Html.Partial("Partials/_Profile", Model)
+</div>

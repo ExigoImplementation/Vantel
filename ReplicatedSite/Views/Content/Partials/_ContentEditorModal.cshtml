@@ -1,0 +1,40 @@
+﻿@* Content Editor modal. *@
+<div id="editContent" class="modal fade editContent" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Resources.Common.EditContent</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <textarea class="form-control content" id="Content"></textarea>
+                        </div>
+                    </div>
+                    <div class="space-20"></div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="text-center">
+                                <button class="btn btn-primary" data-role="preview" data-toggle="modal" data-target="#previewContent">@Resources.Common.Preview</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-6">
+                            <div class="text-center">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Common.Cancel</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="text-center">
+                                <button class="btn btn-primary" data-role="editContent">@Resources.Common.Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-25"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

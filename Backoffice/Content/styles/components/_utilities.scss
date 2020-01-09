@@ -1,0 +1,64 @@
+/* Map for position */
+$position-map: ( top: 'top', right: 'right', left: 'left', bottom: 'bottom', );
+$unit-map: ( per: '%', px: 'px', );
+
+@for $size from 0 through 30 {
+    @each $unit, $ut in $unit-map {
+        @each $position, $pos in $position-map {
+            .margin-#{$position}--#{$size}#{$unit} {
+                margin-#{$position}: #{$size}#{$ut} !important;
+            }
+
+            .padding-#{$position}--#{$size}#{$unit} {
+                padding-#{$position}: #{$size}#{$ut} !important;
+            }
+        }
+
+        .margin-all--#{$size}#{$unit} {
+            margin: #{$size}#{$ut} !important;
+        }
+
+        .margin-vertical--#{$size}#{$unit} {
+            margin-top: #{$size}#{$ut} !important;
+            margin-bottom: #{$size}#{$ut} !important;
+        }
+
+        .margin-horizontal--#{$size}#{$unit} {
+            margin-right: #{$size}#{$ut} !important;
+            margin-left: #{$size}#{$ut} !important;
+        }
+
+        .padding-all--#{$size}#{$unit} {
+            padding: #{$size}#{$ut} !important;
+        }
+
+        .padding-vertical--#{$size}#{$unit} {
+            padding-top: #{$size}#{$ut} !important;
+            padding-bottom: #{$size}#{$ut} !important;
+        }
+
+        .padding-horizontal--#{$size}#{$unit} {
+            padding-right: #{$size}#{$ut} !important;
+            padding-left: #{$size}#{$ut} !important;
+        }
+    }
+}
+
+$spaceHeight: 5;
+@while $spaceHeight <= 100 {
+    .space-#{$spaceHeight} {
+        max-height: 1px;
+        min-height: 1px;
+        overflow: hidden;
+        margin: 0 0 #{$spaceHeight}px 0;
+    }
+    $spaceHeight: $spaceHeight + 5;
+}
+
+.text-xs{
+    font-size: 0.7em;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

@@ -1,0 +1,8 @@
+.container-expandable {
+    @include transition(max-width 1s);
+
+    &.expanded {
+        width: 100%;
+        max-width: 100%;
+    }
+}

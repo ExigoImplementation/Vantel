@@ -1,0 +1,88 @@
+﻿@model ResourceListViewModel
+@{
+    ViewBag.Title = Resources.Common.ResourceLibrary;
+
+    var currentLanguage = Identity.Current.Language.LanguageDescription;
+}
+
+<div id="resource-filters">
+    <div class="card">
+        <div class="card-body">
+            <h6>@Resources.Common.ViewResourcesFor:</h6>
+            <div>
+                @Html.DropDownListFor(model => model.Country, new SelectList(Model.CountryList, "Value", "Text", Identity.Current.Country), new { @class = "form-control" })
+            </div>
+            <div class="space-20"></div>
+
+            <h6>@Resources.Common.Language:</h6>
+            <div>
+                @Html.DropDownListFor(model => model.Language, new SelectList(Model.Languages, "LanguageID", "LanguageDescription"), "All", new { @class = "form-control" })
+            </div>
+            <div class="space-20"></div>
+
+            <h6>@Resources.Common.FindByKeyword<a class="float-right" id="clearKeywords" style="display:none;">@Resources.Common.Clear</a></h6>
+            <div class="input-group">
+                @Html.DropDownListFor(model => model.Tags, new MultiSelectList(Model.Tags, "Name", "Name"), new { @class = "form-control", multiple = "multiple" })
+                <span class="input-group-append">
+                    <button class="btn btn-primary" data-role="searchKeyword" type="button"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+            <div class="space-20"></div>
+
+            <h6>@Resources.Common.Categories<a class="float-right" id="showallcategories" style="display:none;">@Resources.Common.ShowAll</a></h6>
+            <div class="card">
+                <div class="card-body">
+                    <ul id="category-list">
+                        @foreach (var category in Model.ResourceCategories.Where(rc => rc.ParentID == Guid.Empty))
+                        {
+
+                            var categoryTranslation = Model.CategoryTranslation.Where(ct => ct.CategoryID == category.CategoryID && ct.Language == currentLanguage).FirstOrDefault();
+                            var categoryDescription = categoryTranslation == null ? category.CategoryDescription : categoryTranslation.TranslatedCategoryDescription;
+
+                            if (Model.ResourceCategories.Where(rc => rc.ParentID == category.CategoryID).Any())
+                            {
+                                <li data-id="@category.CategoryID">
+                                    <span data-toggle="collapse" data-target="#sub-@category.CategoryID"><i class="fa fa-plus-square-o"></i></span> <a data-role="categoryFilter" id="@category.CategoryID">@categoryDescription</a>
+                                    <ul id="sub-@category.CategoryID" class="collapse">
+                                        @foreach (var subCategory in Model.ResourceCategories.Where(rc => rc.ParentID == category.CategoryID))
+                                        {
+                                            var subCategoryTranslation = Model.CategoryTranslation.Where(ct => ct.CategoryID == subCategory.CategoryID && ct.Language == currentLanguage).FirstOrDefault();
+                                            var subCategoryDescription = categoryTranslation == null ? subCategory.CategoryDescription : subCategoryTranslation.TranslatedCategoryDescription;
+                                            <li data-id="@subCategory.CategoryID">
+                                                <a data-role="categoryFilter" id="@subCategory.CategoryID">@subCategoryDescription</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li data-id="@category.CategoryID" class="pl-3">
+                                    <a data-role="categoryFilter" id="@category.CategoryID">@categoryDescription</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="space-20"></div>
+
+            <h6>@Resources.Common.FindByMedia<a class="float-right" id="applyFilter" style="display:none;">@Resources.Common.ApplyFilter</a><a class="float-right" id="clearFilter" style="display:none;">@Resources.Common.ClearFilter</a></h6>
+            <div class="card">
+                <div class="card-body">
+                    <ul class="pl-0" id="marketFilter">
+                        @foreach (var mediaType in Model.ResourceTypes)
+                        {
+                            <li>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="@mediaType.TypeDescription" name="@mediaType.TypeDescription" value="@mediaType.TypeDescription"><input type="hidden" value="false">
+                                    <label class="custom-control-label" for="@mediaType.TypeDescription">@CommonResources.ResourceTypes(mediaType.TypeDescription)</label>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

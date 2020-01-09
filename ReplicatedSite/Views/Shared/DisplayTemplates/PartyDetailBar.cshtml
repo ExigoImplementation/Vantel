@@ -1,0 +1,76 @@
+﻿@model Party
+
+<div class="alert alert-info" id="party-detail-bar">
+    <div class="row">
+        <div class="col-xs-3">
+            <strong class="detail-header">Event:</strong>
+            <span>@Model.Description</span>
+        </div>
+        <div class="col-xs-3">
+            <strong class="detail-header">Host Name:</strong>
+            <span>@Model.HostName</span>
+        </div>
+        <div class="col-xs-3">
+            <strong class="detail-header">Start Date:</strong>
+            <span>@Convert.ToDateTime(Model.StartDate).ToShortDateString()</span>
+        </div>
+        <div class="col-xs-3 text-right">
+            <strong class="detail-header"><a data-toggle="modal" data-target="#party-detail-modal">View Details</a></strong>
+        </div>
+    </div>
+
+    @if (Model.CurrentGuest != null)
+    {
+        <hr />
+        <strong class="detail-header">Welcome @Model.CurrentGuest.FullName!</strong>
+        <p>Is this not you? Click <strong><a href="@Url.Action("resetshopping", "shopping")">here</a></strong> to reset your shopping cart.</p>
+    }
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="party-detail-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@Model.Description</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="list-unstyled">
+                    <li>
+                        <strong>Host:</strong>
+                        <span>@Model.HostName</span>
+                    </li>
+                    @if (Model.Address != null && Model.Address.IsComplete)
+                    {
+                    <li>
+                        <strong>Location:</strong>
+                        <span>@Html.DisplayFor(c => c.Address)</span>
+                    </li>
+                    }
+                    <li>
+                        <strong>Party Start Date:</strong>
+                        <span>@(Convert.ToDateTime(Model.StartDate).ToShortDateString())</span>
+                    </li>
+                    @if (Model.EventStart != null)
+                    {
+                    <li>
+                        <strong>Event Date:</strong>
+                        <span>@(Convert.ToDateTime(Model.EventStart).ToShortDateString())</span>
+                    </li>
+                    <li>
+                        <strong>Event Time:</strong>
+                        <span>@(Convert.ToDateTime(Model.EventStart).ToShortTimeString()) until @(Convert.ToDateTime(Model.EventEnd).ToShortTimeString())</span>
+                    </li>
+                    }
+                    @if (!Model.HostPhone.IsNullOrEmpty())
+                    {
+                    <li>
+                        <strong>Contact Info:</strong>
+                        <span>@Model.HostPhone</span>
+                    </li>
+                    }
+                </ul>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

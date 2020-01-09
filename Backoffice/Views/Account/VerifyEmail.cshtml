@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = Resources.Common.EmailVerified;
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+
+    var action = ViewContext.RouteData.Values["action"].ToString();
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>@Resources.Common.EmailVerified</p>

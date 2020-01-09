@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = Resources.Common.DownlineOrders;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "organization",
+        DefaultBreadcrumbLinkSitemapID = "downlineorders"
+    };
+}
+
+<div id="view-downlineorders">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        require(["jquery", "kendogrids"], function ($, kendoGrid) {
+
+
+            var cultureCode = "@Identity.Current.Market.CultureCode";
+            kendo.culture(cultureCode);
+
+            kendoGrid.create("#grid", {
+                columns: [
+                    { field: "CustomerID", width: 35, title: " ", type: "string", template: "<a data-profile='modal' data-id='#:CustomerID#' data-token='#:CustomerIDToken#' style='cursor: pointer;'><img src='/Content/images/contactcard.png' /></a>", sortable: false, filterable: false },
+                    { field: "CustomerID", title: "@Resources.Common.ID", type: "string", width: 70 },
+                    { field: "FirstName", title: "@Resources.Common.FirstName", type: "string", width: 150 },
+                    { field: "LastName", title: "@Resources.Common.LastName", type: "string", width: 150 },
+                    { field: "OrderID", type: "number", format: "{0:D}", title: "@Resources.Common.Order", width: 120 },
+                    {
+                        field: "Total", title: "@Resources.Common.Total", type: "number", width: 120,  attributes: { "class": "text-right" },
+                        template: function (row) { return row.Total.toLocaleString(row.CultureCode, { currency: row.CurrencyCode, style: 'currency' }); }
+                    },
+                    { field: "BusinessVolumeTotal", type: "number", title: "@Resources.Common.BV", width: 110, template: "#:BusinessVolumeTotal# " + "@Resources.Common.BV", attributes: { "class": "text-right" } },
+                    { field: "OrderDate", title: "@Resources.Common.Date", width: 120, type: "date", format: "{0:d}", attributes: { "class": "text-right" } }
+                ],
+                toolbar: ["excel"],
+                excel: {
+                    allPages: true,
+                    fileName: 'DownlineOrders.xlsx'
+                }
+            });
+        });
+</script>

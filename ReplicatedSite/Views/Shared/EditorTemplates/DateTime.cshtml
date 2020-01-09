@@ -1,0 +1,23 @@
+﻿@model DateTime
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+
+    var contextID = Guid.NewGuid().ToString();
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    {
+        @class = "form-control datetime-" + contextID,
+        type   = "text",
+        role   = "textbox"
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)
+
+<script>
+    require(["jquery", "jquery-ui"], function ($) {
+        $('.datetime-@contextID').datepicker({
+            culture: '@UICulture',
+            parseFormats: ["MM/dd/yyyy h:mm tt"]
+        });
+    });
+</script>

@@ -1,0 +1,419 @@
+﻿@{
+    ViewBag.Title = Resources.Common.Dashboard;
+}
+
+<div id="view-dashboard">
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-4 mb-3">
+                    <div class="card card-metrics">
+                        <div id="card-member-info" class="card-body h-1 py-1 overflow-auto">
+                            <p class="text-uppercase mb-2">@Resources.Common.MemberInfo</p>
+                            <div class="row">
+                                <div class="col-3 col-md-2 col-lg-3 p-1">
+                                    <img class="rounded-circle px-3 px-sm-2 px-lg-3 px-xl-2" src="@Url.Avatar(Identity.Current.CustomerID)" />
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-9" id="member-info">
+                                    <div class="section"><strong class="text-uppercase">@Identity.Current.DisplayName</strong></div>
+                                    <div class="section text-muted mb-1">@Identity.Current.Company</div>
+                                    <div class="section fs-12"><strong>ID#</strong> @Identity.Current.CustomerID</div>
+                                    <div class="section fs-12"><strong>@Resources.Common.Rank</strong> <span class="text-uppercase">@Identity.Current.Ranks.HighestPaidRankInAnyPeriod.RankDescription</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-3">
+                    <div class="card card-metrics">
+                        <div id="card-current-commissions" class="card-body h-1 py-1 align-items-center">
+                            <p class="text-uppercase mb-2 align-items-start">
+                                 @Resources.Common.BackOffice_Dashboard_CurrentMonthlyProjected
+                                <a href="#" class="float-right">
+                                    <i class="far fa-eye-slash show-values text-muted"></i>
+                                    <i class="far fa-eye hide-values collapse"></i>
+                                </a>
+                            </p>
+                            <div class="row py-2">
+                                <div class="col-3 circle-icon green">
+                                    <a>
+                                        <i class="fas fa-usd"></i>
+                                    </a>
+                                </div>
+                                <div class="col-9" id="current-commissions">
+                                    <div class="text-center">
+                                        <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-3">
+                    <div class="card card-metrics">
+                        <div id="card-accepted-commissions" class="card-body h-1 py-1 align-items-center">
+                            <p class="text-uppercase mb-2 align-items-start">
+                                @Resources.Common.BackOffice_Dashboard_LastMonthlyAccepted
+                                <a href="#" class="float-right">
+                                    <i class="far fa-eye-slash show-values text-muted"></i>
+                                    <i class="far fa-eye hide-values collapse"></i>
+                                </a>
+                            </p>
+                            <div class="row py-2">
+                                <div class="col-3 circle-icon green">
+                                    <a>
+                                        <i class="fas fa-usd"></i>
+                                    </a>
+                                </div>
+                                <div class="col-9" id="accepted-commissions">
+                                    <div class="text-center">
+                                        <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 col-lg-8 mb-3">
+                    <div class="card card-metrics" id="dashboard-carousel">
+                        <div class="card-body p-0">
+                            @Html.Raw(Resources.Common.Replicated_Home_BannerSection1)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100" id="view-companynews" data-scroll-reveal="enter bottom">
+                        <div class="card-header">
+                            <h3 class="card-title color-blue">
+                                @Resources.Common.News
+                            </h3>
+                        </div>
+                        <div class="card-body h-2 overflow-auto" id="card-company-news">
+                            <div class="text-center">
+                                <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <a href="@Url.Action("companynewslist", "companynews")" class="card-link text-uppercase">
+                                @Resources.Common.ViewAllNews
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--PROMOTION STATUS-->
+                <div class="col-12 col-lg-8 mb-3">
+                    <div class="card" id="view-rankadvancementcard" data-scroll-reveal="enter bottom">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                @Resources.Common.YourPromotionStatus
+                            </h3>
+                        </div>
+                        <div class="card-body h-3" id="RankAdvancementBody">
+                            <div class="text-center">
+                                <img src="~/Content/images/loading/circle-64.GIF" />
+                                @Resources.Common.Calculating<br />
+                                <small class="text-muted ajax-status"></small>
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <a href="@Url.Action("rank", "commissions")" class="card-link text-uppercase">
+                                @Resources.Common.ViewPromotionDetails <i class="fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--METRICS -->
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card card-metrics" data-scroll-reveal="enter bottom">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                @Resources.Common.Metrics
+                            </h3>
+                        </div>
+                        <div class="card-body" id="card-business-snapshot">
+                        <div class="text-center">
+                            <div class="space-20"></div>
+                            <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                        </div>
+                    </div>
+                        <div class="card-footer text-right">
+                            <a href="@Url.Action("volumelist", "commissions")" class="card-link text-uppercase">
+                                @Resources.Common.ViewAllMetrics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--ORDERS-->
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card" data-scroll-reveal="enter bottom">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                @Resources.Common.YourRecentOrders
+                            </h3>
+                        </div>
+                        <div class="card-body h-3 overflow-auto p-0" id="card-recent-orders">
+                            <div class="text-center">
+                                <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <a href="@Url.Action("orderlist", "orders")" class="card-link text-uppercase">
+                                @Resources.Common.ViewAllOrders <i class="fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--COMPANY NEWS -->
+                <!--NEW DISTRIBUTORS -->
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card" data-scroll-reveal="enter bottom">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                @Resources.Common.NewTeamMembers
+                                @if (GlobalSettings.Backoffices.Reports.Dashboard.NewestDistributors.Days > 0)
+                                {
+                                    <span class="float-right">
+                                        @Resources.Common.InThePast_Days.FormatWith(GlobalSettings.Backoffices.Reports.Dashboard.NewestDistributors.Days)
+                                    </span>
+                                }
+                            </h3>
+                        </div>
+                        <div class="card-body p-0 h-3" id="card-new-distributors">
+                            <div class="text-center">
+                                <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <a href="@Url.Action("newdistributorslist", "organization")" class="card-link text-uppercase">
+                                @Resources.Common.ViewAllTeamMembers
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--RECENT ACTIVITY-->
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card" data-scroll-reveal="enter bottom">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                @Resources.Common.BackOffice_Dashboard_CustomerWall
+                            </h3>
+                        </div>
+                        <div class="card-body h-3 overflow-auto" id="card-recent-activity">
+                            <div class="text-center">
+                                <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <a href="@Url.Action("recentactivitylist", "organization")" class="card-link text-uppercase">
+                                @Resources.Common.BackOffice_Dashboard_ViewAllCustomers
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--COMMISSIONS-->
+                @*<div class="col-md-6 col-lg-4 mb-3">
+            <div class="card card-metrics" data-scroll-reveal="enter bottom">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        @Resources.Common.YourCurrentEarnings
+                    </h3>
+                </div>
+                <div class="card-body overflow-auto text-center" id="card-current-commissions">
+                    <div class="text-center">
+                        <img src="@Url.Content("~/content/images/loading/circle-48.gif")" />
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <a href="@Url.Action("commissiondetail", "commissions")" class="card-link text-uppercase">
+                        @Resources.Common.ViewCurrentEarnings <i class="fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "ajax", "scrollreveal", "cookies", "kendo"], function ($, ajax, scrollReveal, cookies, kendo) {
+
+            // Settings
+            var context = "#view-dashboard",
+                $context = $(context),
+                currentRankID = 0,
+                logInAlertCookieName = '@GlobalSettings.Globalization.LogInAlertCookieName',
+                logInAlertExpiration = '@DateTime.Now.AddYears(1).ToShortDateString()';
+
+            var urls = {
+                recentOrders: '@Url.Action("GetRecentOrders", "Dashboard")',
+                volumes: '@Url.Action("GetVolumes", "Dashboard")',
+                companyNews: '@Url.Action("GetCompanyNews", "Dashboard")',
+                newestDistributors: '@Url.Action("GetNewestDistributors", "Dashboard")',
+                commissions: '@Url.Action("GetCurrentCommissions", "Dashboard")',
+                recentactivity: '@Url.Action("GetRecentActivity", "Dashboard")',
+                lastAccepted: '@Url.Action("GetLastAcceptedCommissions", "Dashboard")'
+            };
+
+            // Actions
+            var actions = {
+                fireOnLoadFunctions: function() {
+                    actions.getCurrentEarningsCard();
+                    actions.getVolumesCard();
+                    actions.getRecentOrdersCard();
+                    actions.getCompanyNewsCard();
+                    actions.getNewestDistributorsCard();
+                    actions.getRecentActivityCard();
+                    actions.getLastAcceptedCard();
+                },
+                getRecentOrdersCard: function() {
+                    ajax.json({
+                        url: urls.recentOrders,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#card-recent-orders').html(response.html);
+                            } else {
+                                console.log("@Resources.Common.GetRecentOrdersFailed", response);
+                            }
+                        }
+                    });
+                },
+                getVolumesCard: function() {
+                    ajax.json({
+                        url: urls.volumes,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#card-business-snapshot').html(response.html);
+
+                                // Set the Current Rank ID for the Rank Advancement widget
+                                currentRankID = response.currentRankID;
+                                actions.getRankAdvancementCard();
+                            } else {
+                                console.log("@Resources.Common.GetVolumesFailed", response);
+                            }
+                        }
+                    });
+                },
+                getCompanyNewsCard: function() {
+                    ajax.json({
+                        url: urls.companyNews,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#card-company-news').html(response.html);
+                            } else {
+                                console.log("@Resources.Common.GetCompanyNewsFailed", response);
+                            }
+                        }
+                    });
+                },
+                getNewestDistributorsCard: function() {
+                    ajax.json({
+                        url: urls.newestDistributors,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#card-new-distributors').html(response.html);
+                            } else {
+                                console.log("@Resources.Common.GetNewestDistributorsFailed", response);
+                            }
+                        }
+                    });
+                },
+                getCurrentEarningsCard: function() {
+                    ajax.json({
+                        url: urls.commissions,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#current-commissions').html(response.html);
+                            } else {
+                                console.log("@Resources.Common.GetCurrentEarningsFailed", response);
+                            }
+                        }
+                    });
+                },
+                getLastAcceptedCard: function() {
+                    ajax.json({
+                        url: urls.lastAccepted,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#accepted-commissions').html(response.html);
+                            } else {
+                                console.log("@Resources.Common.GetCurrentEarningsFailed", response);
+                            }
+                        }
+                    });
+                },
+                getRecentActivityCard: function() {
+                    ajax.json({
+                        url: urls.recentactivity,
+                        success: function(response) {
+                            if (response.success) {
+                                $('#card-recent-activity').html(response.html);
+                            } else {
+                                console.log("@Resources.Common.GetRecentActivityFailed", response);
+                            }
+                        }
+                    });
+                },
+                getRankAdvancementCard: function () {
+                    ajax.html({
+                        url: Router.action("Dashboard", "GetRankAdvancementCard", { rankid: currentRankID }),
+                        interval: 3000,
+                        maxAttempts: 5,
+                        success: function (response) {
+                            $('#view-rankadvancementcard', $context).replaceWith(response);
+                        },
+                        repeat: function (attempts) {
+                            if (attempts == 3) {
+                                $('#view-rankadvancementcard .ajax-status', $context).html("@Resources.Common.CalculationTakingLonger");
+                            }
+                        },
+                        fail: function () {
+                            $('#view-rankadvancementcard .card-body', $context).html("@Resources.Common.RankAdvancementFailed");
+                        }
+                    });
+                }
+            };
+
+            // Event Handlers
+            function registerEventHandlers() {
+                // ScrollReveal
+                if ($(window).width() > 767) {
+                    window.scrollReveal = new scrollReveal();
+                }
+                else {
+                    $(window).resize(function() {
+                        if ($(window).width() > 767) {
+                            window.scrollReveal = new scrollReveal();
+                        }
+                    });
+                }
+                $('.show-values').click(function () {
+                    $(this).hide();
+                    $('.hide-values', $(this).parent()).show();
+                    $('.hidden-value', $(this).parent().parent().parent()).hide();
+                    $('.real-value', $(this).parent().parent().parent()).show();
+                });
+                $('.hide-values').click(function () {
+                    $(this).hide();
+                    $('.show-values', $(this).parent()).show();
+                    $('.hidden-value', $(this).parent().parent().parent()).show();
+                    $('.real-value', $(this).parent().parent().parent()).hide();
+                });
+            }
+
+            // Initialization
+            function init() {
+
+                // Fire our functions that must occur on initial load
+                actions.fireOnLoadFunctions();
+
+                registerEventHandlers();
+            }
+            init();
+        });
+    </script>
+}

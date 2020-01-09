@@ -1,0 +1,117 @@
+﻿@model AutoOrderSettingsViewModel
+@{
+    ViewBag.Title = Resources.Common.ConfigureAutoOrder;
+    var minimumStartDate = GlobalUtilities.GetNextAvailableAutoOrderStartDate(DateTime.Now.ToCST());
+    var currentMarket = GlobalUtilities.GetCurrentMarket(this.Context);
+
+    var availableFrequencyTypes = currentMarket.AvailableAutoOrderFrequencyTypes;
+}
+
+<section id="page-title">
+    <div class="container clearfix">
+        <h1>@ViewBag.Title</h1>
+    </div>
+</section>
+
+<div id="view-autoordersettings">
+    <div class="content-wrap">
+        <div class="container">
+            @using (Html.BeginForm())
+            {
+                <div class="form-group">
+                    <label for="">@Resources.Common.HowOftenDoYouWantToRecieve</label><br />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(c => c.AutoOrderFrequencyType, availableFrequencyTypes.Select(c => new SelectListItem()
+                            {
+                                Value = ((int)c).ToString(),
+                                Text = CommonResources.FrequencyTypes(ExigoDAL.GetFrequencyTypeID(c))
+                            }), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>@Resources.Common.StartingOn</label>
+                    <div class="form-row">
+                        <div class="col-md-3 mb-md-0 mb-4">
+                            <div class="input-group">
+                                <input type="text" id="Date" class="form-control date" value="@Model.AutoOrderStartDate.ToString("M/d/yyyy")" />
+                                <div id="triggerDatePicker" class="input-group-append cursor-pointer">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="@Html.IdFor(c => c.AutoOrderStartDate)" name="@Html.NameFor(c => c.AutoOrderStartDate)" value="@Model.AutoOrderStartDate.ToString("M/d/yyyy")" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 text-right">
+                        <button type="submit" class="btn btn-primary align-self-end">@Resources.Common.Continue</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        require(["jquery", "moment", "jquery-ui", "timepicker"], function ($,moment) {
+
+            // Settings
+            var context = "#view-autoordersettings",
+                $context = $(context),
+                $Date = $("#Date"),
+                $triggerDatePicker = $("#triggerDatePicker"),
+                $AutoOrderStartDate = $("#" + "@Html.IdFor(c => c.AutoOrderStartDate)");
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $Date.on("change", function () {
+                    SetAutoOrderStartDate();
+                });
+
+                $triggerDatePicker.on('click', function(){
+                    $Date.datepicker('show');
+                });
+
+            }
+
+            function SetAutoOrderStartDate() {
+                let DateTime = moment($Date.val());
+
+                $AutoOrderStartDate.val(DateTime.format());
+            }
+
+            // Initialization
+            function init() {
+                var today = new Date();
+
+	            $Date.datepicker({
+		            'format': 'M/d/yyyy',
+                    'autoclose': true,
+                    beforeShowDay: function (date) {
+                        var day = date.getUTCDate();
+                        return [($.inArray(day, [28,29,30,31]) == -1)];
+                    },
+                    startDate: '+30d',
+                    minDate: today,
+                    maxDate: '+60d'
+                });
+
+                SetAutoOrderStartDate();
+
+                registerEventHandlers();
+            }
+
+            init();
+        });
+    </script>
+}

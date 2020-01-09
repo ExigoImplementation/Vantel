@@ -1,0 +1,764 @@
+﻿@model AccountOverviewViewModel
+@{
+    ViewBag.Title = Resources.Common.AccountSettings;
+
+    var action = ViewContext.RouteData.Values["action"].ToString();
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var market = Utilities.GetCurrentMarket();
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "accountsettings"
+    };
+}
+
+<div id="view-accountoverview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+                    @using (Ajax.BeginForm("xxx", controller, new AjaxOptions()
+                    {
+                        OnSuccess = "accountoverview.onSuccess"
+                    }))
+                    {
+                        <!-- BASIC INFORMATION -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.BasicInformation</h3>
+                            </div>
+
+                            <!-- Avatar -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Avatar</div>
+                                    <div class="col-md-7"><img src="@Url.Avatar(Identity.Current.CustomerID, cache: true)" style="max-height: 100px;" /></div>
+                                    <div class="col-md-2 text-right"><a href="@Url.Action("manageavatar", "account")" class="btn btn-link">@Resources.Common.Edit</a></div>
+                                </div>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Name</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.Customer.FirstName @Model.Customer.LastName, @(Resources.Common.ID)# @Model.Customer.CustomerID
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Email</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.Customer.Email
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Customer.Email, new { @class = "form-control" })
+                                            </div>
+
+                                            <button type="submit" name="UpdateEmailAddress" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- WebAlias -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Website</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @if (Model.WebAlias.IsNullOrEmpty())
+                                            {
+                                                <div class="alert alert-danger no-margin" role="alert">
+                                                    @Resources.Common.PersonalizedWebsite
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <a href="@GlobalSettings.ReplicatedSites.GetFormattedUrl(Model.WebAlias)" target="_blank">@GlobalSettings.ReplicatedSites.GetFormattedUrl(Model.WebAlias)</a>
+                                            }
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">@GlobalSettings.Company.BaseReplicatedUrl</span>
+                                                    </div>
+                                                    @Html.EditorFor(c => c.WebAlias, new { @class = "form-control" })
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateWebAlias" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Username</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.Customer.LoginName
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Customer.LoginName, new { @class = "form-control" })
+                                            </div>
+
+                                            <button type="submit" name="UpdateLoginName" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Password</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            ********
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Password, new { @class = "form-control", placeholder = Resources.Common.ChoosePassword })
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.ConfirmPassword, new { @class = "form-control", placeholder = Resources.Common.ConfirmPassword })
+                                            </div>
+
+                                            <button type="submit" name="UpdatePassword" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Language -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Language</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Identity.Current.Language.GetLanguageDescription()
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.DropDownListFor(c => c.Customer.LanguageID, ExigoDAL.GetLanguages().Select(x => new SelectListItem()
+                                                {
+                                                    Text = CommonResources.Languages(x.LanguageID),
+                                                    Value = x.LanguageID.ToString()
+                                                }),
+                                                htmlAttributes: new { @class = "form-control" })
+                                            </div>
+
+                                            <button type="submit" name="UpdateLanguagePreference" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CONTACT INFORMATION -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.ContactInformation</h3>
+                            </div>
+
+                            <!-- Addresses -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Addresses</div>
+                                    <div class="col-md-7">
+                                        @foreach (var address in Model.Customer.Addresses)
+                                        {
+                                            @Format.FlatAddress(address)
+                                            @Html.Raw((address.AddressType == AddressType.Main) ? " <i class='text-muted'>({0})</i>".FormatWith(Resources.Common.Primary) : string.Empty)
+                                            <br />
+                                        }
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <a href="@Url.Action("AddressList")" class="btn btn-link">@Resources.Common.Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phone Numbers -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.PhoneNumbers</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Resources.Common.Primary: <strong>@Model.Customer.PrimaryPhone</strong><br />
+                                            @Resources.Common.Secondary: <strong>@Model.Customer.SecondaryPhone</strong>
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.Customer.PrimaryPhone, new { @class = "control-label" })
+                                                @Html.EditorFor(c => c.Customer.PrimaryPhone, new { @class = "form-control", placeholder = Resources.Common.YourPrimaryPhoneNumber })
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.Customer.SecondaryPhone, new { @class = "control-label" })
+                                                @Html.EditorFor(c => c.Customer.SecondaryPhone, new { @class = "form-control", placeholder = Resources.Common.YourSecondaryPhoneNumber })
+                                            </div>
+
+                                            <button type="submit" name="UpdatePhoneNumbers" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mobile Phone -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.TextMessages</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @(Resources.Common.SendTextsTo): <strong>@Model.Customer.MobilePhone</strong>
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Customer.MobilePhone, new { @class = "form-control" })
+                                            </div>
+
+                                            <button type="submit" name="UpdateMobilePhone" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fax -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Faxes</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Resources.Common.SendFaxesTo: <strong>@Model.Customer.Fax</strong>
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Customer.Fax, new { @class = "form-control" })
+                                            </div>
+
+                                            <button type="submit" name="UpdateFaxNumber" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CUSTOMER SITE -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.WebsiteInformation</h3>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Name</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.CustomerSite.FirstName @Model.CustomerSite.LastName
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-6">
+                                                        @Html.LabelFor(c => c.CustomerSite.FirstName, Resources.Common.YourName)
+                                                        @Html.EditorFor(c => c.CustomerSite.FirstName, new { @class = "form-control", placeholder = Resources.Common.FirstName })
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label>&nbsp;</label>
+                                                        @Html.EditorFor(c => c.CustomerSite.LastName, new { @class = "form-control", placeholder = Resources.Common.LastName })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateWebsiteName" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Email</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.CustomerSite.Email
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(c => c.CustomerSite.Email, Resources.Common.Email)
+                                                        @Html.EditorFor(c => c.CustomerSite.Email, new { @class = "form-control", placeholder = Resources.Common.Email })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateWebsiteEmail" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phone Numbers -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.PhoneNumbers</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Resources.Common.Primary: <strong>@Model.CustomerSite.PrimaryPhone</strong><br />
+                                            @Resources.Common.Secondary: <strong>@Model.CustomerSite.SecondaryPhone</strong>
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.CustomerSite.PrimaryPhone, new { @class = "control-label" })
+                                                @Html.EditorFor(c => c.CustomerSite.PrimaryPhone, new { @class = "form-control", placeholder = Resources.Common.YourPrimaryPhoneNumber })
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.CustomerSite.SecondaryPhone, new { @class = "control-label" })
+                                                @Html.EditorFor(c => c.CustomerSite.SecondaryPhone, new { @class = "form-control", placeholder = Resources.Common.YourSecondaryPhoneNumber })
+                                            </div>
+
+                                            <button type="submit" name="UpdateWebsitePhoneNumbers" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fax -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Fax</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.CustomerSite.Fax
+                                        </div>
+
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(c => c.CustomerSite.Fax, Resources.Common.Fax)
+                                                        @Html.EditorFor(c => c.CustomerSite.Fax, new { @class = "form-control", placeholder = Resources.Common.Fax })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateWebsiteFax" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Address</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.CustomerSite.Address.AddressDisplay<br />@Model.CustomerSite.Address.City, @Model.CustomerSite.Address.State @Model.CustomerSite.Address.Zip, @Model.CustomerSite.Address.Country
+                                        </div>
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-12">
+                                                        @Html.EditorFor(c => c.CustomerSite.Address, "Address")
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateWebsiteAddress" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link"> @Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Social -->
+                            <div class="card-body border-bottom">
+                                <input type="hidden" id="hdnFacebook" name="@Html.NameFor(c => c.Facebook)" value="@Model.Facebook" />
+                                <input type="hidden" id="hdnTwitter" name="@Html.NameFor(c => c.Twitter)" value="@Model.Twitter" />
+                                <input type="hidden" id="hdnYouTube" name="@Html.NameFor(c => c.YouTube)" value="@Model.YouTube" />
+                                <input type="hidden" id="hdnBlog" name="@Html.NameFor(c => c.Blog)" value="@Model.Blog" />
+                                <input type="hidden" id="hdnGooglePlus" name="@Html.NameFor(c => c.GooglePlus)" value="@Model.GooglePlus" />
+                                <input type="hidden" id="hdnLinkedIn" name="@Html.NameFor(c => c.LinkedIn)" value="@Model.LinkedIn" />
+                                <input type="hidden" id="hdnMySpace" name="@Html.NameFor(c => c.MySpace)" value="@Model.MySpace" />
+                                <input type="hidden" id="hdnPinterest" name="@Html.NameFor(c => c.Pinterest)" value="@Model.Pinterest" />
+                                <input type="hidden" id="hdnInstagram" name="@Html.NameFor(c => c.Instagram)" value="@Model.Instagram" />
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.SocialMedia</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            <dl class="dl-metric">
+                                                <dt>@Resources.Common.Facebook:</dt>
+                                                <dd><a href="@Model.Facebook" target="_blank"><strong>@Model.Facebook</strong></a></dd>
+
+                                                <dt>@Resources.Common.Twitter</dt>
+                                                <dd><a href="@Model.Twitter" target="_blank"><strong>@Model.Twitter</strong></a></dd>
+
+                                                <dt>@Resources.Common.YouTube</dt>
+                                                <dd><a href="@Model.YouTube" target="_blank"><strong>@Model.YouTube</strong></a></dd>
+
+                                                <dt>@Resources.Common.Blog</dt>
+                                                <dd><a href="@Model.Blog" target="_blank"><strong>@Model.Blog</strong></a></dd>
+
+                                                <dt>@Resources.Common.GooglePlus:</dt>
+                                                <dd><a href="@Model.GooglePlus" target="_blank"><strong>@Model.GooglePlus</strong></a></dd>
+
+                                                <dt>@Resources.Common.LinkedIn</dt>
+                                                <dd><a href="@Model.LinkedIn" target="_blank"><strong>@Model.LinkedIn</strong></a></dd>
+
+                                                <dt>@Resources.Common.MySpace</dt>
+                                                <dd><a href="@Model.MySpace" target="_blank"><strong>@Model.MySpace</strong></a></dd>
+
+                                                <dt>@Resources.Common.Pinterest</dt>
+                                                <dd><a href="@Model.Pinterest" target="_blank"><strong>@Model.Pinterest</strong></a></dd>
+
+                                                <dt>@Resources.Common.Instagram</dt>
+                                                <dd><a href="@Model.Instagram" target="_blank"><strong>@Model.Instagram</strong></a></dd>
+                                            </dl>
+                                        </div>
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.Facebook">@Resources.Common.Facebook</label>
+                                                <input type="text" id="facebook" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.Twitter">@Resources.Common.Twitter</label>
+                                                <input type="text" id="twitter" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.YouTube">@Resources.Common.YouTube</label>
+                                                <input type="text" id="youtube" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.Blog">@Resources.Common.Blog</label>
+                                                <input type="text" id="blog" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.GooglePlus">@Resources.Common.GooglePlus</label>
+                                                <input type="text" id="googleplus" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.LinkedIn">@Resources.Common.LinkedIn</label>
+                                                <input type="text" id="linkedin" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.MySpace">@Resources.Common.MySpace</label>
+                                                <input type="text" id="myspace" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.Pinterest">@Resources.Common.Pinterest</label>
+                                                <input type="text" id="pinterest" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="@Model.Instagram">@Resources.Common.Instagram</label>
+                                                <input type="text" id="instagram" class="form-control" />
+                                            </div>
+                                            <button type="submit" name="UpdateWebsiteSocialMediaLinks" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Personal Message -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Message</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            <p>@Model.CustomerSite.Notes1</p>
+                                        </div>
+                                        <div class="form acc-form d-none">
+                                            <div class="form-group">
+                                                <div class="row margin-10">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(c => c.CustomerSite.Notes1, Resources.Common.Message)
+                                                        @Html.TextAreaFor(c => c.CustomerSite.Notes1, new { rows = "5", @class = "form-control", placeholder = Resources.Common.EnterAPersonalMessage })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="submit" name="UpdateWebsiteMessage" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <script>
+        var accountoverview;
+
+        require(["jquery", "forms", "extensions", "mask"],  function ($) {
+
+            // Settings
+            var context = "#view-accountoverview",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $("[type='submit']", $context).on("click", function () {
+                    if (!$("form").valid()) {
+                        return false;
+                    }
+                });  
+
+                $('button[name="edit"]', $context).on('click', function () {
+                    actions.beginEdit($(this));
+                });
+
+                $('button[name="cancel"]', $context).on('click', function () {
+                    actions.endEdit($(this));
+                });
+
+                // update the hidden fields
+                $('#facebook', $context).on('blur', function () {
+                    $('#hdnFacebook').val($(this).val());
+                });
+                $('#twitter', $context).on('blur', function () {
+                    $('#hdnTwitter').val($(this).val());
+                });
+                $('#youtube', $context).on('blur', function () {
+                    $('#hdnYouTube').val($(this).val());
+                });
+                $('#blog', $context).on('blur', function () {
+                    $('#hdnBlog').val($(this).val());
+                });
+                $('#googleplus', $context).on('blur', function () {
+                    $('#hdnGooglePlus').val($(this).val());
+                });
+                $('#myspace', $context).on('blur', function () {
+                    $('#hdnMySpace').val($(this).val());
+                });
+                $('#linkedin', $context).on('blur', function () {
+                    $('#hdnLinkedIn').val($(this).val());
+                });
+                $('#pinterest', $context).on('blur', function () {
+                    $('#hdnPinterest').val($(this).val());
+                });
+                $('#instagram', $context).on('blur', function () {
+                    $('#hdnInstagram').val($(this).val());
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                onSuccess: function (response) {
+                    var $submitbutton = $('[name="{0}"]'.format(response.action), $context);
+                    var $root = helpers.getFormRoot($submitbutton);
+
+                    // Update the display
+                    $root.find('.detail').html(response.html);
+
+                    // Close the form editor
+                    actions.endEdit($submitbutton);
+                    actions.populateSocialUrls();
+
+                    //Re-Enable The Buttons
+                    $submitbutton.buttonState("reset");
+                },
+
+                beginEdit: function ($element) {
+                    var $root = helpers.getFormRoot($element);
+                    var $accForm = $root.find('.acc-form');
+                    var $detail = $root.find('.detail');
+
+                    $accForm.toggleClass('d-none');
+                    $detail.toggleClass('d-none');
+                    $element.toggleClass('d-none');
+                },
+                endEdit: function ($element) {
+                    var $root = helpers.getFormRoot($element);
+                    var $buttonEdit = $root.find('button[name="edit"]');
+                    var $accForm = $root.find('.acc-form');
+                    var $detail = $root.find('.detail');
+
+                    $accForm.toggleClass('d-none');
+                    $buttonEdit.toggleClass('d-none');
+                    $detail.toggleClass('d-none');
+                },
+                populateSocialUrls: function () {
+                    $facebookinput = $('#facebook'),
+                    $twitterinput = $('#twitter'),
+                    $youtubeinput = $('#youtube'),
+                    $bloginput = $('#blog'),
+                    $googleplusinput = $('#googleplus'),
+                    $linkedininput = $('#linkedin'),
+                    $myspaceinput = $('#myspace'),
+                    $pinterestinput = $('#pinterest'),
+                    $instagraminput = $('#instagram');
+
+                    $facebookinput.val($('#hdnFacebook').val());
+                    $twitterinput.val($('#hdnTwitter').val());
+                    $youtubeinput.val($('#hdnYouTube').val());
+                    $bloginput.val($('#hdnBlog').val());
+                    $googleplusinput.val($('#hdnGooglePlus').val());
+                    $linkedininput.val($('#hdnLinkedIn').val());
+                    $myspaceinput.val($('#hdnMySpace').val());
+                    $pinterestinput.val($('#hdnPinterest').val());
+                    $instagraminput.val($('#hdnInstagram').val());
+                }
+            };
+
+
+            // Helpers
+            var helpers = {
+                getFormRoot: function ($element) {
+                    return $element.parents('.card-body');
+                },
+                applyMasks: function () {
+                    $('#Customer_PrimaryPhone').mask('@market.PhoneMask');
+                    $('#Customer_SecondaryPhone').mask('@market.PhoneMask');  
+                    $('#Customer_Fax').mask('@market.PhoneMask');  
+                    $('#CustomerSite_PrimaryPhone').mask('@market.PhoneMask');  
+                    $('#CustomerSite_SecondaryPhone').mask('@market.PhoneMask');  
+                    $('#CustomerSite_Fax').mask('@market.PhoneMask');  
+                    
+				}
+            };
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+
+                actions.populateSocialUrls();
+                helpers.applyMasks();
+            }
+            init();
+
+
+            // Exports
+            accountoverview = {
+                onSuccess: actions.onSuccess
+            }
+
+        });
+    </script>
+}

@@ -1,0 +1,1951 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C68927CC-5E81-45F4-A5BB-400A80574AF1}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Common</RootNamespace>
+    <AssemblyName>Common</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Exigo.ResourceSet, Version=2019.1.25.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Exigo.ResourceSet.2019.1.25.1\lib\net451\Exigo.ResourceSet.dll</HintPath>
+    </Reference>
+    <Reference Include="Exigo.Web.Dapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Exigo.Web.Dapper.1.1.1\lib\net451\Exigo.Web.Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidationNA">
+      <HintPath>..\packages\FluentValidationNA.1.2.16\lib\net40\FluentValidationNA.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.7.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodaTime.1.3.1\lib\net35-Client\NodaTime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RazorEngine, Version=3.9.3.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorEngine.3.9.3\lib\net45\RazorEngine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ResourceJs, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Exigo.Web.ResourceJs.1.0.0\lib\net45\ResourceJs.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.7.1\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Enrichers.Environment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Enrichers.Environment.2.1.2\lib\net45\Serilog.Enrichers.Environment.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Formatting.Compact, Version=1.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Formatting.Compact.1.0.0\lib\net45\Serilog.Formatting.Compact.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.PeriodicBatching, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.PeriodicBatching.2.1.1\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Seq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Seq.4.0.0\lib\net45\Serilog.Sinks.Seq.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLite-net, Version=1.5.231.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\sqlite-net-pcl.1.5.231\lib\netstandard1.1\SQLite-net.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.batteries_green, Version=1.1.11.121, Culture=neutral, PublicKeyToken=a84b7dcfb1391f7f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.bundle_green.1.1.11\lib\net45\SQLitePCLRaw.batteries_green.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.batteries_v2, Version=1.1.11.121, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.bundle_green.1.1.11\lib\net45\SQLitePCLRaw.batteries_v2.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.core, Version=1.1.11.121, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.core.1.1.11\lib\net45\SQLitePCLRaw.core.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.provider.e_sqlite3, Version=1.1.11.121, Culture=neutral, PublicKeyToken=9c301db686d0bd12, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.provider.e_sqlite3.net45.1.1.11\lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll</HintPath>
+    </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.2.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.2.4\lib\net45\StackExchange.Redis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StorageEverywhere, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StorageEverywhere.1.0.0\lib\net45\StorageEverywhere.dll</HintPath>
+    </Reference>
+    <Reference Include="StorageEverywhere.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StorageEverywhere.1.0.0\lib\net45\StorageEverywhere.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.ServiceModel.Duplex, Version=4.1.0.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ServiceModel.Duplex.4.4.4\lib\net461\System.ServiceModel.Duplex.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Http, Version=4.1.2.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ServiceModel.Http.4.4.4\lib\net461\System.ServiceModel.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.NetTcp, Version=4.1.2.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ServiceModel.NetTcp.4.4.4\lib\net461\System.ServiceModel.NetTcp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Primitives, Version=4.2.0.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ServiceModel.Primitives.4.4.4\lib\net461\System.ServiceModel.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Spatial, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.7.0\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Providers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Providers.Core.2.0.0\lib\net40\System.Web.Providers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\Exigo\Factories\AdminWebService.cs" />
+    <Compile Include="Api\Exigo\Factories\WebService.cs" />
+    <Compile Include="Api\Exigo\SqlDataContext.cs" />
+    <Compile Include="Api\Exigo\AdminWebService.cs" />
+    <Compile Include="Attributes\Enums\DescriptionAttribute.cs" />
+    <Compile Include="Attributes\Enums\DescriptiveEnumEnforcementAttribute.cs" />
+    <Compile Include="Bundles\CssRewriteUrlTransformer.cs" />
+    <Compile Include="Bundles\NonOrderingBundleOrderer.cs" />
+    <Compile Include="Exceptions\InvalidRequestException.cs" />
+    <Compile Include="Exceptions\InvalidWebAliasException.cs" />
+    <Compile Include="Exceptions\WebAliasRequiredException.cs" />
+    <Compile Include="Extensions\Enums.cs" />
+    <Compile Include="Extensions\Ints.cs" />
+    <Compile Include="Extensions\Objects.cs" />
+    <Compile Include="Extensions\Dictionaries.cs" />
+    <Compile Include="Filters\LuhnAttribute.cs" />
+    <Compile Include="Filters\AllowCrossSiteJsonAttribute.cs" />
+    <Compile Include="Filters\GlobalFilters.cs" />
+    <Compile Include="Filters\EnforceTrueAttribute.cs" />
+    <Compile Include="Filters\HandleExigoErrorAttribute.cs" />
+    <Compile Include="Filters\HttpParamActionAttribute.cs" />
+    <Compile Include="Filters\ValidateAntiForgeryTokenOnAllPostsAttribute.cs" />
+    <Compile Include="Filters\Validations\ConditionalValidationAttribute.cs" />
+    <Compile Include="Filters\Validations\RegularExpressionIf.cs" />
+    <Compile Include="Filters\Validations\RequiredIf.cs" />
+    <Compile Include="Helpers\DynamicHelper.cs" />
+    <Compile Include="Helpers\IdentityCacheHelper.cs" />
+    <Compile Include="Helpers\JavascriptExpressionVisitor.cs" />
+    <Compile Include="Helpers\JsonNetResult.cs" />
+    <Compile Include="HtmlHelpers\ControllerPartials.cs" />
+    <Compile Include="HtmlHelpers\Editors.cs" />
+    <Compile Include="HtmlHelpers\Forms.cs" />
+    <Compile Include="HtmlHelpers\Images.cs" />
+    <Compile Include="HtmlHelpers\Links.cs" />
+    <Compile Include="HtmlHelpers\Scripts.cs" />
+    <Compile Include="Helpers\ModelBinders\Date.cs" />
+    <Compile Include="Filters\PropertyBinderAttribute.cs" />
+    <Compile Include="Helpers\ModelBinders\CustomModelBinder.cs" />
+    <Compile Include="Helpers\ModelBinders\GlobalModelBinders.cs" />
+    <Compile Include="HtmlHelpers\UrlCompileHelper.cs" />
+    <Compile Include="Models\ContentService\ContentSite.cs" />
+    <Compile Include="Models\ContentService\ContentEnvironment.cs" />
+    <Compile Include="Models\ContentService\Requests\GetContentItemRequest.cs" />
+    <Compile Include="Models\ContentService\Requests\GetContentItemCountryLanguagesRequest.cs" />
+    <Compile Include="Models\Content\ContentListModel.cs" />
+    <Compile Include="Models\Dashboard\CommissionCard.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\AutoOrderDetailResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\AutoOrderResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CreateGuestRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CreatePartyRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\PartyAddress.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\PartyResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\UpdateGuestRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\UpdatePartyRequest.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarCountry.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarSpeaker.cs" />
+    <Compile Include="Models\ExigoService\CompanyNews\Interfaces\ICompanyNews.cs" />
+    <Compile Include="Models\ExigoService\CompanyNews\Requests\GetCompanyNewsItemRequest.cs" />
+    <Compile Include="Models\ExigoService\Customers\CustomerSocialNetwork.cs" />
+    <Compile Include="Models\ExigoService\Customers\Interfaces\ICustomerSocialNetwork.cs" />
+    <Compile Include="Models\ExigoService\DynamicKits\DynamicKitCategoryItem.cs" />
+    <Compile Include="Models\ExigoService\Items\Interfaces\IItemDetailFilterRequest.cs" />
+    <Compile Include="Models\ExigoService\Responses\Result.cs" />
+    <Compile Include="Models\ExigoService\Items\Interfaces\IChildItemRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Interfaces\IItemInformationRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Interfaces\IItemMasterSort.cs" />
+    <Compile Include="Models\ExigoService\Items\ItemStaticKitMember.cs" />
+    <Compile Include="Models\ExigoService\Items\MasterSortItem.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\GetItemInformationRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\ItemInformationRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\PopulateAdditionalItemDataRequest.cs" />
+    <Compile Include="Models\ExigoService\Orders\Responses\GetCustomerOrdersResponse.cs" />
+    <Compile Include="Models\ContentService\ContentItem.cs" />
+    <Compile Include="Models\ExigoService\Parties\CreateGuestRequest.cs" />
+    <Compile Include="Models\ExigoService\Parties\CreatePartyPaymentRequest.cs" />
+    <Compile Include="Models\ExigoService\Parties\CreatePartyRequest.cs" />
+    <Compile Include="Models\ExigoService\Parties\GetPartiesRequest.cs" />
+    <Compile Include="Models\ExigoService\Parties\Guest.cs" />
+    <Compile Include="Models\ExigoService\Parties\Host.cs" />
+    <Compile Include="Models\ExigoService\Parties\HostessEmail.cs" />
+    <Compile Include="Models\ExigoService\Parties\HostessReward.cs" />
+    <Compile Include="Models\ExigoService\Parties\HostessRewardDiscount.cs" />
+    <Compile Include="Models\ExigoService\Parties\Party.cs" />
+    <Compile Include="Models\ExigoService\Parties\PartyGuestList.cs" />
+    <Compile Include="Models\ExigoService\Parties\PartySearchRequest.cs" />
+    <Compile Include="Models\ExigoService\Parties\RSVP.cs" />
+    <Compile Include="Models\ExigoService\Parties\SalesTotalNode.cs" />
+    <Compile Include="Models\ExigoService\Parties\SendPartyInvitationResponse.cs" />
+    <Compile Include="Models\ExigoService\Parties\WeekSalesTotalNode.cs" />
+    <Compile Include="Models\ExigoService\Resources\CreateResource.cs" />
+    <Compile Include="Models\ExigoService\Resources\Interfaces\ICategoryItem.cs" />
+    <Compile Include="Models\ExigoService\Resources\Interfaces\IResource.cs" />
+    <Compile Include="Models\ExigoService\Resources\Interfaces\IResourceCategory.cs" />
+    <Compile Include="Models\ExigoService\Resources\Interfaces\IResourceType.cs" />
+    <Compile Include="Models\ExigoService\Resources\Requests\ResourceRequest.cs" />
+    <Compile Include="Models\ExigoService\Resources\ResourceModels.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CompanyNewsResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CreateAutoOrderRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CreateCustomerRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\GetCompanyNewsItemResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\SetAccountCheckingRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\SetAccountCreditCardTokenRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\SetCustomerSiteRequest.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarEventPrivacyType.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarEventTag.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarSubscriptionCustomer.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Interfaces\IKendoSchedulerEvent.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Tag.cs" />
+    <Compile Include="Models\ExigoService\CompanyNews\CompanyNewsItem.cs" />
+    <Compile Include="Models\ExigoService\CompanyNews\Interfaces\ICompanyNewsItem.cs" />
+    <Compile Include="Models\ExigoService\CompanyNews\Requests\GetCompanyNewsRequest.cs" />
+    <Compile Include="Models\ExigoService\Configurations\Interfaces\IAutoOrderConfiguration.cs" />
+    <Compile Include="Models\ExigoService\Configurations\Interfaces\IWebCategoryConfiguration.cs" />
+    <Compile Include="Models\ExigoService\CustomerSites\CustomerSite.cs" />
+    <Compile Include="Models\ExigoService\CustomerSites\Interfaces\ICustomerSite.cs" />
+    <Compile Include="Models\ExigoService\Customers\Requests\GetNewestDistributorsRequest.cs" />
+    <Compile Include="Models\ExigoService\DynamicKits\DynamicKitCategory.cs" />
+    <Compile Include="Models\ExigoService\Items\Interfaces\IItemGroupMember.cs" />
+    <Compile Include="Models\ExigoService\Items\ItemGroupMember.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\GetItemDetailRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\GetCartItemsRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\GetItemListRequest.cs" />
+    <Compile Include="Models\ExigoService\Payments\Interfaces\IPaymentType.cs" />
+    <Compile Include="Models\ExigoService\Payments\Interfaces\IPayment.cs" />
+    <Compile Include="Models\ExigoService\Payments\Payment.cs" />
+    <Compile Include="Models\ExigoService\Payments\PaymentType.cs" />
+    <Compile Include="Models\ExigoService\Ranks\Responses\GetDownlineUpcomingPromotionsResponse.cs" />
+    <Compile Include="Models\ExigoService\Resources\ResourceFilters.cs" />
+    <Compile Include="Models\ExigoService\Shopping\ShoppingCartKitItem.cs" />
+    <Compile Include="Models\ExigoService\Tags\Tag.cs" />
+    <Compile Include="Models\ExigoService\WebCategories\Requests\GetWebCategoriesRequest.cs" />
+    <Compile Include="Models\ExigoService\WebCategories\WebCategory.cs" />
+    <Compile Include="Models\ExigoService\WebCategories\WebCategoryItem.cs" />
+    <Compile Include="Models\ExigoSql\ExigoSql.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExigoSql.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Identity\IdentityRanks.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Identity\IdentitySubscriptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Identity\IdentityUpline.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Identity\IdentityVolumes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Identity\Interfaces\IIdentityCacheable.cs" />
+    <Compile Include="Models\Identity\IdentityAddress.cs" />
+    <Compile Include="Models\ShoppingService\Interfaces\IItemConverterService.cs" />
+    <Compile Include="Providers\IdentityAuthentication\SqlIdentityAuthenticationProvider.cs" />
+    <Compile Include="Providers\IdentityAuthentication\Interfaces\IIdentityAuthenticationProvider.cs" />
+    <Compile Include="Resources\Models.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Models.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Models.es-US.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Models.es-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Routes\ValuesConstraint.cs" />
+    <Compile Include="Routes\RouteValuePresentConstraint.cs" />
+    <Compile Include="Routes\LowerCaseRoute.cs" />
+    <Compile Include="Services\CacheService\Cache.cs" />
+    <Compile Include="Services\CacheService\Interface\ICache.cs" />
+    <Compile Include="Services\CacheService\Interface\ICacheProvider.cs" />
+    <Compile Include="Services\CacheService\RedisCacheProvider.cs" />
+    <Compile Include="Services\CacheService\SqlCacheProvider.cs" />
+    <Compile Include="Services\CommissionReportRefreshTaskService.cs" />
+    <Compile Include="Services\ExigoService\Calendars.cs" />
+    <Compile Include="Services\ExigoService\CompanyNews.cs" />
+    <Compile Include="Services\ExigoService\CustomerSites.cs" />
+    <Compile Include="Services\ExigoService\DynamicKits.cs" />
+    <Compile Include="Services\ExigoService\FrequencyTypes.cs" />
+    <Compile Include="Services\ExigoService\PaymentTypes.cs" />
+    <Compile Include="Services\ExigoService\PayableTypes.cs" />
+    <Compile Include="Services\ExigoService\Periods.cs" />
+    <Compile Include="Models\ExigoService\SMS\Requests\SendSMSRequest.cs" />
+    <Compile Include="Services\ExigoService\PropertyBags.cs" />
+    <Compile Include="Services\ContentService.cs" />
+    <Compile Include="Services\ExigoService\Resources.cs" />
+    <Compile Include="Services\ExigoService\SMS.cs" />
+    <Compile Include="Services\ExigoService\Items.cs" />
+    <Compile Include="Services\ExigoService\Emails.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Calendar.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarEvent.cs" />
+    <Compile Include="Models\ExigoService\Calendars\CalendarEventType.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Interfaces\ICalendar.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Interfaces\ICalendarEvent.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Interfaces\ICalendarEventType.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Requests\CreateCalendarRequest.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Requests\GetCalendarEventsRequest.cs" />
+    <Compile Include="Models\ExigoService\Calendars\Requests\GetCalendarsRequest.cs" />
+    <Compile Include="Models\ExigoService\Commissions\Requests\GetCustomerRealTimeCommissionsRequest.cs" />
+    <Compile Include="Models\ExigoService\Emails\SMTPConfiguration.cs" />
+    <Compile Include="Models\ExigoService\Emails\Requests\SendEmailRequest.cs" />
+    <Compile Include="Models\ExigoService\Items\Interfaces\IItem.cs" />
+    <Compile Include="Models\ExigoService\Items\Item.cs" />
+    <Compile Include="Models\ExigoService\Items\Requests\GetItemsRequest.cs" />
+    <Compile Include="Models\ExigoService\Ranks\CustomerRankCollection.cs" />
+    <Compile Include="Models\ExigoService\Ranks\Requests\GetCustomerRanksRequest.cs" />
+    <Compile Include="Providers\LogicProvider\BaseLogicProvider.cs" />
+    <Compile Include="Providers\LogicProvider\Interfaces\ILogicProvider.cs" />
+    <Compile Include="Providers\LogicProvider\Results\CheckLogicResult.cs" />
+    <Compile Include="Models\ExigoService\Ranks\CustomerRankScore.cs" />
+    <Compile Include="Models\ExigoService\Ranks\Interfaces\ICustomerRankScore.cs" />
+    <Compile Include="Models\ExigoService\Configurations\Interfaces\IMarketConfiguration.cs" />
+    <Compile Include="Models\ExigoService\Configurations\Interfaces\IOrderConfiguration.cs" />
+    <Compile Include="Models\ExigoService\Languages\Interfaces\ILanguage.cs" />
+    <Compile Include="Models\ExigoService\Markets\Interfaces\IMarket.cs" />
+    <Compile Include="Models\ExigoService\Markets\Market.cs" />
+    <Compile Include="Models\ExigoService\Customers\CustomerType.cs" />
+    <Compile Include="Models\ExigoService\Customers\CustomerStatus.cs" />
+    <Compile Include="Models\ExigoService\Customers\Interfaces\ICustomerType.cs" />
+    <Compile Include="Models\ExigoService\Customers\Interfaces\ICustomerStatus.cs" />
+    <Compile Include="Models\ExigoService\PointAccounts\CustomerPointAccount.cs" />
+    <Compile Include="Models\ExigoService\PointAccounts\Interfaces\IPointAccount.cs" />
+    <Compile Include="Models\ExigoService\PointAccounts\PointAccount.cs" />
+    <Compile Include="Models\ExigoService\Subscriptions\Interfaces\ISubscription.cs" />
+    <Compile Include="Models\ExigoService\Subscriptions\CustomerSubscription.cs" />
+    <Compile Include="Models\ExigoService\Subscriptions\Subscription.cs" />
+    <Compile Include="Models\ExigoService\Trees\Requests\GetUplineRequest.cs" />
+    <Compile Include="Models\ExigoService\Trees\Interfaces\INestedTreeNode.cs" />
+    <Compile Include="Models\ExigoService\Trees\Interfaces\ITreeNode.cs" />
+    <Compile Include="Models\ExigoService\Trees\Interfaces\IWaitingRoomNode.cs" />
+    <Compile Include="Models\ExigoService\Trees\NestedTreeNode.cs" />
+    <Compile Include="Models\ExigoService\Trees\TreeNode.cs" />
+    <Compile Include="Services\ExigoService\PointAccounts.cs" />
+    <Compile Include="Services\ExigoService\Subscriptions.cs" />
+    <Compile Include="Extensions\Collections.cs" />
+    <Compile Include="Extensions\Controllers.cs" />
+    <Compile Include="Extensions\DateTimes.cs" />
+    <Compile Include="Extensions\Linq.cs" />
+    <Compile Include="Extensions\Strings.cs" />
+    <Compile Include="Extensions\TempData.cs" />
+    <Compile Include="Extensions\Types.cs" />
+    <Compile Include="Helpers\ErrorLogger.cs" />
+    <Compile Include="Api\Exigo\Images.cs" />
+    <Compile Include="Api\Exigo\Payments.cs" />
+    <Compile Include="Api\Exigo\Sql.cs" />
+    <Compile Include="Services\ExigoService\Addresses.cs" />
+    <Compile Include="Services\ExigoService\AutoOrders.cs" />
+    <Compile Include="Services\ExigoService\Commissions.cs" />
+    <Compile Include="Services\ExigoService\CountryRegions.cs" />
+    <Compile Include="Services\ExigoService\Customers.cs" />
+    <Compile Include="Services\ExigoService\Languages.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\ChargeCreditCardTokenOnFileRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\ChargeCreditCardTokenRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CommissionDetailResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CommissionResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CreateOrderRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CustomerResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\CustomerWallItemResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\DebitBankAccountOnFileRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\DebitBankAccountRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\GetCustomerSiteResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\ItemMemberResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\ItemResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\OrderDetailRequest.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\OrderDetailResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\OrderResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\ShipMethodResponse.cs" />
+    <Compile Include="Models\ExigoService\Adapters\WebService\VolumeResponse.cs" />
+    <Compile Include="Models\ExigoService\Addresses\AddressType.cs" />
+    <Compile Include="Models\ExigoService\Addresses\Address.cs" />
+    <Compile Include="Models\ExigoService\Addresses\Interfaces\IAddress.cs" />
+    <Compile Include="Models\ExigoService\Addresses\JsonConverters\AddressJsonConverter.cs" />
+    <Compile Include="Models\ExigoService\Addresses\ShippingAddress.cs" />
+    <Compile Include="Models\ExigoService\AutoOrders\AutoOrder.cs" />
+    <Compile Include="Models\ExigoService\AutoOrders\AutoOrderDetail.cs" />
+    <Compile Include="Models\ExigoService\AutoOrders\Interfaces\IAutoOrder.cs" />
+    <Compile Include="Models\ExigoService\AutoOrders\Interfaces\IAutoOrderDetail.cs" />
+    <Compile Include="Models\ExigoService\Commissions\CommissionBonus.cs" />
+    <Compile Include="Models\ExigoService\Commissions\CommissionBonusDetail.cs" />
+    <Compile Include="Models\ExigoService\Commissions\HistoricalCommission.cs" />
+    <Compile Include="Models\ExigoService\Commissions\Interfaces\ICommission.cs" />
+    <Compile Include="Models\ExigoService\Commissions\Interfaces\ICommissionBonus.cs" />
+    <Compile Include="Models\ExigoService\Commissions\Interfaces\ICommissionBonusDetail.cs" />
+    <Compile Include="Models\ExigoService\Commissions\RealTimeCommission.cs" />
+    <Compile Include="Models\ExigoService\Commissions\RealTimeCommissionBonusDetail.cs" />
+    <Compile Include="Models\ExigoService\CountryRegions\Country.cs" />
+    <Compile Include="Models\ExigoService\CountryRegions\CountryRegionCollection.cs" />
+    <Compile Include="Models\ExigoService\CountryRegions\Region.cs" />
+    <Compile Include="Models\ExigoService\Customers\Customer.cs" />
+    <Compile Include="Models\ExigoService\Customers\CustomerWallItem.cs" />
+    <Compile Include="Models\ExigoService\Customers\Interfaces\ICustomer.cs" />
+    <Compile Include="Models\ExigoService\Customers\Interfaces\ICustomerWallItem.cs" />
+    <Compile Include="Models\ExigoService\Languages\Language.cs" />
+    <Compile Include="Models\ExigoService\Orders\Interfaces\IOrder.cs" />
+    <Compile Include="Models\ExigoService\Orders\Interfaces\IOrderDetail.cs" />
+    <Compile Include="Models\ExigoService\Orders\Order.cs" />
+    <Compile Include="Models\ExigoService\Orders\OrderDetail.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\BankAccount.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\CreditCard.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\CreditCardType.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\Interfaces\IAutoOrderPaymentMethod.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\Interfaces\IBankAccount.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\Interfaces\ICreditCard.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\Interfaces\IPaymentMethod.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\JsonConverters\PaymentMethodJsonConverter.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\ModelBinders\IPaymentMethodModelBinder.cs" />
+    <Compile Include="Models\ExigoService\Period\Interfaces\IPeriod.cs" />
+    <Compile Include="Models\ExigoService\Period\Period.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\BooleanRankQualificationDefinition.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\DecimalRankQualificationDefinition.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\Requests\GetCustomerRankQualificationsRequest.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\Responses\GetCustomerRankQualificationsResponse.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\Interfaces\IRankQualificationDefinition.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\RankQualificationLeg.cs" />
+    <Compile Include="Models\ExigoService\RankQualifications\RankRequirement.cs" />
+    <Compile Include="Models\ExigoService\Ranks\Interfaces\IRank.cs" />
+    <Compile Include="Models\ExigoService\Ranks\Rank.cs" />
+    <Compile Include="Models\ExigoService\Requests\DataRequest.cs" />
+    <Compile Include="Models\ExigoService\Trees\Requests\GetBottomTreeNodeRequest.cs" />
+    <Compile Include="Models\ExigoService\AutoOrders\Requests\GetCustomerAutoOrdersRequest.cs" />
+    <Compile Include="Models\ExigoService\PaymentMethods\Requests\GetCustomerPaymentMethodsRequest.cs" />
+    <Compile Include="Models\ExigoService\Customers\Requests\GetCustomerRecentActivityRequest.cs" />
+    <Compile Include="Models\ExigoService\Volumes\Requests\GetCustomerVolumesRequest.cs" />
+    <Compile Include="Models\ExigoService\Commissions\Requests\GetHistoricalCommissionBonusDetailsRequest.cs" />
+    <Compile Include="Models\ExigoService\Period\Requests\GetPeriodsRequest.cs" />
+    <Compile Include="Models\ExigoService\Trees\Requests\GetTreeRequest.cs" />
+    <Compile Include="Models\ExigoService\Trees\Requests\GetCustomerWaitingRoomRequest.cs" />
+    <Compile Include="Models\ExigoService\Requests\Interfaces\IDataRequest.cs" />
+    <Compile Include="Models\ExigoService\Orders\Requests\OrderCalculationRequest.cs" />
+    <Compile Include="Models\ExigoService\Orders\Requests\GetCustomerOrdersRequest.cs" />
+    <Compile Include="Models\ExigoService\Trees\Requests\PlaceUniLevelCustomerRequest.cs" />
+    <Compile Include="Models\ExigoService\Addresses\Responses\VerifyAddressResponse.cs" />
+    <Compile Include="Models\ExigoService\Orders\Responses\OrderCalculationResponse.cs" />
+    <Compile Include="Models\ExigoService\Shopping\Enums\ShoppingCartItemType.cs" />
+    <Compile Include="Models\ExigoService\Shopping\Interfaces\ICart.cs" />
+    <Compile Include="Models\ExigoService\Shopping\Interfaces\IShoppingCartItem.cs" />
+    <Compile Include="Models\ExigoService\Shopping\Interfaces\IItemCollection.cs" />
+    <Compile Include="Models\ExigoService\ShipMethods\Interfaces\IShipMethod.cs" />
+    <Compile Include="Models\ExigoService\ShipMethods\ShipMethod.cs" />
+    <Compile Include="Models\ExigoService\Shopping\ShoppingCartItem.cs" />
+    <Compile Include="Models\ExigoService\Shopping\ShoppingCartItemCollection.cs" />
+    <Compile Include="Models\ExigoService\Trees\WaitingRoomNode.cs" />
+    <Compile Include="Models\ExigoService\Volumes\Interfaces\IVolumeCollection.cs" />
+    <Compile Include="Models\ExigoService\Volumes\VolumeCollection.cs" />
+    <Compile Include="Services\ExigoService\Orders.cs" />
+    <Compile Include="Services\ExigoService\PaymentMethods.cs" />
+    <Compile Include="Services\ExigoService\Trees.cs" />
+    <Compile Include="Services\ExigoService\Volumes.cs" />
+    <Compile Include="Services\CommonResourcesService.cs" />
+    <Compile Include="Services\ExigoService\WebCategories.cs" />
+    <Compile Include="Services\GreekingService.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ExigoService\PropertyBags\BasePropertyBag.cs" />
+    <Compile Include="Models\ExigoService\PropertyBags\Interfaces\IPropertyBag.cs" />
+    <Compile Include="Services\ClientResourceService.cs" />
+    <Compile Include="Services\ShoppingService\ItemConverterService.cs" />
+    <Compile Include="Services\PartyService.cs" />
+    <Compile Include="Services\Interfaces\Email.cs" />
+    <Compile Include="Services\ScheduledTaskService.cs" />
+    <Compile Include="Services\SecurityService.cs" />
+    <Compile Include="Helpers\SqlHelper.cs" />
+    <Compile Include="Services\ShoppingService\ShoppingService.cs" />
+    <Compile Include="Settings\Configurations\Canada\Configuration.cs" />
+    <Compile Include="Settings\Configurations\Canada\Market.cs" />
+    <Compile Include="Settings\Configurations\Mexico\Configuration.cs" />
+    <Compile Include="Settings\Configurations\Mexico\Market.cs" />
+    <Compile Include="Settings\Configurations\UnitedStates\Configuration.cs" />
+    <Compile Include="Settings\Configurations\UnitedStates\Market.cs" />
+    <Compile Include="Settings\Lookups\AutoOrderProcessTypes.cs" />
+    <Compile Include="Settings\Lookups\AutoOrderPaymentTypes.cs" />
+    <Compile Include="Settings\Lookups\ContentSites.cs" />
+    <Compile Include="Settings\Lookups\CountryCodes.cs" />
+    <Compile Include="Settings\Lookups\CreditCardTypes.cs" />
+    <Compile Include="Settings\Lookups\CultureCodes.cs" />
+    <Compile Include="Settings\Lookups\CurrencyCodes.cs" />
+    <Compile Include="Settings\Lookups\CustomerStatuses.cs" />
+    <Compile Include="Settings\Lookups\CustomerTypes.cs" />
+    <Compile Include="Settings\Lookups\Departments.cs" />
+    <Compile Include="Settings\Lookups\FrequencyTypes.cs" />
+    <Compile Include="Settings\Lookups\ItemTypes.cs" />
+    <Compile Include="Settings\Lookups\Languages.cs" />
+    <Compile Include="Settings\Lookups\OrderStatuses.cs" />
+    <Compile Include="Settings\Lookups\OrderTypes.cs" />
+    <Compile Include="Settings\Lookups\PartyTypes.cs" />
+    <Compile Include="Settings\Lookups\PeriodTypes.cs" />
+    <Compile Include="Settings\Lookups\PointAccounts.cs" />
+    <Compile Include="Settings\Lookups\PriceTypes.cs" />
+    <Compile Include="Settings\Lookups\Ranks.cs" />
+    <Compile Include="Settings\Lookups\SocialNetworks.cs" />
+    <Compile Include="Settings\Lookups\SQLTableCookie.cs" />
+    <Compile Include="Settings\Lookups\Subscriptions.cs" />
+    <Compile Include="Settings\Lookups\SubscriptionStatuses.cs" />
+    <Compile Include="Settings\Lookups\Volumes.cs" />
+    <Compile Include="Settings\Lookups\PartyStatusTypes.cs" />
+    <Compile Include="Settings\Lookups\Warehouses.cs" />
+    <Compile Include="Settings\Settings.cs" />
+    <Compile Include="Utilities\Addresses.cs" />
+    <Compile Include="Utilities\Cache.cs" />
+    <Compile Include="Utilities\Calendars.cs" />
+    <Compile Include="Utilities\Cookies.cs" />
+    <Compile Include="Utilities\Enums.cs" />
+    <Compile Include="Utilities\Identity.cs" />
+    <Compile Include="Utilities\Language.cs" />
+    <Compile Include="Utilities\PaymentCredentials.cs" />
+    <Compile Include="Utilities\Reflection.cs" />
+    <Compile Include="Utilities\Sql.cs" />
+    <Compile Include="Utilities\AutoOrders.cs" />
+    <Compile Include="Utilities\Client.cs" />
+    <Compile Include="Utilities\DateTimes.cs" />
+    <Compile Include="Utilities\Globalization.cs" />
+    <Compile Include="Utilities\Images.cs" />
+    <Compile Include="Utilities\Shopping.cs" />
+    <Compile Include="Utilities\Tasks.cs" />
+    <Compile Include="Utilities\Strings.cs" />
+    <Compile Include="Utilities\ReplicatedSites.cs" />
+    <Compile Include="Utilities\Debug.cs" />
+    <Compile Include="Utilities\Types.cs" />
+    <Compile Include="Api\Exigo\WebService.cs" />
+    <Compile Include="Web References\Api.ExigoAdminWebService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\Api.ExigoWebService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\styles\debug.css" />
+    <Content Include="Content\styles\debug.min.css" />
+    <Content Include="Content\styles\icons\fontawesome\fontawesome-webfont.svg" />
+    <Content Include="Content\styles\icons\glyphicons\glyphicons-regular.svg" />
+    <Content Include="Models\ExigoSql\ExigoSql.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>ExigoSql.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\styles\icons\fontawesome\fontawesome-webfont.eot" />
+    <Content Include="Content\styles\icons\fontawesome\fontawesome-webfont.ttf" />
+    <Content Include="Content\styles\icons\fontawesome\fontawesome-webfont.woff" />
+    <Content Include="Content\styles\icons\fontawesome\FontAwesome.otf" />
+    <Content Include="Content\styles\icons\glyphicons\glyphicons-regular.eot" />
+    <Content Include="Content\styles\icons\glyphicons\glyphicons-regular.ttf" />
+    <Content Include="Content\styles\icons\glyphicons\glyphicons-regular.woff" />
+    <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Scripts\jquery-2.2.1.min.js" />
+    <Content Include="Scripts\jquery-2.2.1.min.js.map">
+      <DependentUpon>jquery-2.2.1.min.js</DependentUpon>
+    </Content>
+    <None Include="Scripts\jquery-2.2.2.intellisense.js" />
+    <Content Include="Scripts\jquery-2.2.2.js" />
+    <Content Include="Scripts\jquery-2.2.2.min.js" />
+    <Content Include="Scripts\jquery-2.2.2.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.min.js.map">
+      <DependentUpon>jquery.validate.min.js</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\AdjustCustomerBalanceResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\AdjustCustomerPointAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\AdjustCustomerSubscriptionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\AuthenticateUserResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ChangeUserPasswordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CheckRoutingNumberResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CheckUserPermissionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CommitOrderFormResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateAliasRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateBroadcastResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateCompanyNewsItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateCustomerQuickResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateDomainResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateHostRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateMXRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreatePaymentResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateResponderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\CreateVendorBillResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteBroadcastResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteCompanyNewsItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteCustomerAccountHistoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteCustomerCodingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteCustomerPaymentCardResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteDnsRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteOrderItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeletePaymentResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\DeleteResponderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\Api.ExigoAdminWebService\exigoapiadmin.wsdl" />
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBankAccountTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBinaryGenealogyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBinaryGridSubTreeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBinaryPlacementTypeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastDataIncludeTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastDataTemplatesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastReplyToAddressesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastSendFromAddressesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastSendToTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetBroadcastsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCheckAccountTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionNavigatorByBonusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionNavigatorByCurrencyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionNavigatorByVolumeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionPeriodsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionPeriodTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunHistoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunStatusTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunTotalsByBonusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunTotalsByCurrencyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunTotalsBySourceResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunTotalsByVolumeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCommissionRunTotalsReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCompanyCurrencyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCompanyReportGroupsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCompanyReportParametersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCompanyReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCompanyTaxTypeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCreatedByNamesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCreditCardTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCurrencyByWarehouseResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerAccountHistoryFormResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerAccountHistoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerAccountingBalanceResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerBroadcastResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerBroadcastsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerChangeLogResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerCheckingAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerCodingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerCodingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerContactsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerCreditCardAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerDefaultCurrencyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerEmailGroupsSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerLetterHistoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerLetterResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerOptionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerOverviewResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerPaymentCardsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerPaymentCardTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerPaymentCardTypesToCreateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerPaymentTermDetailsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerPointAccountsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerPointTransactionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerRankResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerSocialInfoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomersPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerStatementReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerStatusTypeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerSubscriptionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerSubscriptionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerTerminationSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerTypeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerWalletAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerWebInfoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomerWebLoginInfoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomReportParametersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetCustomReportsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetDepartmentsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetDomainInfoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetDomainsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetEmailTemplatesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetEnrollerTreePagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetEventHandlerFiltersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetItemsPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetLocalTimeByRegionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetMailFolderListingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetMailFolderTreeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetNewsHeadlinesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetNewsHeadlinesSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderACHPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderBankDraftPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderBankWirePaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderCheckPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderCreditCardPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderFormItemsSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderFormPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderFormShipMethodSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderFormShipToSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderGeneralPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderItemSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderReplacementReasonsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderReportLayoutsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderReturnReasonsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderShippingMethodsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrdersPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderStatusTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetOrderWalletPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetPayableTypeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetPaymentsPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetPaymentTermResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetPaymentTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetPointAccountsPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetPriceTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetReportTemplateGroupsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetReportTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetResponderFiltersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetResponderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetRespondersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetSharedReportsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetStackSubTreeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetSystemEventsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetTransactionTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetTreeMoveHistoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUnilevelTreePagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUserCultureCodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUserDetailsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUserLocationResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUserPermissionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUserRegionWeatherResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUserReportsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetUsersPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVendorBillResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVendorBillsPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVendorBillStatusesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVendorPaymentsPagingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVendorTransactionHistoryReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVolumeReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetVolumeTransferStatementReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetWalletTypesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetWarehousesByUserResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GetWeatherForecastByLocationResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\GroupResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ManageOrderItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ModifyCustomerAccountHistoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\MoveTreeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\Api.ExigoAdminWebService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Web References\Api.ExigoAdminWebService\SearchOrderItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\TerminateCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\TransactionalResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\TransferCustomerDataResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\TransferCustomerPointsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateAliasRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateBroadcastResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCompanyNewsItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerBroadcastStatusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerCheckingAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerCodingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerCommissionDetailsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerCreditCardAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerEmailGroupsSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerExtraFieldsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerGeneralInfoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerNotesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerPaymentTermResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerWalletAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerWebInfoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateCustomerWebLoginResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateDomainResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateHostRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateMXRecordResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateNewsHeadlinesSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateOrderFormItemsSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateOrderFormPaymentSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateOrderFormShipMethodSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateOrderFormShipToSettingsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateResponderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateUserCultureCodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateUserLocationResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateVendorBillResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\UpdateVendorBillStatusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ViewOrderDetailReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ViewOrderReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ViewPaymentReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ViewVendorBillReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoAdminWebService\ViewVendorPaymentReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\Api.ExigoAdminWebService\exigoapiadmin.disco" />
+    <Content Include="Web References\Api.ExigoWebService\AddPartyGuestsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\AddProductsToCategoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\AdjustInventoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\AppendCustomerNotesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\AuthenticateCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\AuthenticateUserResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\AuthorizeOnlyCreditCardResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CalculateOrderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ChangeAutoOrderStatusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ChangeOrderStatusBatchResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ChangeOrderStatusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ChargeCreditCardResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ChargeGroupOrderCreditCardTokenResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ChargeWalletAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateAutoOrderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateBillResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCalendarItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerBalanceAdjustmentResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerExtendedResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerFileResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerInquiryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerLeadResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateCustomerWallItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateEntityResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateExpectedBankWireResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateExpectedPaymentResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateExtendedDbSchemaResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateGuestResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateMailFolderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateOrderImportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateOrderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePartyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePaymentCheckResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePaymentCreditCardResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePaymentPointAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePaymentResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePayoutResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreatePointTransactionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateVendorBillResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateWarehouseResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\CreateWebCategoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DebitBankAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteCalendarItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteCustomerExtendedResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteCustomerLeadResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteCustomerWallItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteEntityResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteMailFolderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteProductFromCategoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteQualificationOverrideResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteSchemaResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DeleteWebCategoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\DequeueCustomerEventsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\EmptyMailFolderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\EnsureMailFoldersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\Api.ExigoWebService\ExigoApi.disco" />
+    <Content Include="web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Web References\Api.ExigoWebService\ExigoApi.wsdl" />
+    <Content Include="Web References\Api.ExigoWebService\FireResponderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetAccountDirectDepositResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetAutoOrdersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetBinaryPreferenceResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCompanyNewsItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCompanyNewsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCountryRegionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerBalancesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerBillingResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerExtendedResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerLeadSocialNetworksResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerLeadsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerNotesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerSiteResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerSocialNetworksResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomerWallResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetCustomReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetDownlineResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetEmailAttachmentResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetEntityResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetFileContentsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetFilesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetGuestSocialNetworksResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetGuestsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetItemCountryRegionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetItemsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetLanguagesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetLoginSessionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetOrdersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetOrderTotalsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetPartiesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetPartyGuestsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetPaymentsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetPointAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetQualitificationOverridesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetRandomMessageResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetRankQualificationsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetRealTimeCommissionDetailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetRealTimeCommissionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetReportResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetSchemaResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetSessionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetShipMethodsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetShoppingCartResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetSubscriptionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetUplineResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetUserPermissionsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetVolumesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\GetWarehousesResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\LoginCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\MergeCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\MoveEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\OptInEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\OptInSmsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\OptOutEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\OptOutSmsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\PlaceBinaryNodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\PlaceEnrollerNodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\PlaceMatrixNodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\PlaceStackNodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\PlaceUniLevelNodeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\RefundPriorCreditCardChargeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\RefundPriorWalletChargeResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\RemovePartyGuestsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SendEmailResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SendSmsResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetAccountResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetBinaryPreferenceResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetCustomerLeadSocialNetworksResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetCustomerSiteImageResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetCustomerSiteResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetCustomerSocialNetworksResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetGuestSocialNetworksResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetImageFileResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetItemCountryRegionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetItemImageResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetItemKitMembersResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetItemPriceResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetItemWarehouseResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetQualificationOverrideResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\SetSessionResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\TransactionalResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateCalendarItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateCustomerContactResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateCustomerExtendedResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateCustomerLeadResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateCustomerResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateEmailStatusResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateEmailTemplateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateEntityResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateGuestResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateItemResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateMailFolderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateOrderResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdatePartyResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\UpdateWebCategoryResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\ValidateResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\Api.ExigoWebService\VerifyAddressResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://api.exigo.com/3.0/">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\Api.ExigoWebService\</RelPath>
+      <UpdateFromURL>http://api.exigo.com/3.0/</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Common_Api_ExigoWebService_ExigoApi</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://api.exigo.com/admin/1.0/">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\Api.ExigoAdminWebService\</RelPath>
+      <UpdateFromURL>http://api.exigo.com/admin/1.0/</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Common_Api_ExigoAdminWebService_ExigoApiAdmin</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Models\ExigoSql\ExigoSql.dbml.layout">
+      <DependentUpon>ExigoSql.dbml</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_GlobalResources\" />
+    <Folder Include="Models\ContentService\Alerts\" />
+    <Folder Include="Settings\RankQualifications\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Models.es-US.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Models.es-US.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Models.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Models.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets'))" />
+    <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
+    <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
+  </Target>
+  <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
+  <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

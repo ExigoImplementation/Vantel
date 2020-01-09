@@ -1,0 +1,166 @@
+﻿@model GetCustomerRankQualificationsResponse
+@{
+    var uniqueID = Guid.NewGuid().ToString();
+    var isHighestRank = (Model == null);
+    if (Model.IsUnavailable) { throw new Exception("Unavailable"); }
+}
+
+
+<div class="card" id="view-rankadvancementcard-@uniqueID">
+    <div class="card-header">
+        <h3 class="card-title">
+            @Resources.Common.RankAdvancement
+        </h3>
+    </div>
+    <div class="card-body h-5">
+        <div class="row">
+            <div class="col-4 text-left mx-0 px-0"   >
+                <span class="text-uppercase rank-description" id="gotopreviousrank"> @Model.PreviousRank.RankDescription</span>
+            </div>
+            <div class="col-4 text-center mx-0 px-0">
+                <div class="lead text-uppercase" id="rankchoice" data-rankid="@Model.Rank.RankID">@Model.Rank.RankDescription</div>
+            </div>
+            <div class="col-4 text-right mx-0 px-0">
+                <span class="text-uppercase rank-description" id="gotonextrank">@Model.NextRank.RankDescription </span>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center h-4 pb-0">
+        @if (isHighestRank)
+        {
+            <small class="text-muted text-uppercase">@Resources.Common.NextRank</small>
+            <div class="lead">---</div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-12 col-md-3 mt-2">
+                    <input class="dial-chart"
+                           value="@Math.Ceiling(Model.TotalPercentComplete).ToString("N0")"
+                           data-width="140"
+                           data-height="140"
+                           data-min="0"
+                           data-max="100"
+                           data-fgcolor="#4761A0"
+                           data-bgcolor="#E5E5E5"
+                           data-thickness=".18"
+                           data-readonly="true" />
+                </div>
+                <div class="col-12 col-md-9" id="view-rank-advancement-detail"></div>
+
+            </div>
+        }
+    </div>
+    <div class="card-footer text-right">
+        <a href="@Url.Action("rank", "commissions")" class="card-link text-uppercase">
+            @Resources.Common.ViewAllRanks
+        </a>
+    </div>
+</div>
+
+    <script>
+    require(["jquery", "ajax", "toastr", "jquery-knob"], function ($, ajax, toastr) {
+
+        // Settings
+        var context = "#view-rankadvancementcard-@uniqueID",
+            $context = $(context),
+            settings = {
+                rankid: $('#rankchoice', $context).data("rankid"),
+                    nextrankid: null,
+                    previousrankid: null,
+                    attempts: 5,
+                    attemptdelayedwarning: 3,
+                    attemptinterval: 3000
+                };
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('#gotonextrank', $context).on('click', function () {
+                    if (settings.nextrankid) {
+                        $('#rankchoice', $context).val(settings.nextrankid).triggerHandler('change');
+                    }
+                });
+                $('#gotopreviousrank', $context).on('click', function () {
+                    if (settings.previousrankid) {
+                        $('#rankchoice', $context).val(settings.previousrankid).triggerHandler('change');
+                    }
+                });
+                $('#rankchoice', $context).on('change', function () {
+                    settings.rankid = Number($(this).val());
+                    actions.getRankQualifications(settings.rankid);
+                });
+            }
+
+            // Actions
+            var actions = {
+                getRankQualifications: function (rankid, attempt) {
+                    rankid = rankid || settings.rankid;
+                    attempt = attempt || 1;
+
+                    if (attempt >= 1) {
+                        var text = "@Resources.Common.CalculatingPleaseWait";
+                        if (attempt >= settings.attemptdelayedwarning) {
+                            text += "<br /><small class='text-muted'>@Resources.Common.CalculationTakingLonger</small>";
+                        }
+                    }
+                    if (attempt > settings.attempts) {
+                        var text = "@Resources.Common.RankAdvancementFailed";
+                        toastr.error(text);
+                        $('#view-rank-advancement-detail').html(text);
+                        return;
+                    }
+
+                    ajax.json({
+                        url: '@Url.Action("GetRankQualificationsDashboard", "commissions")',
+                        data: {
+                            rankid: rankid
+                        },
+                        success: function (response) {
+                            if (response.result.IsUnavailable) {
+                                attempt++;
+                                setTimeout(function () {
+                                    actions.getRankQualifications(rankid, attempt);
+                                }, settings.attemptinterval);
+                            } else if (response.result.ErrorMessage != null) {
+                                var text = "@Resources.Common.RankAdvancementFailed";
+                                toastr.error(text);
+                                $context.html(text);
+                            } else {
+
+                                settings.rankid = response.result.Rank.RankID;
+                                $('#rankchoice', $context).data("rankid", response.result.Rank.RankID);
+                                $('#rankchoice', $context).html("<h5 class='font-weight-bold rank-description'>" + response.result.Rank.RankDescription + "</h5>");
+                                $('.dial-chart').val(Math.ceil(response.result.TotalPercentComplete)).trigger('change').trigger('draw');
+                                settings.nextrankid = (response.result.NextRank) ? response.result.NextRank.RankID : null;
+                                $('#gotonextrank', $context).html((response.result.NextRank) ? response.result.NextRank.RankDescription + " <i class='fas fa-chevron-right'></i>" : "");
+                                settings.previousrankid = (response.result.PreviousRank) ? response.result.PreviousRank.RankID : null;
+                                $('#gotopreviousrank', $context).html((response.result.PreviousRank) ? "<i class='fas fa-chevron-left'></i> " + response.result.PreviousRank.RankDescription : "");
+                                $('#view-rank-advancement-detail').html(response.html);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            };
+
+        // Initialization
+        function init() {
+            $('.dial-chart', $context).dial({
+                format: function (value) {
+                    return value + "%";
+                }
+            });
+            $('.dial-chart').css("font-size", "35px");
+            $('.dial-chart').css("width", "95px");
+            $('.dial-chart').css("margin-left", "-115px");
+
+            registerEventHandlers();
+
+            actions.getRankQualifications();
+        }
+        init();
+
+    });
+    </script>

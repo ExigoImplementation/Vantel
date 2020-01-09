@@ -1,0 +1,30 @@
+﻿@model Item
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="options">
+
+            @Html.HiddenFor(c => c.ItemCode)
+            @Html.HiddenFor(c => c.Type)
+
+            @Html.LabelFor(c => c.Quantity)<br />
+            @Html.TextBoxFor(c => c.Quantity,
+            htmlAttributes: new
+            {
+                type = "number",
+                @class = "form-control input-sm"
+            })
+
+            <div class="space-20" />
+            <button type="button" class="btn btn-primary btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoorder"><i class="fa-shopping-cart"></i> @Resources.Common.AddToCart</button>
+            @if (Model.AllowOnAutoOrder)
+            {
+                <div class="text-divider">
+                    <h5>@Resources.Common.or</h5>
+                </div>
+
+                <button type="button" class="button nomargin fullwidth btn-block" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder"><i class="fa-refresh"></i> @Resources.Common.AddToAutoShip</button>
+            }
+        </div>
+    </div>
+</div>

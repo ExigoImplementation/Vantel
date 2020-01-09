@@ -1,0 +1,29 @@
+﻿@model Item
+@{
+    var contextID = Guid.NewGuid();
+    var fullWidthClass = Model.AllowOnAutoOrder ? "fullwidth" : "";
+    var productAutoorder = Model.AllowOnAutoOrder ? "product-withautoorder" : "";
+}
+
+<div data-widget="item" id="view-item-@contextID" class="view-item view-item-card work-item-img img-rounded panel panel-default">
+    <div class="product sf-'@Model.CategoryID' clearfix" href="@Url.Action("itemdetail", "shopping", new { itemcode = Model.ItemCode })">
+        <div class="product-image">
+            @Html.HiddenFor(c => c.ItemCode)
+            @Html.HiddenFor(c => c.ItemDescription)
+            @Html.Hidden("Quantity", 1)
+            <a href="@Url.Action("itemdetail", "shopping", new { itemcode = Model.ItemCode })"><img src="@Model.LargeImageUrl" alt="@Model.ItemDescription"></a>
+            <div class="product-overlay @productAutoorder">
+                <a class="item-quick-view @fullWidthClass" data-itemcode="@Model.ItemCode"><i class="fa-search-plus"></i><span> @Resources.Common.QuickView</span></a>
+                <a class="add-to-cart" data-loading-text="@Resources.Common.Loading" data-role="item.addtoorder" data-itemcode="@Model.ItemCode"><i class="fa-shopping-cart"></i><span> @Resources.Common.AddToCart</span></a>
+                @if (Model.AllowOnAutoOrder)
+                {
+                    <a class="add-to-cart" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder" data-itemcode="@Model.ItemCode"><i class="fa-shopping-cart"></i><span> @Resources.Common.AddToAutoOrder</span></a>
+                }
+            </div>
+        </div>
+        <div class="product-desc center">
+            <div class="product-title"><h3><a href="@Url.Action("itemdetail", "shopping", new { itemcode = Model.ItemCode })">@Model.ItemDescription</a></h3></div>
+            <div class="product-price">@Model.Price.ToString("C")</div>
+        </div>
+    </div>   
+</div>

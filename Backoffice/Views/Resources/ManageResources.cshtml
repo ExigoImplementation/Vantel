@@ -1,0 +1,402 @@
+﻿@model ResourceListViewModel
+@{
+    ViewBag.Title = Resources.Common.ManageResources;
+
+    var catID = Guid.Empty;
+    var currentLanguage = Identity.Current.Language.LanguageDescription;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Description = Resources.Common.ResourceLibrary, UrlPath = Url.Action("ResourceList", "Resources")},
+            new BreadcrumbItem{ Description = ViewBag.Title}
+        }
+    };
+}
+
+<div id="view-manage-resources">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+
+            <div class="row">
+                <div class="col text-right">
+                    <a class="btn btn-primary" href="@Url.Action("ResourceItems", "Resources")">@Resources.Common.CreateNewResource</a>
+                    <a class="btn btn-primary" href="@Url.Action("ManageResourceCategories", "Resources")">@Resources.Common.ManageCategories</a>
+                </div>
+            </div>
+            <div class="space-20"></div>
+
+            <div class="row">
+                <div class="col-xl-3">
+                    @Html.Partial("Partials/_ResourceFilters", Model)
+                </div>
+                <div class="col-xl-9" id="resourcelist-target">
+
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal" id="deleteResource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">@Resources.Common.DeleteResource</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">@Resources.Common.Close</span></button>
+                        </div>
+                        @using (Html.BeginForm("DeleteResource", "resources"))
+                        {
+                            <div class="modal-body">
+                                @Resources.Common.DeleteResourceQuestion
+                            </div>
+                            <!-- hidden value -->
+                            @Html.HiddenFor(model => model.EditItemID, new { @id = "deleteitemid" })
+                            @Html.HiddenFor(model => model.DeleteCategoryID, new { @id = "deletecategoryid" })
+                            @Html.HiddenFor(model => model.CategoryID, new { @id = "oldcategoryid" })
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Common.No</button>
+                                <button type="submit" class="btn btn-info" data-loading-text="@Resources.Common.Loading">@Resources.Common.Yes</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    require(["jquery", "ajax", "jquery-ui", "select2", "customsort", "forms"], function ($, ajax, jqueryui, select2, customsort) {
+
+        var context = $("#view-manage-resources"),
+            $context = $(context),
+            sortCategoryByDatUrl = '@Url.Action("SortCategoryByDate","Resources")';
+
+        var oldID = @Model.CategoryID,
+            FilteredCategory = "",
+            FilteredMedia = [],
+            FilteredMarket = "",
+            FilteredRank = "",
+            FilteredLanguage = "",
+            keywords = [],
+            isFiltered = false;
+
+        function registerEventHandlers(){
+
+            //$("[type='submit']", $context).loadingClickEvent();
+
+            //delete resource
+            $context.on("click", "[delete-resource]", function () {
+                var itemID = $(this).data("id");
+                var catID = $(this).closest('.categoryDetail').data('id');
+
+                actions.deleteResource(itemID, catID);
+            });
+
+            $context.on("click", "[date-sort]", function () {
+                var $this = $(this),
+                    isAscending = $this.hasClass("asc"),
+                    isDescending = $this.hasClass("desc"),
+                    categoryId = $(this).parents('.categoryDetail').first().data("id"),
+                    sortType = "";
+
+                if(isAscending)
+                {
+                    $this.removeClass("asc");
+                    $this.addClass("desc");
+                    sortType = "desc";
+                }
+                else if(isDescending)
+                {
+                    $this.removeClass("desc");
+                }
+                else {
+                    $this.addClass("asc");
+                    sortType = "asc";
+                }
+
+                actions.sortCategoryByDate(categoryId, sortType);
+            });
+
+            $context.on("click", "#category-list li span", function () {
+                $(this).find('i').toggleClass('fa-plus-square-o fa-minus-square-o')
+            });
+
+            $context.on("click","[data-role='searchKeyword']", function () {
+                keywords = $("#Tags").val()
+                if(keywords !== "undefined" || keywords.length() > 0){
+                    getResourceList();
+                }
+            });
+
+            $context.on("click","#clearKeywords", function () {
+                keywords = [];
+                $("#Tags").val("").trigger('change');
+                $("#clearKeywords").hide();
+                getResourceList();
+            });
+
+            $context.on("click", "#addresource", function(){
+
+            });
+
+            $('#categorybutton').on('click', function () {
+                getModal();
+            });
+
+            $("[data-role='editCategory']").on('click', function () {
+                var parent = $(this).closest('li');
+                var categoryID = parent.data('id');
+                editCategory(categoryID);
+            });
+
+            $("[data-role='createResource']").on("click", function () {
+                var selectedAvails = [];
+                var values = "";
+                $(".create-availability").find('input:checked').each(function () { selectedAvails.push($(this).attr('value')); });
+                for (var i = 0; i < selectedAvails.length; i++) {
+                    values += (selectedAvails[i]);
+                    if (i != (selectedAvails.length - 1)) {
+                        values += ",";
+                    }
+                }
+                $(".create-availability").find("#SelectedAvailability").val(values);
+                $(this).parent().parent().submit();
+            });
+
+            $("[data-role='editResource']").on("click", function () {
+                var selectedAvails = [];
+                var values = "";
+                $(".edit-availability").find('input:checked').each(function () { selectedAvails.push($(this).attr('value')); });
+                for (var i = 0; i < selectedAvails.length; i++) {
+                    values += (selectedAvails[i]);
+                    if (i != (selectedAvails.length - 1)) {
+                        values += ",";
+                    }
+                }
+                $(".edit-availability").find("#SelectedAvailability").val(values);
+
+                $(this).parent().parent().submit();
+            });
+
+            $context.on("click", "[data-role='rankFilter']", function() {
+                FilteredRank = $(this).attr('id');
+                getResourceList();
+                $("#rankFilter").find("li").each(function(){ $(this).removeClass("highlight")})
+                $(this).parent().addClass("highlight");
+                $("#showallranks").show();
+            });
+
+            $("[data-role='categoryFilter']").on("click", function () {
+                FilteredCategory = JSON.stringify($(this).attr('id'));
+                getResourceList();
+                $("#category-list").find("li").each(function(){ $(this).removeClass("highlight")})
+                $(this).parent().addClass("highlight");
+                $("#showallcategories").show();
+            });
+
+            $("#showallranks").on("click", function () {
+                FilteredRank = "";
+                getResourceList();
+                $("#rankFilter").find("li").each(function(){ $(this).removeClass("highlight")})
+                $("#showallranks").hide();
+
+            });
+
+            $("#showallcategories").on("click", function () {
+                FilteredCategory = "";
+                getResourceList();
+                $("#category-list").find("li").each(function(){ $(this).removeClass("highlight")})
+                $("#showallcategories").hide();
+
+            });
+
+            $("#marketFilter").on("change", function () {
+                FilteredMedia = [];
+                var listitems = $(this).find('li');
+                $.each(listitems, function ()
+                {
+                    var y = $(this).find('input[type=checkbox]');
+                    if($(y).is(":checked"))
+                    {
+                        FilteredMedia.push($(y).val());
+                    }
+                })
+                if(FilteredMedia.length > 0){
+                    $("#applyFilter").show();
+                }
+                else{
+                    $("#applyFilter").hide();
+                }
+                if(isFiltered && FilteredMedia.length <= 0){
+                    $("#clearFilter").show()
+                }
+                else{
+                    $("#clearFilter").hide()
+                }
+            });
+
+            $("#applyFilter").on("click", function () {
+                getResourceList();
+            });
+
+            $("#clearFilter").on("click", function () {
+                isFiltered = false;
+                getResourceList();
+                $(this).hide()
+            });
+
+            $("#Country").on("change", function () {
+                FilteredMarket = $(this).val();
+                getResourceList();
+            });
+
+            $("#Language").on("change", function () {
+                FilteredLanguage = $(this).val();
+                getResourceList();
+            });
+
+            actions.createSelectList();
+
+        }
+        var actions = {
+            deleteResource: function (itemID, catID) {
+                //set hidden field
+                $("#deleteitemid").val(itemID);
+                $("#deletecategoryid").val(catID);
+                $("#oldcategoryid").val(oldID)
+                //show modal
+                $('#deleteResource').modal("show");
+            },
+            createSelectList: function(){
+                $("#Tags").select2({
+                    value:"",
+                    tags: true,
+                    multiple:true,
+                    placeholder: '@Resources.Common.SelectAKeyword',
+
+                })
+            },
+            sortCategoryByDate: function(categoryId, sortType){
+                var categories = '@Html.Raw(Json.Encode(Model.ResourceCategories))';
+                var filter = {
+                    MediaFilter: FilteredMedia,
+                    Categories: categories,
+                    MarketFilter: FilteredMarket,
+                    CategoryFilter: FilteredCategory,
+                    LanguageFilter: FilteredLanguage,
+                    Keyword: keywords,
+                    isResourceManager: true
+                };
+
+                ajax.json({
+                    url: sortCategoryByDatUrl,
+                    data: {
+                        categoryID: categoryId,
+                        sortType: sortType,
+                        filter: filter
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            var $categoryTableBody = $(".panel[data-id='"+ categoryId +"'] tbody");
+
+                            console.log("$categoryTableBody.length: ", $categoryTableBody.length);
+
+                            $categoryTableBody.html(response.html);
+                        }
+                    },
+                    error: function (response) {
+                        //console.log(response.message, "Error");
+                    }
+                });
+            }
+        }
+
+        function getModal() {
+            var categoryID = "@catID";
+            ajax.json({
+                url: '@Url.Action("getmodal","resources")',
+                data: { categoryID: categoryID },
+                success: function (response) {
+                    if (!response.success) {
+                        console.log(response.message);
+                        return;
+                    }
+                    var $html = $("#modal-target");
+                    $html.html(response.html);
+                    $("#categoryModal").modal();
+
+                },
+                error: function (response) {
+                    console.log(response.message, "@Resources.Common.Error");
+                }
+            });
+        }
+        function editCategory(categoryID) {
+
+            ajax.json({
+                url: '@Url.Action("getModal","resources")',
+                data: { categoryID: categoryID },
+                success: function (response) {
+                    if (!response.success) {
+                        console.log(response.message);
+                        return;
+                    }
+                    var $html = $("#modal-target");
+                    $html.html(response.html);
+                    $("#categoryModal").modal();
+
+                },
+                error: function (response) {
+                    console.log(response.message, "@Resources.Common.Error");
+                }
+            });
+        }
+        function getResourceList() {
+            var categories = '@Html.Raw(Json.Encode(Model.ResourceCategories))';
+            var filter = {
+                MediaFilter: FilteredMedia,
+                Categories: categories,
+                MarketFilter: FilteredMarket,
+                CategoryFilter: FilteredCategory,
+                LanguageFilter: FilteredLanguage,
+                Keyword: keywords,
+                isResourceManager: true
+            };
+            ajax.json({
+                url: '@Url.Action("getresourcelist", "resources")',
+                data: { filter: filter },
+                success: function (response) {
+                    if (!response.success) {
+                        console.log(response.message);
+                        return;
+                    }
+                    isFiltered = response.isFiltered;
+                    var $html = $("#resourcelist-target");
+                    $html.html(response.html);
+                    if(keywords != ""){
+                        $("#clearKeywords").show();
+                    }
+                    customsort.init($html.find("[data-sort-group]"));
+
+                },
+                error: function (response) {
+                    console.log(response.message, "@Resources.Common.Error");
+                }
+            });
+        }
+
+        function init() {
+            registerEventHandlers()
+            $(".expiredatepicker").datepicker();
+            $(".postondatepicker").datepicker();
+
+            $('#Country').trigger('change');
+        }
+
+        $(init);@*Methd called when the form is called*@
+    });
+</script>

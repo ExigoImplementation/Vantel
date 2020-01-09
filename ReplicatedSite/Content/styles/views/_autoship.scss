@@ -1,0 +1,41 @@
+//Only include for local testing for intellisense
+//@import "../settings/_colors"; 
+
+#view-choose-autoorder {
+    .panel-body { min-height: 200px; }    
+}
+
+#view-manage-autoorder {
+    .form-section-title {
+        margin: 0;
+        color: $blue;
+    }
+
+    .form-section {
+        padding: 30px 0 20px 0;
+        border-bottom: 1px solid #CCC;
+
+        &.last {
+            border: none;
+        }
+    }
+
+    #delete-autoorder {
+        color: $blue;
+        cursor: pointer;
+    }
+
+    .product-image {
+        img {
+            max-width: 75px;
+
+            @media (max-width: 480px) {
+                display: none;
+            }
+        }
+    }
+}
+
+#view-autoorder-list{
+    margin-top:20px;
+}

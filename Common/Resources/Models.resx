@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>First Name is required</value>
+  </data>
+  <data name="TaxID" xml:space="preserve">
+    <value>SSN</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="PrimaryPhone" xml:space="preserve">
+    <value>Home Phone</value>
+  </data>
+  <data name="SecondaryPhone" xml:space="preserve">
+    <value>Office Phone</value>
+  </data>
+  <data name="MobilePhone" xml:space="preserve">
+    <value>Mobile Phone</value>
+  </data>
+  <data name="FaxNumber" xml:space="preserve">
+    <value>Fax Number</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="IncorrectEmail" xml:space="preserve">
+    <value>This is not a correct email format</value>
+  </data>
+  <data name="UsernameUnavailable" xml:space="preserve">
+    <value>This username isn't available</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>Make sure your username doesn't contain any spaces or special characters, and is at least 3 characters long</value>
+  </data>
+  <data name="InvalidPasswordLength" xml:space="preserve">
+    <value>Your password must be at least 6 characters long</value>
+  </data>
+  <data name="AddressOneRequired" xml:space="preserve">
+    <value>Street Address is required</value>
+  </data>
+  <data name="AddressOne" xml:space="preserve">
+    <value>Street Address</value>
+  </data>
+  <data name="AddressTwo" xml:space="preserve">
+    <value>Address 2</value>
+  </data>
+  <data name="AddressTwoRequired" xml:space="preserve">
+    <value>Street Address 2 is required</value>
+  </data>
+  <data name="CityRequired" xml:space="preserve">
+    <value>City is required</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="StateRequired" xml:space="preserve">
+    <value>State is required</value>
+  </data>
+  <data name="ZipRequired" xml:space="preserve">
+    <value>Zipcode is required</value>
+  </data>
+  <data name="CountryRequired" xml:space="preserve">
+    <value>Country is required</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="LastNameRequired" xml:space="preserve">
+    <value>Last Name is required</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>Phone Number is required</value>
+  </data>
+  <data name="BirthDateRequired" xml:space="preserve">
+    <value>Birth Date is required</value>
+  </data>
+  <data name="PrimaryPhoneRequired" xml:space="preserve">
+    <value>Home Phone is required</value>
+  </data>
+  <data name="MobilePhoneRequired" xml:space="preserve">
+    <value>Mobile Phone is required</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Zip" xml:space="preserve">
+    <value>Zipcode</value>
+  </data>
+  <data name="ShowMyPassword" xml:space="preserve">
+    <value>Show my password</value>
+  </data>
+  <data name="NameOnCardRequired" xml:space="preserve">
+    <value>Name is required</value>
+  </data>
+  <data name="CardNumberRequired" xml:space="preserve">
+    <value>Card number is required</value>
+  </data>
+  <data name="ExpirationMonthRequired" xml:space="preserve">
+    <value>Expiration Month is required</value>
+  </data>
+  <data name="ExpirationYearRequired" xml:space="preserve">
+    <value>Expiration Year is required</value>
+  </data>
+  <data name="NameOnCard" xml:space="preserve">
+    <value>Name on Card</value>
+  </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>Card Number</value>
+  </data>
+  <data name="ExpirationMonth" xml:space="preserve">
+    <value>Expiration Month</value>
+  </data>
+  <data name="ExpirationYear" xml:space="preserve">
+    <value>Expiration Year</value>
+  </data>
+  <data name="CVV" xml:space="preserve">
+    <value>CVV</value>
+  </data>
+  <data name="ExpirationDate" xml:space="preserve">
+    <value>Expiration Date</value>
+  </data>
+  <data name="AccountHolderNameRequired" xml:space="preserve">
+    <value>Account holder name is required</value>
+  </data>
+  <data name="AccountHolderName" xml:space="preserve">
+    <value>Account Holder Name</value>
+  </data>
+  <data name="BankNameRequired" xml:space="preserve">
+    <value>Bank name is required</value>
+  </data>
+  <data name="BankName" xml:space="preserve">
+    <value>Bank Name</value>
+  </data>
+  <data name="CardNumberTooLong" xml:space="preserve">
+    <value>Card Number is too long</value>
+  </data>
+  <data name="CardNumberTooShort" xml:space="preserve">
+    <value>Card Number is too short</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Password must be at least 8 characters long, contain at least 1 number, and contain at least one uppercase character</value>
+  </data>
+  <data name="NotRequired" xml:space="preserve">
+    <value>Not Required</value>
+  </data>
+  <data name="LoginName" xml:space="preserve">
+    <value>Login Name</value>
+  </data>
+  <data name="BankAccountNameRequired" xml:space="preserve">
+    <value>Please enter the name associated with the account</value>
+  </data>
+  <data name="NameOnAccount" xml:space="preserve">
+    <value>Name on Account</value>
+  </data>
+  <data name="AccountNumberRequired" xml:space="preserve">
+    <value>A Valid Account Number is Required</value>
+  </data>
+  <data name="AccountNumber" xml:space="preserve">
+    <value>Account Number</value>
+  </data>
+  <data name="IncorrectAccountNumber" xml:space="preserve">
+    <value>Please enter a valid account number</value>
+  </data>
+  <data name="RoutingNumberRequired" xml:space="preserve">
+    <value>A valid routing number is required</value>
+  </data>
+  <data name="RoutingNumber" xml:space="preserve">
+    <value>Routing Number</value>
+  </data>
+  <data name="IncorrectRoutingNumber" xml:space="preserve">
+    <value>Please enter a valid routing number</value>
+  </data>
+  <data name="InvalidCardNumber" xml:space="preserve">
+    <value>Invalid card number</value>
+  </data>
+  <data name="IncorrectCVV" xml:space="preserve">
+    <value>Please enter a valid CVV</value>
+  </data>
+  <data name="WebAliasRequired" xml:space="preserve">
+    <value>Web Alias is required</value>
+  </data>
+  <data name="LoginNameRequired" xml:space="preserve">
+    <value>Login name is required</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>Your passwords do not match</value>
+  </data>
+  <data name="ConfirmPasswordRequired" xml:space="preserve">
+    <value>Please confirm your password</value>
+  </data>
+  <data name="EmailUserName" xml:space="preserve">
+    <value>Email / Username</value>
+  </data>
+  <data name="ConfirmEmailRequired" xml:space="preserve">
+    <value>Please confirm your email address</value>
+  </data>
+  <data name="EmailsDoNotMatch" xml:space="preserve">
+    <value>Your emails do not match</value>
+  </data>
+  <data name="ConfirmEmail" xml:space="preserve">
+    <value>Confirm Email</value>
+  </data>
+  <data name="JoinAsPreferredCustomer" xml:space="preserve">
+    <value>Join as a Preferred Customer</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>From:</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To:</value>
+  </data>
+  <data name="WebsiteAddress" xml:space="preserve">
+    <value>Website Address</value>
+  </data>
+  <data name="WebsiteAddressRequired" xml:space="preserve">
+    <value>You Must Enter a Distributor's Site Name to Search by Website Address</value>
+  </data>
+  <data name="InvalidWebsiteAddress" xml:space="preserve">
+    <value>Please enter a valid Website Address</value>
+  </data>
+  <data name="DistributorID" xml:space="preserve">
+    <value>My Distributor's ID Is</value>
+  </data>
+  <data name="DistributorIDRequired" xml:space="preserve">
+    <value>Distributor ID is required</value>
+  </data>
+  <data name="EventCode" xml:space="preserve">
+    <value>The Event ID Is</value>
+  </data>
+  <data name="DistributorFirstName" xml:space="preserve">
+    <value>Distributor's First Name</value>
+  </data>
+  <data name="EventCodeRequired" xml:space="preserve">
+    <value>Event ID is required</value>
+  </data>
+  <data name="DistributorLastNameRequired" xml:space="preserve">
+    <value>Distributor's Last Name is required</value>
+  </data>
+  <data name="DistributorLastName" xml:space="preserve">
+    <value>Distributor's Last Name</value>
+  </data>
+  <data name="DistributorFirstNameRequired" xml:space="preserve">
+    <value>Distributor's First Name is required</value>
+  </data>
+  <data name="DistributorState" xml:space="preserve">
+    <value>Distributor's State</value>
+  </data>
+  <data name="DistributorStateRequired" xml:space="preserve">
+    <value>Distributor's State is required</value>
+  </data>
+  <data name="DistributorCity" xml:space="preserve">
+    <value>Distributor's City</value>
+  </data>
+  <data name="DistributorZipCode" xml:space="preserve">
+    <value>Distributor's Zip Code</value>
+  </data>
+  <data name="CustomerZipCodeRequired" xml:space="preserve">
+    <value>You must enter a valid Zip Code</value>
+  </data>
+  <data name="CustomerZipCode" xml:space="preserve">
+    <value>My Zip Code</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="MiddleName" xml:space="preserve">
+    <value>Middle Name</value>
+  </data>
+  <data name="PreferredLanguage" xml:space="preserve">
+    <value>Preferred Language</value>
+  </data>
+  <data name="Birthday" xml:space="preserve">
+    <value>Birthday</value>
+  </data>
+  <data name="WebAlias" xml:space="preserve">
+    <value>Web Alias</value>
+  </data>
+  <data name="FieldIsRequired" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>Description is required</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Privacy" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="StartTimezone" xml:space="preserve">
+    <value>Start Timezone</value>
+  </data>
+  <data name="EndTimezone" xml:space="preserve">
+    <value>End Timezone</value>
+  </data>
+  <data name="IsAllDay" xml:space="preserve">
+    <value>All Day</value>
+  </data>
+  <data name="RecurrenceRule" xml:space="preserve">
+    <value>Recurring</value>
+  </data>
+  <data name="TitleRequired" xml:space="preserve">
+    <value>Title is required</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="SpeakersName" xml:space="preserve">
+    <value>Speakers's Name</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Flyer" xml:space="preserve">
+    <value>Flyer</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="ConferenceNumber" xml:space="preserve">
+    <value>Conference Number</value>
+  </data>
+  <data name="ConferencePIN" xml:space="preserve">
+    <value>PIN</value>
+  </data>
+  <data name="Url" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="AddressThree" xml:space="preserve">
+    <value>Address 3</value>
+  </data>
+  <data name="AddressThreeRequired" xml:space="preserve">
+    <value>Street Address  3 is Required</value>
+  </data>
+  <data name="InvalidTaxID" xml:space="preserve">
+    <value>This Tax ID is invalid</value>
+  </data>
+  <data name="NameSuffix" xml:space="preserve">
+    <value>NameSuffix</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="IncorrectPhone" xml:space="preserve">
+    <value>Please enter a valid Phone Number</value>
+  </data>
+  <data name="Map" xml:space="preserve">
+    <value>Map</value>
+  </data>
+</root>

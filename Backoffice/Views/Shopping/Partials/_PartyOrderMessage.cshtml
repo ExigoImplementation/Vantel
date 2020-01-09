@@ -1,0 +1,82 @@
+﻿@model IShoppingViewModel
+@{
+    var isPartyOrder = Model.PropertyBag.PartyID > 0;
+    var isHostOrder = Model.PropertyBag.IsHostessOrder();
+    var isGuestOrder = Model.PropertyBag.IsGuestOrder();
+}
+
+@if (isPartyOrder)
+{
+    var party = ViewBag.ActiveParty;
+
+    if (party != null)
+    {
+        var description = "#" + party.PartyID.ToString();
+
+        if (party.Description != "" && party.Description != " ")
+        {
+            description = party.Description;
+        }
+        <div class="space-10"></div>
+
+        <div id="host-reward-warning">
+            @if (isHostOrder)
+            {
+                <div class="alert alert-gray alert-dismissible no-margin" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>@Resources.Common.BackOffice_Review_Warning</strong>@Resources.Common.BackOffice_Review_YouAreCreatingHostessOrder.FormatWith(description as string)
+                    <div class="space-10"></div>
+                    <a class="btn btn-danger" id="cancel-hostorder-button">@Resources.Common.BackOffice_Review_CancelHostess</a>
+                </div>
+
+                if (ViewBag.ActiveParty.HostessRewards != null && (ViewBag.ActiveParty.HostessRewards.FreeProductAmount > 0 || ViewBag.ActiveParty.HostessRewards.FreeProductPercentage > 0))
+                {
+                    var rewards = ViewBag.ActiveParty.HostessRewards;
+                    <div id="hostess-rewards-container">
+                        <h4>@Resources.Common.BackOffice_Review_HereAreRewards</h4>
+
+                        <ul>
+                            <li><strong>Free Shipping</strong></li>
+                            <li><strong><a style="color:white;" href="@Url.Action("shopportunities")">@Resources.Common.HostessShopportunity</a></strong></li>
+                            @if (rewards.HalfPricedItems > 0)
+                            {
+                                <li><strong>@Resources.Common.HalfPriceItem:</strong> <span id="half-priced-product-amount">@ViewBag.HalfPricedItemsInCart of @rewards.HalfPricedItems</span></li>
+                            }
+                            @if (rewards.FreeProductAmount > 0)
+                            {
+                                <li><strong>@Resources.Common.BackOffice_Review_FreeProduct:</strong> <span id="free-product-amount">@rewards.FreeProductAmount.ToString("C")</span></li>
+                            }
+                            else if (rewards.FreeProductPercentage > 0)
+                            {
+                                var freeAmount = rewards.FreeProductPercentage * ViewBag.CartTotal;
+                                <li><strong>@Resources.Common.BackOffice_Review_FreeProduct:</strong> <span id="free-product-amount">@freeAmount.ToString("C")</span></li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+            else if (isGuestOrder)
+            {
+                    <div class="alert alert-gray alert-dismissible no-margin" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        @Resources.Common.BackOffice_Review_PlacingOrderParty.FormatWith(party.HostDisplayName as string, description as string)
+                        <div class="space-10"></div>
+                        <a class="btn btn-info" id="cancel-hostorder-button">@Resources.Common.BackOffice_Review_ReturnPartyManagement</a>
+                    </div>
+            }
+        </div>
+
+        <script>
+            require(["ajax"], function (ajax) {
+                $("#cancel-hostorder-button").on("click", function () {
+                    ajax.json({
+                        url: "@Url.Action("resetshopping")",
+                        success: function (response) {
+                            window.location = '@Url.Action("summary", "parties", new { id = ViewBag.ActiveParty.PartyID })';
+                        }
+                    });
+                });
+            });
+        </script>
+    }
+}

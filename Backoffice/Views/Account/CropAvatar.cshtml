@@ -1,0 +1,124 @@
+﻿@model byte[]
+@{
+    Layout = null;
+
+    var contextID = Guid.NewGuid().ToString();
+
+    var rawBytes = Convert.ToBase64String(Model);
+    var rawImageUrl = "data:image/png;base64,{0}".FormatWith(rawBytes);
+}
+
+
+<div class="view-cropavatar" id="view-cropavatar-@contextID">
+    <div class="modal-header">
+        <h4 class="modal-title">@Resources.Common.Avatar</h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="row">
+            <div class="col-md-8">
+                <img src="@rawImageUrl" class="jcrop_target" />
+            </div>
+            <div class="col-md-4">
+                <h4>Preview</h4>
+                <div style="width:100px;height:100px;overflow:hidden;">
+                    <img src="@rawImageUrl" class="preview" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-role="submit" data-loading-text="@Resources.Common.Saving">@Resources.Common.SaveChanges</button>
+        <button type="button" class="btn btn-link" data-dismiss="modal">@Resources.Common.Cancel</button>
+    </div>
+</div>
+
+
+
+<script>
+    require(["jquery", "ajax", "jcrop", "jquery-form"], function ($, ajax) {
+
+        // Settings
+        var context        = "#view-cropavatar-@contextID",
+            $context       = $(context),
+            rawImageWidth  = 0,
+            rawImageHeight = 0,
+            cropsettings   = {};
+
+
+        // Event Handlers
+        function registerEventHandlers() {
+            $('[data-role="submit"]', $context).on('click', function (e) {
+                if (cropsettings.w && parseInt(cropsettings.w) > 0) {
+                    $(this).buttonState("loading");
+                    actions.saveChanges();
+                }
+            });
+        }
+
+
+        // Actions
+        var actions = {
+            showPreview: function (coords) {
+                if (parseInt(coords.w) > 0) {
+                    cropsettings = coords;
+
+                    if (rawImageWidth == 0) rawImageWidth = $('.jcrop_target', $context).width();
+                    if (rawImageHeight == 0) rawImageHeight = $('.jcrop_target', $context).height();
+
+                    var rx = 100 / coords.w;
+                    var ry = 100 / coords.h;
+
+                    $('.preview', $context).css({
+                        width: Math.round(rx * rawImageWidth) + 'px',
+                        height: Math.round(ry * rawImageHeight) + 'px',
+                        marginLeft: '-' + Math.round(rx * coords.x) + 'px',
+                        marginTop: '-' + Math.round(ry * coords.y) + 'px'
+                    }).show();
+                }
+            },
+            hidePreview: function () {
+                cropsettings = {};
+                $('.preview', $context).stop().fadeOut('fast');
+            },
+            saveChanges: function () {
+                ajax.json({
+                    url: '@Url.Action("cropavatar")',
+                    data: {
+                        width: cropsettings.w,
+                        height: cropsettings.h,
+                        x: cropsettings.x,
+                        y: cropsettings.y,
+                        rawBytes: '@rawBytes'
+                    },
+                    success: function (response) {
+                        window.location.reload(true);
+                    }
+                });
+            }
+        };
+
+
+        // Helpers
+        var helpers = {
+
+        };
+
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+
+            $('.jcrop_target', $context).Jcrop({
+                setSelect: [0, 0, 800, 800],
+                aspectRatio: 1,
+                onChange: actions.showPreview,
+                onSelect: actions.showPreview,
+                onRelease: actions.hidePreview
+            });
+        }
+        init();
+
+    });
+</script>

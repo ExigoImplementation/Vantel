@@ -1,0 +1,16 @@
+﻿@model String
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    { 
+        @class = "form-control",
+        type = "search",
+        role = "textbox"
+    });
+}
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="fa-search"></i></span>
+    @Html.TextBoxFor(c => c, htmlAttributes)
+</div>

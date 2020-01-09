@@ -1,0 +1,8 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid().ToString();
+}
+
+<div id="view-homeaddress-@contextID" data-role="hidecountry">
+    @Html.EditorFor(c => c.Customer.MainAddress, "Address")
+</div>

@@ -1,0 +1,14 @@
+﻿@model String
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    { 
+        @class              = "form-control",
+        type                = "tel",
+        role                = "textbox",
+        data_restrict_input = "phone"
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)

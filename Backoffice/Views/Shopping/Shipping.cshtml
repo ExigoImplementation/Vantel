@@ -1,0 +1,151 @@
+﻿@model ShippingAddressesViewModel
+@{
+    ViewBag.Title = Resources.Common.ShippingAddress;
+
+    var market = Utilities.GetCurrentMarket();
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Cart, UrlPath = Url.Action("Cart", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-ordershipping">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col">
+
+                    @if (ViewBag.ActiveParty != null)
+                    {
+                        @Html.Partial("Partials/_PartyOrderMessage", Model)
+                    }
+                    @* End Party Info Bar*@
+
+                    @if (Model.Addresses.Count() > 0)
+                    {
+                        var addressNumber = 0;
+
+                        <div class="row">
+                            <div class="col-sm-8 offset-sm-2  card border-left-0 border-right-0 p-3 p-sm-1">
+                                <h3 class="pt-4">@Resources.Common.SelectShippingAddress</h3>
+                                <hr />
+                                <div class="space-10"></div>
+                                @foreach (var address in Model.Addresses)
+                                {
+                                    var AddressNotes = "AddressNotes" + addressNumber++;
+                                    <div class="row">
+                                        <div class="col-md-7 col-sm-12">
+                                            @Html.DisplayFor(c => address)
+                                        </div>
+
+                                        <div class="col-md-5 col-sm-12">
+                                            @using (Html.BeginForm(new { novalidate = "novalidate" }))
+                                            {
+                                                using (Html.BeginHtmlFieldPrefixScope("Address"))
+                                                {
+                                                    @Html.Partial("~/Views/Shared/EditorTemplates/ShippingAddressOnFile.cshtml", address)
+                                                }
+                                                <div class="space-10"></div>
+                                                <button type="submit" class="btn btn-primary float-right w-100" data-loading-text="@Resources.Common.Saving">@Resources.Common.ShipToThisAddress</button>
+                                                <div>
+                                                    <a class="btn btn-link w-100" data-toggle="collapse" href="#@AddressNotes" role="button" aria-expanded="false" aria-controls="@AddressNotes">
+                                                        @Resources.Common.AddShippingInstructions
+                                                    </a>
+
+                                                    <div class="collapse" id="@AddressNotes">
+                                                        <div class="form-group">
+                                                            <div class="space-10"></div>
+                                                            <textarea class="form-control" name="Address.Notes" id="Address_Notes" rows="2"></textarea>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="space-10"></div>
+                                    if (address.AddressType != Model.Addresses.Last().AddressType)
+                                    {
+                                        <hr />
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="space-50"></div>
+                    }
+
+
+
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <h3>@Resources.Common.AddNewAddress</h3>
+                        </div>
+                        <div class="col-sm-8 offset-sm-2  card border-left-0 border-right-0 p-3 p-sm-1">
+                            @using (Html.BeginForm())
+                            {
+                                var Address = new ShippingAddress(Identity.Current.FirstName, Identity.Current.LastName);
+                                Address.AddressType = AddressType.New;
+
+                                @Html.EditorFor(c => Address)
+
+                                <div class="form-group">
+                                    <button id="new-address" type="submit" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.ShipToThisAddress</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section scripts
+{
+    <script>
+        require(["jquery", "forms", "bootstrap", "mask"],function ($) {
+
+            // Settings
+            var context = "#view-ordershipping",
+                $context = $(context);
+            // Helpers
+            var helpers = { 
+                applyMasks: function () { 
+                    $('[name="Address.Phone"]').mask('@market.PhoneMask'); 
+				}
+            };
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $("[type='submit']", $context).on("click", function () {
+                    if (!$("form").valid()) {
+                        return false;
+                    }
+                });   
+            }
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+                helpers.applyMasks();
+            }
+            init();
+
+        });
+    </script>
+}

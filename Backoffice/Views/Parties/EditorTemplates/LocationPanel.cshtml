@@ -1,0 +1,70 @@
+﻿@model CreatePartyViewModel
+@{
+    var request = Model.CreatePartyRequest;
+    var isAddressSelected = request.IsVirtualOnly ? "checked='checked'" : "";
+    var addressVisible = request.IsVirtualOnly ? "style=display:none;" : "";
+}
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab">Choose a Location</a></li>
+</ul>
+<div class="space-30"></div>
+
+<div class="locationwrapper" data-type="1">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="virtualParty" name="@Html.NameFor(c => request.IsVirtualOnly)" value="true" @isAddressSelected />
+            Check if this is virtual party only (no actual location for the party)
+        </label>
+    </div>
+    <div class="space-20"></div>
+
+    <div id="addresses">
+        <p>Where will your party be hosted?</p>
+
+        <div id="partyaddresswrapper" @addressVisible>
+            
+            <div class="form-group">
+                <label for="Address1">@Resources.Common.Address</label>
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.TextBoxFor(c => request.Address1, new { @class = "form-control", placeholder = Resources.Common.StreetAddress })
+                        @Html.ValidationMessageFor(c => request.Address1)
+                        <div class="space-5"></div>
+                        @Html.TextBoxFor(c => request.Address2, new { @class = "form-control", placeholder = Resources.Common.Address2Placeholder })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="City" class="hidden-xs">@Resources.Common.CityStateZip</label>
+                <div class="row margin-6">
+                    <div class="col-lg-5 col-md-4">
+                        <label for="City" class="visible-xs">@Resources.Common.City</label>
+                        @Html.TextBoxFor(c => request.City, new { @class = "form-control", placeholder = Resources.Common.City, style="width:100%;"})
+                        @Html.ValidationMessageFor(c => request.City)
+                    </div>
+                    <div class="col-lg-5 col-md-4">
+                        <label for="State" class="visible-xs">@Resources.Common.State</label>
+                        <select id="request_State" name="@Html.NameFor(c => request.State)" class="form-control" , style="width:100%;">
+                            @Html.RegionOptions("US", request.State)
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label for="Zip" class="visible-xs">@Resources.Common.Zip</label>
+                        @Html.TextBoxFor(c => request.Zip, new { @class = "form-control", placeholder = Resources.Common.Zipcode, style = "width:100%;" })
+                        @Html.ValidationMessageFor(c => request.Zip)
+                    </div>
+                </div>
+            </div>
+            <div class="form-group hidden">
+                <label for="Country">@Resources.Common.Country</label>
+                <div class="row">
+                    <div class="col-md-12">
+                        <select id="request_Country" name="@Html.NameFor(c => request.Country)" class="form-control" data-region-bind="State" style="width:100%;">
+                            @Html.CountryOptions("US")
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

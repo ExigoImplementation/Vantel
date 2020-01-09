@@ -1,0 +1,25 @@
+﻿@*Any modifications made here should also be made in _PageLayout*@
+
+@{
+    Layout = "~/Views/Shared/_AuthenticatedLayout.cshtml";
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = ViewBag.ParentOption,
+        DefaultBreadcrumbLinkSitemapID = ViewBag.LinkOption
+    };
+}
+@section header { @RenderSection("header", required: false) }
+
+<div id="view-events">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section scripts{ @RenderSection("scripts", required: false) }

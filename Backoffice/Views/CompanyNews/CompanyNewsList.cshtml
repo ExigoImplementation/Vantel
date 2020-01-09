@@ -1,0 +1,41 @@
+﻿@model CompanyNewsViewModel
+@{ 
+    ViewBag.Title = Resources.Common.CompanyNews;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div id="view-company-news">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col-sm-12">
+                    @if (Model.CompanyNewsItems.Count > 0)
+                    {
+                        foreach (var NewsItem in Model.CompanyNewsItems)
+                        {
+                            <div class="card">
+                                <div class="card-inner">
+                                    <div class="article">
+                                        <a class="title text-lg" href="@Url.Action("companynewsdetail", "companynews", new { newsid = NewsItem.NewsID })">@NewsItem.Description</a>
+                                        <div class="date">@NewsItem.CreatedDate.ToShortDateString()</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                    }
+                    else
+                    {
+                        <p>@Resources.Common.NoCurrentNewsDisplay.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+﻿@model Item
+@{ 
+    var hideControls = (ViewData["HideControls"] != null && ViewData["HideControls"].CanBeParsedAs<bool>()) ? (bool)ViewData["HideControls"] : false;
+}
+
+<tr data-itemcode="@Model.ItemCode" data-itemtype="@Model.Type">
+    <td>@Model.ItemDescription</td>
+    <td>@Model.Quantity.ToString("N0")</td>
+    <td>@Model.Price.ToString("C")</td>
+    <td>
+        @if (Model.Type != ShoppingCartItemType.EnrollmentPack && !hideControls) // Enrollment Packs
+        {
+        <a data-itemcode="@Model.ItemCode" data-type="@Model.Type" class="removed" title="Remove this item"><i class="fa fa-trash"></i></a>
+        }
+    </td>
+</tr>

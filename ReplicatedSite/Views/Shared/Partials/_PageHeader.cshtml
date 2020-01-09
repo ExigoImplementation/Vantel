@@ -1,0 +1,97 @@
+﻿@model PageHeader
+@{
+    var accountNode = new NavigationSiteMapNode();
+    NavigationSiteMapNode subAccountNode = null;
+    var defaultAccountNode = new NavigationSiteMapNode();
+    IEnumerable<ISiteMapNode> accountNodes = null;
+    IEnumerable<ISiteMapNode> subAccountNodes = null;
+
+
+    if (Model.DisplayBreadcrumbLinksAsDropdown)
+    {
+        accountNode = Settings.SiteMap.Current.Items.Single(c => c.ID.Equals(Model.DefaultParentLinkSitemapID, StringComparison.InvariantCultureIgnoreCase)) as NavigationSiteMapNode;
+        accountNodes = accountNode.Children.Where(c => c.IsVisible());
+        subAccountNode = (!String.IsNullOrWhiteSpace(Model.DefaultSubParentLinkSitemapID)) ? accountNodes.Single(c => c.ID.Equals(Model.DefaultSubParentLinkSitemapID, StringComparison.InvariantCultureIgnoreCase)) as NavigationSiteMapNode : null;
+        subAccountNodes = (subAccountNode != null) ? subAccountNode.Children.Where(c => c.IsVisible()) : null;
+        defaultAccountNode = (subAccountNodes != null) ? subAccountNodes.Where(c => c.ID.Equals(Model.DefaultBreadcrumbLinkSitemapID, StringComparison.InvariantCultureIgnoreCase)).First() as NavigationSiteMapNode : accountNodes.Where(c => c.ID.Equals(Model.DefaultBreadcrumbLinkSitemapID, StringComparison.InvariantCultureIgnoreCase)).First() as NavigationSiteMapNode;
+    }
+}
+
+<section id="page-title" class="@(Model.BreadcrumbItems.Any() || Model.DisplayBreadcrumbLinksAsDropdown ? "":"nolist")">
+    <div class="container clearfix">
+        <h1>@Model.PageName</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.PageDescription))
+        {
+            <span>@Model.PageDescription</span>
+        }
+
+        @if (Model.DisplayBreadcrumbLinksAsDropdown)
+        {
+            <div id="page-header-menu" class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @Resources.Common.Replicated_Global_Menu
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    @{
+                        int totalNodes = accountNodes.Where(c => c is NavigationSiteMapNode).Count();
+                        int nodeIndex = 0;
+                    }
+
+                    @foreach (var node in accountNodes.Where(c => c is NavigationSiteMapNode).Cast<NavigationSiteMapNode>())
+                    {
+                        nodeIndex++;
+
+                        if (node.Children.Where(c => c.IsVisible()).Count() > 0)
+                        {
+                            <h6 class="dropdown-header">@node.Label</h6>
+                            <div class="dropdown-divider"></div>
+
+                            int totalSubChildNodes = node.Children.Where(c => c is NavigationSiteMapNode).Count();
+                            int subChildNodeIndex = 0;
+
+                            foreach (var subNode in node.Children.Where(c => c is NavigationSiteMapNode).Cast<NavigationSiteMapNode>())
+                            {
+                                <a class="dropdown-item  @(defaultAccountNode.Url == subNode.Url ? "active" : "")" href="@subNode.Url" @(subNode.Target == "file" ? "target='self'" : "")>@subNode.Label</a>
+
+                                subChildNodeIndex++;
+
+                                if (subChildNodeIndex == totalSubChildNodes && (nodeIndex < totalNodes))
+                                {
+                                    <div class="dropdown-divider"></div>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <a class="dropdown-header @(defaultAccountNode.Url == node.Url ? "active" : "")" href="@node.Url">@node.Label</a>
+                            if (nodeIndex < totalNodes)
+                            {
+                                <div class="dropdown-divider"></div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <ol class="breadcrumb">
+                @for (int i = 0; i < Model.BreadcrumbItems.Count(); i++)
+                {
+                    var lastIndex = Model.BreadcrumbItems.Count() - 1;
+                    var isLastIndex = i == lastIndex;
+                    var breadCrumbItem = Model.BreadcrumbItems[i];
+
+                    if (isLastIndex || !breadCrumbItem.Clickeable)
+                    {
+                        <li class="breadcrumb-item @(isLastIndex ? "active" : "")" @(isLastIndex ? "aria-current='true'" : "")>@breadCrumbItem.Description</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a href="@breadCrumbItem.UrlPath">@breadCrumbItem.Description</a></li>
+                    }
+                }
+            </ol>
+        }
+    </div>
+</section>

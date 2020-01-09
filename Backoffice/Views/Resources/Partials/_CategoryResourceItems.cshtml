@@ -1,0 +1,48 @@
+﻿@model CategoryResourceItemsViewModel
+@{
+    var currentCulture = System.Globalization.CultureInfo.GetCultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name);
+    var manage = Model.IsResourceManager;
+}
+
+@if (Model.ResourceList != null && Model.ResourceList.Count() > 0)
+{
+    foreach (var resource in Model.ResourceList)
+    {
+        var isPending = resource.StatusID != ExigoDAL.ResourceStatuses.Active ? "Pending" : "";
+        var TypeName = Model.Types.Where(t => t.TypeID == resource.TypeID).FirstOrDefault().TypeDescription;
+        <tr data-id="@resource.ItemID" data-sort-node="@Model.CategoryItem.ItemID">
+            @if (manage)
+            {
+                <td><i class="fa fa-bars sortable-handle"></i></td>
+            }
+            <td class="pop-over">
+                @if (resource.UrlThumbnail.IsNotNullOrEmpty())
+                {
+                    <div class="pop-over-content"><img src='@resource.UrlThumbnail' class='img-thumbnail' /></div>
+                    <img src="@resource.UrlThumbnail" />
+                }
+                else
+                {
+                    <div class="pop-over-content"><img src="~/Content/images/Resources/@(TypeName).jpg" class="img-thumbnail" /></div>
+                    <img src="~/Content/images/Resources/@(TypeName).jpg" />
+                }
+            </td>
+            <td>@TypeName</td>
+            <td>@resource.Title <span class="badge badge-secondary">@isPending</span></td>
+            <td><a href="@resource.Url" target="_blank">@GlobalUtilities.DescriptionFormatter(resource.Url, 20)</a></td>
+            <td>@resource.Language</td>
+            <td>@resource.CreatedDate.ToString(currentCulture)</td>
+            @if (manage)
+            {
+                <td>
+                    <a href="@Url.Action("resourceitems", "resources", new { editItemID = @resource.ItemID })" data-id="@resource.ItemID" title="@Resources.Common.Edit"><i class="fa-pencil-square"></i></a>
+                    <a delete-resource data-id="@resource.ItemID" title="@Resources.Common.Delete"><i class="fa-times-circle"></i></a>
+                </td>
+            }
+        </tr>
+    }
+}
+else
+{
+    <tr><td colspan="6"><p>@Resources.Common.NoResourcesSaved</p></td></tr>
+}

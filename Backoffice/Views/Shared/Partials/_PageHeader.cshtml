@@ -1,0 +1,63 @@
+﻿@model PageHeader
+@{
+    var accountNode = new NavigationSiteMapNode();
+    IEnumerable<ISiteMapNode> accountNodes = null;
+    var defaultAccountNode = new NavigationSiteMapNode();
+    IEnumerable<ISiteMapNode> otherAccountNodes = null;
+
+    if (Model.DisplayBreadcrumbLinksAsDropdown)
+    {
+        accountNode = Settings.SiteMap.Current.Items.Single(c => c.ID == Model.DefaultParentLinkSitemapID) as NavigationSiteMapNode;
+        accountNodes = accountNode.Children.Where(c => c.IsVisible());
+        defaultAccountNode = accountNodes.Where(c => c.ID == Model.DefaultBreadcrumbLinkSitemapID).First() as NavigationSiteMapNode;
+        otherAccountNodes = accountNodes.Where(c => c.ID != Model.DefaultBreadcrumbLinkSitemapID);
+    }
+
+}
+
+<section id="page-title" class="@(Model.BreadcrumbItems.Any() || Model.DisplayBreadcrumbLinksAsDropdown ? "":"nolist")">
+    <div class="container clearfix">
+        <h1>@Model.PageName</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.PageDescription))
+        {
+            <span>@Model.PageDescription</span>
+        }
+
+        @if (Model.DisplayBreadcrumbLinksAsDropdown)
+        {
+            <div id="page-header-menu" class="form-group">
+                <label for="page-header-select">@Resources.Common.Replicated_Global_Menu</label>
+                <select id="page-header-select" class="form-control">
+
+                    @foreach (var node in accountNodes.Where(c => c is NavigationSiteMapNode).Cast<NavigationSiteMapNode>())
+                    {
+                        <option value="@node.Url" @(defaultAccountNode.Url == node.Url ? "selected" : "")>@node.Label</option>
+                    }
+                </select>
+            </div>
+        }
+        else
+        {
+            <ol class="breadcrumb">
+                @for (int i = 0; i < Model.BreadcrumbItems.Count(); i++)
+
+
+
+                {
+                    var lastIndex = Model.BreadcrumbItems.Count() - 1;
+                    var isLastIndex = i == lastIndex;
+                    var breadCrumbItem = Model.BreadcrumbItems[i];
+
+                    if (isLastIndex || !breadCrumbItem.Clickeable)
+                    {
+                        <li class="breadcrumb-item @(isLastIndex ? "active" : "")" @(isLastIndex ? "aria-current='true'" : "")>@breadCrumbItem.Description</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a href="@breadCrumbItem.UrlPath">@breadCrumbItem.Description</a></li>
+                    }
+                }
+            </ol>
+        }
+    </div>
+</section>

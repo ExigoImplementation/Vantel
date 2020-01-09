@@ -1,0 +1,15 @@
+﻿@model OrderCompleteViewModel
+@{
+    ViewBag.Title = Resources.Common.OrderComplete;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div id="view-order-complete">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    @Html.Raw(Resources.Common.Replicated_Shopping_OrderComplete.FormatWith(Url.Action("OrderList", "Orders")))
+</div>

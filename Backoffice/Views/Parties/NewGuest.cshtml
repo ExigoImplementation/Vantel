@@ -1,0 +1,164 @@
+﻿@model ManageGuestsViewModel
+@{
+    ViewBag.Title = Resources.Common.CreateNewGuest;
+    var contextID = Guid.NewGuid().ToString();
+
+    var defaultRegionCode = (Identity.Current.Addresses != null && Identity.Current.Addresses.MainAddress != null) ? Identity.Current.Addresses.MainAddress.State : "";
+    var error = Request.QueryString["error"];
+    var hasError = error.IsNotNullOrEmpty();
+}
+
+<div id="view-partyguest">
+
+    @if (hasError)
+    {
+        <div class="space-10"></div>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@Resources.Common.GenericSomethingWentWrong</strong> @Resources.Common.TheFollowingError:
+            <br />
+            <p>
+                @error
+            </p>
+        </div>
+    }
+    
+
+    <h1>@Resources.Common.AddNewGuest @Model.Party.Description</h1>
+
+    @using (Html.BeginForm("createnewguest", "parties", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        // Our hidden variables we need to pass along with the form
+        <input type="hidden" value="@Model.PartyID" name="@Html.NameFor(c => c.PartyID)" />
+        <input type="hidden" value="@Model.HostessID" name="@Html.NameFor(c => c.HostessID)" />
+
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.FirstName)
+            @Html.EditorFor(c => c.Guest.FirstName)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.LastName)
+            @Html.EditorFor(c => c.Guest.LastName)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.Country, new { @class = "control-label" })
+            @Html.DropDownListFor(c => c.Guest.Country,
+            selectList: Html.Countries("US"),
+            htmlAttributes: new
+            {
+                @class = "form-control",
+                data_region_bind = "#" + Html.IdFor(c => c.Guest.State) + "_" + contextID,
+                data_address_bind = "#" + Html.IdFor(c => c.Guest.Address2) + "_" + contextID,
+                data_role = "Country"
+            })
+            @Html.ValidationMessageFor(c => c.Guest.Country)
+        </div>
+        <div class="space-5"></div>
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.Address1, new { @class = "control-label" })
+            @Html.TextBoxFor(c => c.Guest.Address1, new
+        {
+            @class = "form-control",
+            placeholder = "Street address",
+            data_role = "Address1"
+        })
+            @Html.ValidationMessageFor(c => c.Guest.Address1)
+
+            <div class="space-5"></div>
+            @Html.TextBoxFor(c => c.Guest.Address2, new
+            {
+                @class = "form-control",
+                placeholder = "Apartment, suite, unit, building, floor, etc.",
+                id = Html.IdFor(c => c.Guest.Address2) + "_" + contextID,
+                data_role = "Address2"
+            })
+            @Html.ValidationMessageFor(c => c.Guest.Address2)
+        </div>
+
+
+        <label for="@Html.NameFor(c => c.Guest.City)" class="control-label hidden-xs">@Resources.Common.CityStateZip</label>
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    @Html.LabelFor(c => c.Guest.City, new { @class = "control-label visible-xs" })
+                    @Html.TextBoxFor(c => c.Guest.City, new
+                {
+                    @class = "form-control",
+                    placeholder = "City",
+                    data_role = "City"
+                })
+                    @Html.ValidationMessageFor(c => c.Guest.City)
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="form-group">
+                    @Html.LabelFor(c => c.Guest.State, new { @class = "control-label visible-xs" })
+                    @Html.DropDownListFor(c => c.Guest.State,
+                    selectList: Html.Regions("US", defaultRegionCode),
+                    htmlAttributes: new
+                    {
+                        @class = "form-control",
+                        id = Html.IdFor(c => c.Guest.State) + "_" + contextID,
+                        data_role = "State"
+                    })
+                    @Html.ValidationMessageFor(c => c.Guest.State)
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="form-group">
+                    @Html.LabelFor(c => c.Guest.Zip, new { @class = "control-label visible-xs" })
+                    @Html.TextBoxFor(c => c.Guest.Zip, new
+                {
+                    @class = "form-control",
+                    placeholder = "Zip code",
+                    data_role = "Zip"
+                })
+                    @Html.ValidationMessageFor(c => c.Guest.Zip)
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.Email)
+                        @Html.EditorFor(c => c.Guest.Email)
+                        <small><em>@Resources.Common.DoNotUseYourHostessEmail</em></small>
+        </div>
+
+        <div class="form-group">
+            <label>
+                @Resources.Common.OkToEmail
+            </label>
+            <input type="checkbox" name="@Html.NameFor(c => c.Guest.AllowEmail)" value="true" />
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.Phone)
+            @Html.EditorFor(c => c.Guest.Phone)
+            @Html.ValidationMessageFor(c => c.Guest.Phone)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.WorkPhone)
+            @Html.EditorFor(c => c.Guest.WorkPhone)
+            @Html.ValidationMessageFor(c => c.Guest.WorkPhone)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(c => c.Guest.CellPhone)
+            @Html.EditorFor(c => c.Guest.CellPhone)
+            @Html.ValidationMessageFor(c => c.Guest.CellPhone)
+        </div>
+
+        @*<div class="form-group">
+                @Html.LabelFor(c => c.Guest.Notes)
+                @Html.TextAreaFor(c => c.Guest.Notes, new { @class = "form-control" })
+            </div>*@
+
+        <button type="submit" class="btn btn-info">@Resources.Common.CreateNewGuest</button>
+        <a href="@Url.Action("summary", new { id = Model.PartyID })" class="btn btn-primary"><i class="fa-arrow-left"></i> @Resources.Common.BackToPartySummary</a>
+    }
+</div>

@@ -1,0 +1,356 @@
+﻿@{
+    #region Properties
+    // Market and Language properties
+    var availableMarkets = GlobalSettings.Markets.AvailableMarkets;
+    var availableLanguages = ExigoDAL.GetLanguages();
+    var selectedMarket = GlobalUtilities.GetCurrentMarket(this.Context);
+    var selectedCountry = CommonResources.Countries(selectedMarket.MainCountry);
+    var selectedLanguage = GlobalUtilities.GetSelectedLanguage(this.Context, selectedMarket.AvailableLanguages.First().CultureCode, selectedMarket);
+    var isEnrollment = ViewContext.RouteData.Values["controller"].ToString().ToLower().Contains("enrollment");
+    var countryHiddenClass = (availableMarkets.Count > 1) ? "" : "hidden";
+    var languageHiddenClass = (availableLanguages.Count() > 1) ? "" : "hidden";
+    var modalHeaderText = "";
+
+    if (availableMarkets.Count > 1 && availableLanguages.Count() > 1)
+    {
+        modalHeaderText = Resources.Common.SelectCountLang;
+    }
+    else if (availableMarkets.Count > 1)
+    {
+        modalHeaderText = Resources.Common.SelectCountry;
+    }
+    else
+    {
+        modalHeaderText = Resources.Common.SelectLanguage;
+    }
+    #endregion
+}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" class="lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html lang="en" class="ie9"> <![endif]-->
+<html lang="en" data-scroll="0">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <meta name="mobileoptimized" content="0" />
+    <meta name="published" content="@MvcApplication.ApplicationStartDate" />
+
+    <title>@ViewBag.Title - @Resources.Common.CompanyName</title>
+
+
+    <link rel="app" id="apppath" href="@Request.ApplicationPath" />
+    <link rel="app" id="appauthenticated" href="@Request.IsAuthenticated.ToString()" />
+    <link rel="app" id="appsessiontimeout" href="@GlobalSettings.ReplicatedSites.SessionTimeout" />
+
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="~/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="~/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="~/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="~/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="~/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="~/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="~/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="~/apple-touch-icon-152x152.png" />
+    @* Styles *@
+
+    @*<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />*@
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/timepicker@1.11.15/jquery.timepicker.css" />
+    @Styles.Render("~/bundles/styles/vendor")
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css" />
+    <link href="~/Content/styles/vendor/Bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/styles/site.min.css?v=@Settings.StyleVersionNumber" rel="stylesheet" />
+
+    @*<link href="~/Content/styles/components/_style.min.css" rel="stylesheet" />*@
+
+    @RenderSection("styles", required: false)
+    @* Scripts *@
+    <script src="@RouteJs.RouteJsHandler.HandlerUrl"></script>
+    <script src="@Url.Action("culture", "app" )"></script>
+    @Html.Partial("Resources")
+    <!-- RequireJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js" data-main="@Url.Content(" ~/Content/scripts/main.js")"></script>
+    <script>
+        require.config({
+            baseUrl: '/Content/scripts',
+            waitSeconds: 60,
+            @if (HttpContext.Current.IsDebuggingEnabled) { <text>urlArgs: "bust=" + (new Date()).getTime(),</text> }
+            paths: {
+                'main': 'main',
+                'addresses': 'modules/addresses.min',
+                'app': 'modules/app.min',
+                'ajax': 'modules/ajax.min',
+                'browser': 'modules/browser.min',
+                'calendars': 'modules/calendars.min',
+                'console': 'modules/console.min',
+                'containers': 'modules/containers.min',
+                'cookies': 'modules/cookies.min',
+                'debug': 'modules/debug.min',
+                'encryptions': 'modules/encryptions.min',
+                'extensions': 'modules/extensions.min',
+                'forms': 'modules/forms.min',
+                'guids': 'modules/guids.min',
+                'idletimeout': 'modules/idletimeout.min',
+                'kendogrids': 'modules/kendogrids.min',
+                'passwords': 'modules/passwords.min',
+                'popups': 'modules/popups.min',
+                'pubsub': 'modules/pubsub.min',
+                'shopping': 'modules/shopping',
+                'urls': 'modules/urls.min',
+                'widgets': 'modules/widgets.min',
+                'handlebars': '@Scripts.Url("~/bundles/scripts/handlebars")',
+                // OLD FROM CDN
+                //'jquery': 'https://code.jquery.com/jquery-1.11.3.min',
+                // Local
+                'jquery': 'vendor/jquery-3.3.1.min',
+                //'jquery': 'vendor/jquery-1.11.3.min',
+                'bootstrap': 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min',
+                'jquery-ui': 'https://code.jquery.com/ui/1.12.1/jquery-ui.min',
+                'bootstrap-hover-dropdown': 'vendor/bootstrap-hover-dropdown.min',
+                'jquery-validate': 'vendor/jquery.validate.min',
+                'jquery-validate-unobtrusive': 'vendor/jquery.validate.unobtrusive.min',
+                'jquery-validate-unobtrusive-custom': 'vendor/jquery.validate.unobtrusive.custom.min',
+                'jquery-unobtrusive-ajax': 'vendor/jquery.unobtrusive-ajax.min',
+                'jquery-sumoselect': 'vendor/jquery.sumoselect.min',
+                'kendo': 'vendor/kendo/scripts/kendo.web.min',
+                'kendo-cultures': 'vendor/kendo/scripts/kendo.culture.min',
+                'mask': 'vendor/jquery.mask.min',
+                'moment': 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment-with-locales.min',
+                'tinymce': '//cdn.tinymce.com/4/tinymce.min',
+
+                @* theme requireses *@
+                'animsition': 'modules/animsition.min',
+
+                //new view javascript files
+                'timepicker': 'https://cdn.jsdelivr.net/npm/timepicker@1.11.15/jquery.timepicker.min',
+                'toastr' : 'modules/toastr'
+            },
+        shim: {
+            'bootstrap': {
+                deps: ["jquery", "jquery-ui", 'bootstrap-hover-dropdown']
+            },
+            'jquery-validate-unobtrusive': {
+                deps: ['jquery-validate']
+            },
+            'jquery-unobtrusive-ajax': {
+                deps: ['jquery']
+            },
+            'jquery-sumoselect': {
+                deps: ['jquery']
+            },
+            'handlebars': {
+                exports: 'Handlebars'
+            },
+            'animsition': {
+                deps: ['jquery']
+            }
+        },
+        deps: ["bootstrap", "extensions", "forms"]
+        });
+    </script>
+    <!--[if lt IE 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    @RenderSection("header", required: false)
+    @if (!GlobalSettings.ReplicatedSites.GoogleAnalyticsWebPropertyID.IsNullOrEmpty())
+    {
+        <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', '@GlobalSettings.ReplicatedSites.GoogleAnalyticsWebPropertyID', 'auto');
+      ga('send', 'pageview');
+
+        </script>
+    }
+</head>
+@if(HttpContext.Current.IsDebuggingEnabled)
+{
+    @ExigoDevTools.ExigoDevTools.InstantiateDevService()
+}
+<body class="stretched" data-loader="2" data-loader-color="red">
+    <div id="toasts-container" aria-live="polite" aria-atomic="true">
+        <!-- Then put toasts within -->
+    </div>
+    <div id="wrapper" class="clearfix">
+        <div id="top-header">
+            <div class="container-fluid top-bar clearfix">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="item text">
+                            You are on <b>@Identity.Owner.FullName<text>'s</text></b> website!
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-5">
+                        <div class="item contact float-right">
+                            <div class="text">Get in touch:</div>
+                            <ul>
+                                <li><a title="Send e-mail" href="mailto:@(Identity.Owner.Email)"><i class="fa fa-envelope"></i></a></li>
+                                @foreach (var socialItem in Identity.Owner.SocialMediaUrls)
+                                {
+                                    var icon = socialItem.Key;
+                                    var url = socialItem.Value;
+                                    if (url.IsNotNullOrEmpty())
+                                    {
+                                        <li><a title="View @icon" href="@url.ToHttpPrefixedURI()" target="_blank"><i class="fa fa-@(icon.ToLower())"></i></a></li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="top-header-spacer"></div>
+        <!-- Header
+        ============================================= -->
+        <header id="header" class="full-header hidden-print" data-sticky-offset="400">
+            <div id="header-wrap">
+                <div class="container clearfix">
+                    <div id="primary-menu-trigger"><i class="fa-reorder"></i></div>
+
+                    <!-- Logo
+    ============================================= -->
+                    <div id="logo">
+                        <a href="@Url.Action("Index", "Home")" class="standard-logo" data-dark-logo="@Resources.Common.Global_Exigo_Logo_Base"><img src="@Resources.Common.Global_Exigo_Logo_Base" alt="Canvas Logo"></a>
+                    </div><!-- #logo end -->
+                    <!-- Primary Navigation
+    ============================================= -->
+                    <nav id="primary-menu">
+
+                        <ul class="one-page-menu @(isEnrollment?"border-right-0":"")" data-easing="easeInOutExpo" data-speed="1250" data-offset="65">
+                            <li class=""><a href="@Url.Action("Index", "Home")"><div>@Resources.Common.Home</div></a></li>
+                            <li class=""><a href="@Url.Action("about", "Home")"><div>@Resources.Common.AboutUs</div></a></li>
+                            <li class=""><a href="@Url.Action("ContactUs", "Home")"><div>@Resources.Common.Contact</div></a></li>
+                            <li class=""><a href="@Url.Action("Index", "Enrollment")"><div>@Resources.Common.Join</div></a></li>
+                            <li class=""><a href="@Url.Action("ItemList", "Shopping")"><div>@Resources.Common.Shop</div></a></li>
+                            <li class="d-block d-sm-none"><a href="@Url.Action("Cart","Shopping")"><div>@Resources.Common.Cart</div></a></li>
+                            @if (Identity.Customer == null)
+                            {
+                                <li class="" id="top-login">
+                                    <a href="#" id="top-login-trigger">
+                                        <div>@Resources.Common.Login</div>
+                                    </a>
+                                    @if (!Request.Url.AbsoluteUri.Contains("account/login"))
+                                    {
+                                        <div id="top-login">
+                                            @Html.Partial("Partials/_Login", new LoginViewModel())
+                                        </div>
+                                    }
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="" id="top-login">
+                                    <a class="nav-link" href="@Url.Action("index", "account")">
+                                        <div>@Resources.Common.Account.ToUpper()</div>
+                                    </a>
+                                    <div id="login-preview">
+
+                                    </div>
+                                </li>
+                            }
+
+                        </ul>
+
+                        @if (!isEnrollment)
+                        {
+                            <div id="top-cart">
+                                <a href="#" id="top-cart-trigger"><i class="fa-shopping-cart"></i><span id="PreviewCart_ItemCount">...</span></a>
+                            </div>
+                            <div class="fullwidth">
+                                @Html.Partial("Partials/_ShoppingCart")
+                            </div>
+                        }
+                    </nav>
+
+                    </div>
+            </div>
+        </header><!-- #header end -->
+
+        @RenderBody()
+
+        @Html.Raw(string.Format(Resources.Common.Replicated_Global_Footer, DateTime.Now.Year, Url.Action("TermsAndConditions", "Home"), Url.Action("PrivacyPolicy", "Home")))
+
+    </div>
+    <!-- Go To Top
+    ============================================= -->
+    <div id="gotoTop" class="fa-angle-up hidden-print"></div>
+
+    <!-- Language Modal -->
+    <div class="modal fade" id="language" tabindex="-1" role="dialog" aria-labelledby="language" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">@modalHeaderText</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="country @countryHiddenClass">
+                        <label>@Resources.Common.ChooseCountry</label><br />
+                        <select name="Country" id="CountrySelector" class="form-control">
+                            @foreach (var item in availableMarkets)
+                            {
+                                var selected = (selectedMarket == item) ? "selected='selected'" : "";
+                                <option value="@item.Countries.FirstOrDefault()" @selected>@item.Description</option>
+                            }
+                        </select>
+                        <div class="space-20"></div>
+                    </div>
+                    <div class="language @languageHiddenClass">
+                        <label>@Resources.Common.ChooseLang</label><br />
+                        <select name="Language" class="form-control">
+                            @foreach (var lang in availableLanguages)
+                            {
+                                <option value="@lang.CultureCode">@CommonResources.Languages(lang.LanguageID)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="space-10"></div>
+                    <a class="btn btn-primary pull-right" id="languageSubmit">@Resources.Common.Submit</a>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Site Owner Info -->
+    <div class="modal fade" id="owner-info-modal" tabindex="-1" role="dialog" aria-labelledby="owner-info" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">@Resources.Common.SiteOwnerInformation</h4>
+                </div>
+                <div class="modal-body">
+                    @Html.Partial("~/Views/Shared/_OwnerInfo.cshtml")
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Item Detail Modal -->
+    <div class="modal fade" id="quick-view-modal" tabindex="-1" role="dialog" aria-labelledby="quick-view-modal-label" aria-hidden="true" aria-modal="true">
+        <div class="modal-dialog" role="document">
+        </div>
+    </div>
+
+    @* Global Javascript *@
+    @Html.Partial("_GlobalScripts")
+
+    <!-- Page Scripts -->
+    @RenderSection("scripts", required: false)
+    @Html.PartialScripts()
+    @Html.AntiForgeryToken()
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+﻿@model ShippingAddressesViewModel
+@{
+    ViewBag.Title = Resources.Common.ShippingAddress;
+    var market = Utilities.GetCurrentMarket();
+
+    var hasError = !Request.QueryString["message"].IsNullOrEmpty() || (ViewBag.PartyInvalid != null && ViewBag.PartyInvalid == true);
+    var partyInvalidMessage = hasError ? Resources.Common.PartyInvalidMessage : "";
+    var hasOpenParties = ViewBag.OpenParties != null;
+    List<Party> OpenParties = hasOpenParties ? ViewBag.OpenParties : new List<Party>();
+    var canChooseOpenParty = ViewBag.ActiveParty == null && hasOpenParties && OpenParties.Count() > 0;
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Cart, UrlPath = Url.Action("Cart", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-ordershipping">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            @* Party Info Bar *@
+            @if (ViewBag.ActiveParty != null)
+            {
+                Party ActiveParty = ViewBag.ActiveParty;
+
+                @Html.DisplayFor(c => ActiveParty, "PartyDetailBar")
+            }
+            else if (canChooseOpenParty)
+            {
+                <div class="party-link">@Resources.Common.Replicated_ShoppingController_PartyLinkText <a data-role="find-party-modal">@Resources.Common.ClickHere.ToLower()</a></div>
+
+                @Html.Partial("Partials/_PartyHostModal", OpenParties)
+            }
+            @* End Party Info Bar*@
+            @if (Model.Addresses.Count() > 0)
+            {
+                var addressNumber = 0;
+
+                <div class="row">
+                    <div class="col-sm-8 offset-sm-2  card border-left-0 border-right-0 p-3 p-sm-1">
+                        <h3 class="pt-4">@Resources.Common.SelectShippingAddress</h3>
+                        <hr />
+                        <div class="space-10"></div>
+                        @foreach (var address in Model.Addresses)
+                        {
+                            var AddressNotes = "AddressNotes" + addressNumber++;
+                            <div class="row">
+                                <div class="col-md-7 col-sm-12">
+                                    @Html.DisplayFor(c => address)
+                                </div>
+
+                                <div class="col-md-5 col-sm-12">
+                                    @using (Html.BeginForm(new { novalidate = "novalidate" }))
+                                    {
+                                        using (Html.BeginHtmlFieldPrefixScope("Address"))
+                                        {
+                                            @Html.Partial("~/Views/Shared/EditorTemplates/ShippingAddressOnFile.cshtml", address)
+                                        }
+                                        <div class="space-10"></div>
+                                        <button type="submit" class="btn btn-primary float-right w-100" data-loading-text="@Resources.Common.Saving">@Resources.Common.ShipToThisAddress</button>
+
+                                        <div class="">
+
+
+                                            <a class="btn btn-link w-100" data-toggle="collapse" href="#@AddressNotes" role="button" aria-expanded="false" aria-controls="@AddressNotes">
+                                                @Resources.Common.AddShippingInstructions
+                                            </a>
+
+                                            <div class="collapse" id="@AddressNotes">
+                                                <div class="form-group">
+                                                    <div class="space-10"></div>
+                                                    <textarea class="form-control" name="Address.Notes" id="Address_Notes" rows="2"></textarea>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="space-10"></div>
+                            if(address.AddressType != Model.Addresses.Last().AddressType)
+                            {
+                                <hr />
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="space-50"></div>
+            }
+
+
+            <div class="row">
+                <div class="col-sm-8 offset-sm-2 card border-left-0 border-right-0 p-3 p-sm-1">
+                    <h3 class="pt-4">@Resources.Common.AddNewAddress</h3>
+                    <hr />
+                    <div class="space-10"></div>
+                    @using (Html.BeginForm())
+                    {
+                        var Address = new ShippingAddress(Identity.Customer.FirstName, Identity.Customer.LastName);
+                        Address.AddressType = AddressType.New;
+
+                        @Html.EditorFor(c => Address)
+
+                        <div class="form-group">
+                            <label for="Notes">@Resources.Common.AddShippingInstructions</label>
+                            <textarea class="form-control" name="Address.Notes" id="Address_Notes" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <button id="new-address" type="submit" class="btn btn-primary" data-loading-text="@Resources.Common.Saving">@Resources.Common.ShipToThisAddress</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="space-100"></div>
+    </div>
+</div>
+        @section scripts
+{
+            <script>
+                require(["jquery", "toastr", "forms", "bootstrap","mask"], function ($, toastr) {
+
+            // Settings
+            var context = "#view-ordershipping",
+                $context = $(context);
+
+            // Parties
+            var hasError = @hasError.ToString().ToLower(),
+                partyErrorMessage = '@partyInvalidMessage';
+            // Helpers
+            var helpers = { 
+                applyMasks: function () { 
+                    $('[name="Address.Phone"]').mask('@market.PhoneMask'); 
+				}
+            };
+            function registerEventHandlers() {
+                // Parties
+                if (hasError && partyErrorMessage.length > 0) {
+                    toastr.error(partyErrorMessage, '@Resources.Common.OopsSomethingWentWrong');
+                }
+                $("[type='submit']", $context).loadingClickEvent();
+            }
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+                helpers.applyMasks();
+            }
+            init();
+
+        });
+            </script>
+        }

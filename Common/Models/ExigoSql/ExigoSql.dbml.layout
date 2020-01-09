@@ -1,0 +1,690 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 39, 71.375" name="ExigoSql">
+  <DataContextMoniker Name="/ExigoSqlDataContext" />
+  <nestedChildShapes>
+    <classShape Id="c3cbf4c2-3dae-47e8-8994-45db6fd76a2e" absoluteBounds="0.75, 0.75, 2, 1.7708968098958331">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="ad8e607e-6668-4b00-9be4-df3aae06b504" absoluteBounds="0.765, 1.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="53754f94-b7e2-4ff4-9ca7-037965472d94" absoluteBounds="3.75, 0.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/WebCategoryItem" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6f46d7e6-43dd-4d3d-a5de-1196eb6f088a" absoluteBounds="3.765, 1.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="51eb7e46-aafa-4790-9a51-4c64273c2316" absoluteBounds="0.75, 3.75, 2, 4.2708154296874987">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderDetail" />
+      <nestedChildShapes>
+        <elementListCompartment Id="92e8c6a6-b8bd-44e4-9bfe-bfbce19491f6" absoluteBounds="0.765, 4.21, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="df5dda65-09ed-409e-98fc-5f647ee3c7b1" absoluteBounds="3.75, 3.75, 2, 1.193992513020834">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderPaymentType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="8d9f58b0-d629-4b7b-9fcd-4c4bb384b534" absoluteBounds="3.765, 4.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="a28dabd0-526b-4df2-bf54-a51764fb4437" absoluteBounds="3.75, 5.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderProcessType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="68244e56-3cd0-40cf-a74e-a88950d2357d" absoluteBounds="3.765, 6.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="648fce74-3a5c-454b-b42a-c03718cbcd33" absoluteBounds="6.75, 0.75, 2, 10.6167626953125">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrder" />
+      <nestedChildShapes>
+        <elementListCompartment Id="9a671b00-3bb4-4f72-8f73-d4aabd36b4c8" absoluteBounds="6.765, 1.21, 1.9700000000000002, 10.0567626953125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="5e6f5b42-8414-4420-88f2-27ccc9231e4e" absoluteBounds="9.75, 0.75, 2, 1.7708968098958329">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderSchedule" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f09af720-d78c-473b-b039-e96366ab2ddf" absoluteBounds="9.765, 1.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="07a208ba-fd2b-47b9-8a78-3a46be961426" absoluteBounds="0.75, 9.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderStatusChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6de231c2-a74a-494c-8754-8aea33b75070" absoluteBounds="0.765, 10.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ffa923e1-6205-4e3a-93ae-8e8ea81be557" absoluteBounds="9.75, 3.75, 2, 1.193992513020834">
+      <DataClassMoniker Name="/ExigoSqlDataContext/AutoOrderStatuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="24dc66e4-3844-4c9a-9a7d-8f38110a1490" absoluteBounds="9.765, 4.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="d17608a3-5e2d-44dc-81b6-0c0b6a347f91" absoluteBounds="9.75, 5.75, 2, 3.5016097005208326">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Bill" />
+      <nestedChildShapes>
+        <elementListCompartment Id="ba7b070c-4e10-4113-b7d6-1a61c3563a98" absoluteBounds="9.765, 6.21, 1.9700000000000002, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="9e01daf8-0ac4-475e-99ae-0a8c6f3c89d1" absoluteBounds="9.75, 10.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/BillStatuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="8b8ad7bb-d3b1-4a94-828a-2bf0d1ebfb84" absoluteBounds="9.765, 11.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="387ec1d3-c6cb-43f5-b9bb-0a4d65444f5a" absoluteBounds="12.75, 0.75, 2, 1.1939925130208335">
+      <DataClassMoniker Name="/ExigoSqlDataContext/BillType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e5d06a93-b7d5-44dd-a961-a255c9cdf132" absoluteBounds="12.765, 1.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="31b31856-ebf7-4770-a94a-9372fc3281ad" absoluteBounds="0.75, 12.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/BinaryPlacementType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0734f14c-3c46-4293-bd17-355a0a632c92" absoluteBounds="0.765, 13.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="0d5d13da-a6de-4b1e-863f-b8b55e94fede" absoluteBounds="12.75, 2.75, 2, 1.9631982421875005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/BinaryTree" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e5265847-ada0-4e75-9d02-a665143e5bb1" absoluteBounds="12.765, 3.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="bf3ccc58-6d82-4e19-99fa-9adea76b980b" absoluteBounds="3.75, 12.75, 2, 1.3862939453124987">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Bonuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f71800fb-0a88-4ca3-84a8-c44b39c79583" absoluteBounds="3.765, 13.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cf94c548-56a5-42e9-9ca0-25b437fa5f01" absoluteBounds="12.75, 5.75, 2, 2.3478011067708344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CodedRank" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2024ceb0-275e-495b-b7c5-22dd27a68f19" absoluteBounds="12.765, 6.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="809ff407-11fe-4ddb-967e-a75b8a3b559b" absoluteBounds="6.75, 12.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CodingType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="658cf455-bdee-4938-b19d-db273fea18a4" absoluteBounds="6.765, 13.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="62b9af1c-97ca-4551-9952-d762512e4aaf" absoluteBounds="12.75, 9.75, 2, 2.1554996744791666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionBinaryTree" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f5e4e8c2-0cea-4be9-8821-786ebc5bbe84" absoluteBounds="12.765, 10.21, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cbf4722a-f1d7-4035-aca6-0da2b0946a12" absoluteBounds="9.75, 12.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionBonuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="75c9f1bc-1895-43e3-bf6a-4eb0299cb25f" absoluteBounds="9.765, 13.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="a626cc05-306d-4931-94ab-8dbed3eb69bf" absoluteBounds="12.75, 12.75, 2, 2.3478011067708344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionCustomer" />
+      <nestedChildShapes>
+        <elementListCompartment Id="c66641e2-6c1f-4e07-8ae0-dc1c3c0063df" absoluteBounds="12.765, 13.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8f534d63-cbdd-4e94-adcd-94b802a79427" absoluteBounds="15.75, 0.75, 2, 2.9247054036458326">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionDetail" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2740adb8-be92-4f7b-a3a9-d56aeeb88e53" absoluteBounds="15.765, 1.21, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="49887566-acb2-47fc-8498-a92e5f5139a4" absoluteBounds="0.75, 15.75, 2, 1.9631982421875005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionEnrollerTree" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2dd09b23-27c5-426e-afff-9a03ad8fd914" absoluteBounds="0.765, 16.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="2c0f9bff-9830-4735-97ce-c1eec8a87ba0" absoluteBounds="3.75, 15.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionExchangeRate" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5c02e8c4-7d03-421c-b984-513050231e58" absoluteBounds="3.765, 16.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="68d3bdc5-c27d-412a-993b-7a80adf67baf" absoluteBounds="15.75, 4.75, 2, 2.3478011067708344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionOverride" />
+      <nestedChildShapes>
+        <elementListCompartment Id="843b93eb-f5c2-480a-ba76-6018ef1d2258" absoluteBounds="15.765, 5.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="9e5ffeaa-4595-401f-979f-11b49ee5f638" absoluteBounds="6.75, 15.75, 2, 1.9631982421875005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionRankGroup" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d6a171b0-df67-407a-9e5e-f41535b4070e" absoluteBounds="6.765, 16.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="d2fd4206-a9e3-424a-ac4c-cbc045c6c83d" absoluteBounds="15.75, 8.75, 2, 2.5401025390624987">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionRun" />
+      <nestedChildShapes>
+        <elementListCompartment Id="72226059-1911-483c-a34f-70d48b9bc43d" absoluteBounds="15.765, 9.21, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="a25c0e1e-c466-440b-8724-398333a165ad" absoluteBounds="15.75, 12.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionRunStatuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="b73b2333-7ecd-4e65-8dec-08833ad9ecd0" absoluteBounds="15.765, 13.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="fe55e3a4-ac8f-4a07-adfa-b0a7e0bf10da" absoluteBounds="15.75, 14.75, 2, 2.3478011067708344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Commission" />
+      <nestedChildShapes>
+        <elementListCompartment Id="8e5b2e46-8183-44ac-810e-34ecb4f4abe3" absoluteBounds="15.765, 15.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7a39666c-55eb-4a42-b8eb-6bf3baa60a3d" absoluteBounds="9.75, 16.75, 2, 1.9631982421875023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionUniLevelTree" />
+      <nestedChildShapes>
+        <elementListCompartment Id="c31f833c-99e1-43c2-8727-fd3f5e1f8fcf" absoluteBounds="9.765, 17.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8ce69bb3-1644-47c4-ab8b-3d5322327d10" absoluteBounds="18.75, 0.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionVolume" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2453ea04-f1eb-4186-8980-a8e906571d44" absoluteBounds="18.765, 1.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="688375f3-4f62-424b-975c-00d0b03c4aac" absoluteBounds="0.75, 18.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CommissionVolumeType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0ba80bda-7d25-482c-955b-5403efe13518" absoluteBounds="0.765, 19.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="966adb91-a32d-4a77-a948-044d684ba348" absoluteBounds="18.75, 3.75, 2, 1.193992513020834">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Company" />
+      <nestedChildShapes>
+        <elementListCompartment Id="89be8d62-9c29-48ef-adbf-359315cdfc66" absoluteBounds="18.765, 4.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="bb9fcd2d-6582-4cfb-aff8-85a256c8cbf7" absoluteBounds="3.75, 18.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Country" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d7df3be2-aaa1-4819-beec-45ef4096ed7d" absoluteBounds="3.765, 19.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="9aa65026-29ba-45ef-b7a8-752f81fcf4a5" absoluteBounds="18.75, 5.75, 2, 1.3862939453125005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CountryRegion" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e16c0b18-9b9c-4c8d-b99f-cd20c3c2d1a0" absoluteBounds="18.765, 6.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="4656f229-abe5-4337-a9cf-aae12e0553b2" absoluteBounds="18.75, 8.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CreditCardType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="715011d5-9c24-44eb-a4e7-d63419447e7a" absoluteBounds="18.765, 9.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7cf74ee9-9d4e-4fc2-865c-0db63f7fba56" absoluteBounds="18.75, 10.75, 2, 1.3862939453124987">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Currency" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0ed204b7-188b-45c4-a5a5-f93ae6b0e21d" absoluteBounds="18.765, 11.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="70abcf5c-f830-4813-a9a3-70a712c942f8" absoluteBounds="12.75, 18.75, 2, 1.7708968098958309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerAccountChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d917f7d0-17eb-4f95-ba75-a2b42763f5f8" absoluteBounds="12.765, 19.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="603646fb-1b53-4934-9c58-27c21d67fb26" absoluteBounds="18.75, 13.75, 2, 9.0783512369791666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerAccount" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e66295dc-3b64-4be6-80a5-2c23cae0ee2d" absoluteBounds="18.765, 14.21, 1.9700000000000002, 8.5183512369791661" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="d78968ca-c40e-4ad4-bda9-b992ffb05210" absoluteBounds="6.75, 19.75, 2, 2.3478011067708309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerAdjustment" />
+      <nestedChildShapes>
+        <elementListCompartment Id="ba75bf95-eb3a-4fe9-8916-2c05908a5604" absoluteBounds="6.765, 20.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="dc2ebe85-9462-4eaa-ad7c-dc5f2b48eac7" absoluteBounds="21.75, 0.75, 2, 1.7708968098958329">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="971d314f-8dc5-4c40-8639-05952627dc55" absoluteBounds="21.765, 1.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="fca91ca3-6c6b-451a-af28-481f65db8a8b" absoluteBounds="0.75, 21.75, 2, 3.8862125651041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerContact" />
+      <nestedChildShapes>
+        <elementListCompartment Id="33408768-da0a-4e94-9495-dc6efd6e3d65" absoluteBounds="0.765, 22.21, 1.9700000000000002, 3.3262125651041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ae65ef50-79ad-46d1-812a-aa5119a49074" absoluteBounds="21.75, 3.75, 2, 1.9631982421875005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerEventHistory" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e884c369-0fbf-412d-bb8e-70f5ece6acda" absoluteBounds="21.765, 4.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="5878da05-d252-46e6-b296-c08ef286e1b5" absoluteBounds="21.75, 6.75, 2, 1.9631982421874996">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerEvent" />
+      <nestedChildShapes>
+        <elementListCompartment Id="858f853d-8730-4e17-9677-a8d5f1355fe3" absoluteBounds="21.765, 7.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="415a1710-53ff-4648-91c9-d82d86157979" absoluteBounds="21.75, 9.75, 2, 7.3476383463541666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerExtendedDetail" />
+      <nestedChildShapes>
+        <elementListCompartment Id="be652e2c-d2ab-4c92-8ae3-5fefa957d0af" absoluteBounds="21.765, 10.21, 1.9700000000000002, 6.7876383463541661" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6a5e085d-f054-4012-a713-da8e38ab5883" absoluteBounds="9.75, 21.75, 2, 6.9630354817708309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerExtendedGroup" />
+      <nestedChildShapes>
+        <elementListCompartment Id="28d838dd-cb0b-4914-a563-cab1519c2b1f" absoluteBounds="9.765, 22.21, 1.9700000000000002, 6.403035481770833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6e1e2d8e-3445-47ec-bf8c-baee9e366333" absoluteBounds="12.75, 21.75, 2, 3.3093082682291666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerInquiry" />
+      <nestedChildShapes>
+        <elementListCompartment Id="a571d667-e9f0-4e9f-821e-f2d7f048d3e4" absoluteBounds="12.765, 22.21, 1.9700000000000002, 2.7493082682291665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="07bc9e11-d012-4b4e-8b63-14759f2aa7ca" absoluteBounds="21.75, 18.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerInquiryCategory" />
+      <nestedChildShapes>
+        <elementListCompartment Id="b0b8ad50-8129-4609-8e4b-9bf31566bec3" absoluteBounds="21.765, 19.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="f0a7d7b4-7483-4295-846a-be5a8d0536c1" absoluteBounds="21.75, 20.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerInquiryStatuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="3441533e-23b6-481e-8baa-fae2a47a4ddc" absoluteBounds="21.765, 21.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="d9cf0e5e-decf-4123-b283-62d863dc7026" absoluteBounds="21.75, 22.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerInquiryType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="29d6bbc3-f1ca-46f0-b353-325aa294b40e" absoluteBounds="21.765, 23.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="55ff842c-49cd-4f51-a955-c7644a3bfcf5" absoluteBounds="3.75, 23.75, 2, 4.4631168619791666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerLead" />
+      <nestedChildShapes>
+        <elementListCompartment Id="739f08b4-00ac-4930-9f79-9d2a385f7585" absoluteBounds="3.765, 24.21, 1.9700000000000002, 3.903116861979167" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8826ba55-b050-4a6f-9cd2-e32af37ba1eb" absoluteBounds="15.75, 23.75, 2, 2.5401025390625023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerOverride" />
+      <nestedChildShapes>
+        <elementListCompartment Id="afbaaf70-5b5c-404a-aa47-6a947eb6a897" absoluteBounds="15.765, 24.21, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="dc14b8a2-5032-4cc8-a826-2c7e890c39d7" absoluteBounds="24.75, 0.75, 2, 1.9631982421875003">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerPayoutSetting" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d5e1700c-786e-4cf1-b3ed-d3ffe6deca16" absoluteBounds="24.765, 1.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="804768b1-1a2f-46b4-bd73-37b8ea04bdcf" absoluteBounds="24.75, 3.75, 2, 1.3862939453125005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerPointAccount" />
+      <nestedChildShapes>
+        <elementListCompartment Id="fbec3708-4541-4f77-8690-004eebd73263" absoluteBounds="24.765, 4.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3258ca78-ba28-4239-b342-f45608668cdb" absoluteBounds="24.75, 6.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerRankChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="91b7790a-5d2a-421d-83d0-0c43387e5588" absoluteBounds="24.765, 7.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="046529f3-cb87-4939-beb6-82cdfdcdd768" absoluteBounds="24.75, 9.75, 2, 16.770408528645831">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Customer" />
+      <nestedChildShapes>
+        <elementListCompartment Id="cd6204d6-4a8c-4e4b-bc02-c70ec02da169" absoluteBounds="24.765, 10.21, 1.9700000000000002, 16.210408528645832" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="1b7e136a-db41-45b3-82ed-d26a6f14086d" absoluteBounds="18.75, 24.75, 2, 8.5014469401041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerSite" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6ccad72e-f9e4-4cd9-9a64-773d5116fc83" absoluteBounds="18.765, 25.21, 1.9700000000000002, 7.941446940104167" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="453ca498-ea69-4624-9b55-9b509e1c2c65" absoluteBounds="27.75, 0.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerSocialNetwork" />
+      <nestedChildShapes>
+        <elementListCompartment Id="68ce1343-c36d-4f86-aa4a-c2483d00e851" absoluteBounds="27.765, 1.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="99a126d0-f990-47f4-853f-7e546753cdf0" absoluteBounds="27.75, 3.75, 2, 1.7708968098958327">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerStatusChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="8b58afb6-f961-49a7-adf1-e26652f51cc3" absoluteBounds="27.765, 4.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ba913e77-a1ce-4fb3-90ca-9a6ecc9dfa8e" absoluteBounds="27.75, 6.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerStatuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="de8d1cde-ccd7-45a5-85d4-53dcced62a83" absoluteBounds="27.765, 7.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="c4d6593e-6ebe-4e27-95f6-8977bf9731fe" absoluteBounds="27.75, 8.75, 2, 1.7708968098958344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerSubscription" />
+      <nestedChildShapes>
+        <elementListCompartment Id="01ecabeb-929c-44c2-9099-9a504bca10f9" absoluteBounds="27.765, 9.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="f7eb40ee-4be6-49ab-9396-5900a9c63128" absoluteBounds="27.75, 11.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerTransactionType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="a6cd8370-f32c-4844-8f35-1a4b28860b2b" absoluteBounds="27.765, 12.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8d9c5f2c-0819-4f43-9be4-afd83f7c6820" absoluteBounds="12.75, 27.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="1a3dede9-fd66-4d10-bb37-9a88f44ce8e6" absoluteBounds="12.765, 28.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="042f54d1-115a-49cb-8bf2-9c6c327591a4" absoluteBounds="27.75, 13.75, 2, 2.1554996744791666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/CustomerWall" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f8b89722-9cf1-4e7f-8b67-a47fc3084f04" absoluteBounds="27.765, 14.21, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3dc86a9b-deda-42d9-b517-5e10b5380f00" absoluteBounds="27.75, 16.75, 2, 1.7708968098958309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/EnrollerTree" />
+      <nestedChildShapes>
+        <elementListCompartment Id="53b84a0d-714a-4516-9d39-3892589e54e0" absoluteBounds="27.765, 17.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cafa5186-e5c2-4f16-b9d2-ebdc3d4670c1" absoluteBounds="27.75, 19.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/FrequencyType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="78403f36-2d96-49f5-bdd4-6ac09b063dbc" absoluteBounds="27.765, 20.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3764de79-ae4e-48f7-b4d5-dc2b6079685e" absoluteBounds="27.75, 21.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/hash" />
+      <nestedChildShapes>
+        <elementListCompartment Id="121f30f6-2380-4d47-82a4-6bd94cebfb5c" absoluteBounds="27.765, 22.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="72c1d3e1-b8ed-4430-baf1-6fd1a844b111" absoluteBounds="27.75, 23.75, 2, 1.7708968098958309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemCountryRegion" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0b478fd8-8f08-4b0f-8909-b00847f149f4" absoluteBounds="27.765, 24.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="26546362-64f9-40a0-b922-98ca4dae3954" absoluteBounds="24.75, 27.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemDynamicKitCategory" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d3678c55-e305-4d9c-8130-1fa701ae84f4" absoluteBounds="24.765, 28.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="20ad56e4-e37b-425c-ad7a-a9af0c67c779" absoluteBounds="27.75, 26.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemDynamicKitCategoryItemMember" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7511b006-0a92-4794-86b7-9bdfe44fac12" absoluteBounds="27.765, 27.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="2b6a9656-2c47-4cd1-ad38-e6794898b583" absoluteBounds="27.75, 28.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemDynamicKitCategoryMember" />
+      <nestedChildShapes>
+        <elementListCompartment Id="3db72f8f-407f-4dd0-93b8-6624f43f1a77" absoluteBounds="27.765, 29.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="93016860-07a3-4fd6-80d2-283c78a68a37" absoluteBounds="0.75, 29.75, 2, 2.9247054036458309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemLanguage" />
+      <nestedChildShapes>
+        <elementListCompartment Id="1a8f1eb5-25d8-4a15-87ea-23a4e077d212" absoluteBounds="0.765, 30.21, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6490733b-1d4c-46e9-bfc6-55ae22e984f6" absoluteBounds="3.75, 29.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemPointAccount" />
+      <nestedChildShapes>
+        <elementListCompartment Id="a59c8b84-c2d9-4786-a174-c170a0b3d696" absoluteBounds="3.765, 30.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="64c59fa9-be5b-4802-8073-fab0575cc166" absoluteBounds="6.75, 29.75, 2, 4.2708154296875023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemPrice" />
+      <nestedChildShapes>
+        <elementListCompartment Id="28cc0fe6-71b6-48d9-a903-6b0301d2a774" absoluteBounds="6.765, 30.21, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="df1e00cb-bf23-4873-a808-84da9fe30077" absoluteBounds="21.75, 29.75, 2, 8.3091455078125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Item" />
+      <nestedChildShapes>
+        <elementListCompartment Id="545d112f-9ad0-4aad-84e4-7028ee0807f8" absoluteBounds="21.765, 30.21, 1.9700000000000002, 7.7491455078125009" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="590a47c9-6104-4453-bb56-3650d36570b3" absoluteBounds="30.75, 0.75, 2, 1.3862939453125003">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemStaticKitMember" />
+      <nestedChildShapes>
+        <elementListCompartment Id="da296b2c-0ad3-4aad-8247-c0495e84e30c" absoluteBounds="30.765, 1.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="e254eddc-9ce9-4155-9ae5-3aa9a24b5387" absoluteBounds="30.75, 3.75, 2, 1.3862939453125005">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemSubscription" />
+      <nestedChildShapes>
+        <elementListCompartment Id="3f16a12e-b2ed-4403-93cb-34bda7beab72" absoluteBounds="30.765, 4.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8fdf0e55-651a-42e1-8e83-ad40d07b918b" absoluteBounds="30.75, 6.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="aad58c32-af73-4cde-b389-3f48b16a514e" absoluteBounds="30.765, 7.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cbc5ccaa-0e25-4f31-bc23-d2a4abde6810" absoluteBounds="30.75, 8.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ItemWarehouse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7ed26e73-7b8d-4f73-8402-0fded65c562d" absoluteBounds="30.765, 9.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ca13c97f-4d32-4cae-9b9c-87284a661b68" absoluteBounds="9.75, 30.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Language" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0041251d-af68-4dd9-9a45-d5700c25f42d" absoluteBounds="9.765, 31.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8334dfe5-4a22-4b4b-a814-bfc06ad1be57" absoluteBounds="30.75, 11.75, 2, 4.6554182942708309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/MerchantDeclineLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0626abbc-cc97-4eaa-81b2-a9f9548312e7" absoluteBounds="30.765, 12.21, 1.9700000000000002, 4.095418294270833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="1aed668a-7282-4c64-a9eb-b25b4b3a318e" absoluteBounds="12.75, 30.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/MerchantDeclineReason" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7edb8524-7953-4551-986a-a68b4482fea3" absoluteBounds="12.765, 31.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7dc2e62e-267b-4917-90d0-88b677db5743" absoluteBounds="30.75, 17.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/OrderBatch" />
+      <nestedChildShapes>
+        <elementListCompartment Id="254e9af5-6124-4401-9bc8-dbb21c366142" absoluteBounds="30.765, 18.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="02443753-54a9-48a2-8e21-d7f5cd231113" absoluteBounds="30.75, 20.75, 2, 1.7708968098958309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/OrderChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="ba761a43-1f27-43a7-bdf7-f74e2644b5eb" absoluteBounds="30.765, 21.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6338b6b1-36c0-4584-a6ce-e0e34f7bb650" absoluteBounds="30.75, 23.75, 2, 9.4629541015625023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/OrderDetail" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2cea6e28-b931-4d98-9c2a-eed8ed9d18d1" absoluteBounds="30.765, 24.21, 1.9700000000000002, 8.9029541015625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ad514b57-a2f9-4e2e-a085-66e80e9c036d" absoluteBounds="24.75, 31.75, 2, 17.539614257812502">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Order" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5dc35173-a164-44b0-abb8-5efc7af856fd" absoluteBounds="24.765, 32.21, 1.9700000000000002, 16.9796142578125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7c46a4ec-4411-4dfd-9e87-e19d391b5a83" absoluteBounds="9.75, 32.75, 2, 1.7708968098958309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/OrderStatusChangeLog" />
+      <nestedChildShapes>
+        <elementListCompartment Id="bf079942-cd0e-45f3-85c2-f0ea64371fe6" absoluteBounds="9.765, 33.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="900db0f5-0873-4dae-a0c3-dbbe8dd6fe2a" absoluteBounds="12.75, 32.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/OrderStatuse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7027cd60-caf5-42bc-b0fe-f636711dc709" absoluteBounds="12.765, 33.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="5a69863d-3e66-491d-b126-dd88bdfab778" absoluteBounds="33.75, 0.75, 2, 1.1939925130208335">
+      <DataClassMoniker Name="/ExigoSqlDataContext/OrderType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7f8b1da4-49a1-49f4-8ff1-b11c3810e505" absoluteBounds="33.765, 1.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="32684ac3-abc2-4c30-8d22-04289ddcafad" absoluteBounds="0.75, 33.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Override" />
+      <nestedChildShapes>
+        <elementListCompartment Id="739dff47-d55b-4d68-9717-ef5dccecb0be" absoluteBounds="0.765, 34.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8dc3eb3a-85f7-4ff1-8b32-e027032f2ad1" absoluteBounds="33.75, 2.75, 2, 4.2708154296874987">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Payment" />
+      <nestedChildShapes>
+        <elementListCompartment Id="ca5411ae-27a2-4b1b-8aa5-22ae0ca9b85f" absoluteBounds="33.765, 3.21, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7489e408-7da9-4311-8465-4d3577c52085" absoluteBounds="33.75, 8.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PaymentType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e06a0f49-bb47-4a16-bd8c-a8d52afdd6cb" absoluteBounds="33.765, 9.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="2bb6bdb5-1e51-4b8e-aee3-c8ca864d2f7e" absoluteBounds="33.75, 10.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PayoutBill" />
+      <nestedChildShapes>
+        <elementListCompartment Id="87f39886-99a8-4a27-b2c4-caefea1e883b" absoluteBounds="33.765, 11.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7b6ac45c-1af1-418b-8880-71178d3c3eb1" absoluteBounds="33.75, 13.75, 2, 5.6169254557291666">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Payout" />
+      <nestedChildShapes>
+        <elementListCompartment Id="c2c4a42a-4e67-4807-8d98-8248120eef79" absoluteBounds="33.765, 14.21, 1.9700000000000002, 5.0569254557291661" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="dab64d2b-a076-4d13-a87e-8d7388940a7f" absoluteBounds="33.75, 20.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PayoutType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="10ab2888-2f4b-4db3-b5d7-2a6d2d467e8b" absoluteBounds="33.765, 21.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7a97cdfe-6be6-4dfd-b7cc-aa95b1d603db" absoluteBounds="33.75, 22.75, 2, 1.7708968098958309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PeriodRankScore" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f6e7c46c-8a16-4360-93c1-7b2557e9161c" absoluteBounds="33.765, 23.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="f44a5eb9-8b9d-4d87-97c1-752ce1d9251b" absoluteBounds="33.75, 25.75, 2, 1.9631982421875023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Period" />
+      <nestedChildShapes>
+        <elementListCompartment Id="fa6f54e6-f5ff-42fe-8116-4e5b8992bf2c" absoluteBounds="33.765, 26.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cd9fda07-6e29-4ea8-afd0-c6cf5651ba5c" absoluteBounds="33.75, 28.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PeriodType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f09e2c90-c011-491b-bd6f-fb63fc022ce4" absoluteBounds="33.765, 29.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7001be23-a652-45c8-899d-9b8e354af9d2" absoluteBounds="33.75, 30.75, 2, 40.423484700520831">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PeriodVolume" />
+      <nestedChildShapes>
+        <elementListCompartment Id="4b954a17-e532-4eae-9054-22b90fe8c803" absoluteBounds="33.765, 31.21, 1.9700000000000002, 39.863484700520829" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="c19ad900-54fd-4185-93a9-8b67a47aa845" absoluteBounds="12.75, 34.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PointAccount" />
+      <nestedChildShapes>
+        <elementListCompartment Id="c48c7bad-de09-403a-8bf2-d551a1797816" absoluteBounds="12.765, 35.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="091804ce-fc2d-4dae-8163-cb2817e74c74" absoluteBounds="15.75, 34.75, 2, 2.3478011067708309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PointTransaction" />
+      <nestedChildShapes>
+        <elementListCompartment Id="984747b0-acd1-4de4-918e-4d6cc0d0dfc7" absoluteBounds="15.765, 35.21, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="f1398bdd-0680-441d-a67a-fc0a8306b1af" absoluteBounds="27.75, 34.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PointTransactionType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="b697aa3e-705e-447f-96d1-863ca18459fd" absoluteBounds="27.765, 35.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6aacd4ba-9f10-495d-9297-8b8db6b6bf63" absoluteBounds="3.75, 35.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/PriceType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5d20fca3-80a4-4896-8322-c1266dd11d69" absoluteBounds="3.765, 36.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="892c6d51-2a76-486b-bd45-2ca6325c6115" absoluteBounds="6.75, 35.75, 2, 1.1939925130208309">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Rank" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5a5fa2b3-8192-4379-99fd-f027bf26fc95" absoluteBounds="6.765, 36.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6b3d8c94-551d-42eb-bb47-cd96ad59ac8e" absoluteBounds="36.75, 0.75, 2, 1.1939925130208335">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ShipCarrier" />
+      <nestedChildShapes>
+        <elementListCompartment Id="b0aa72ac-e5ff-44fa-9eef-13f1b8a95036" absoluteBounds="36.765, 1.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3c5993d2-f644-463b-b678-bd4bc1b1a491" absoluteBounds="36.75, 2.75, 2, 1.7708968098958327">
+      <DataClassMoniker Name="/ExigoSqlDataContext/ShipMethod" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f6140064-4aa2-49d5-8ef1-ca53a39a3d5d" absoluteBounds="36.765, 3.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3b1be5d3-6118-46da-8d46-37259c42c501" absoluteBounds="36.75, 5.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/SocialNetwork" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6e555252-8abb-4071-87e9-62e8731b6e46" absoluteBounds="36.765, 6.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="4298b958-9d00-4d87-a73f-919a185210d4" absoluteBounds="36.75, 9.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Subscription" />
+      <nestedChildShapes>
+        <elementListCompartment Id="27a87553-52f9-48a6-a12b-14457f52172d" absoluteBounds="36.765, 10.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="613c6cf5-5f54-4ea8-b313-cf9760761bd1" absoluteBounds="36.75, 11.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/TaxAddressType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0b3dc7cc-979a-47b8-8436-b35842f9c5bf" absoluteBounds="36.765, 12.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3c129004-506e-4ac2-8099-7f0061e95cb4" absoluteBounds="36.75, 13.75, 2, 1.1939925130208344">
+      <DataClassMoniker Name="/ExigoSqlDataContext/TaxCodeType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="88f97578-6aa6-4380-9445-b9e446f84053" absoluteBounds="36.765, 14.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ed683c71-427d-49a5-ae60-862b01ee425c" absoluteBounds="36.75, 15.75, 2, 1.1939925130208327">
+      <DataClassMoniker Name="/ExigoSqlDataContext/TaxNameType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6d11e9e3-6ef7-4fd6-9b4d-ec99fa118a19" absoluteBounds="36.765, 16.21, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="b2090590-bb08-49fd-9e49-ae0d16184c34" absoluteBounds="36.75, 17.75, 2, 1.9631982421875023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/UniLevelTree" />
+      <nestedChildShapes>
+        <elementListCompartment Id="a92b0288-a630-4937-9b38-34601ae9e2c0" absoluteBounds="36.765, 18.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="dac69027-251b-4c35-85e8-2b7512aeef37" absoluteBounds="36.75, 20.75, 2, 1.3862939453125023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/WarehouseCurrency" />
+      <nestedChildShapes>
+        <elementListCompartment Id="184a93df-3372-434f-a305-9ab4c1816816" absoluteBounds="36.765, 21.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6e3be173-ba3e-4e94-b021-874620b4b0aa" absoluteBounds="36.75, 23.75, 2, 2.5401025390625023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/Warehouse" />
+      <nestedChildShapes>
+        <elementListCompartment Id="9f45a667-0200-4eb9-87ce-c93ba81f8053" absoluteBounds="36.765, 24.21, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cacdf644-aed8-44da-aa6c-92f8051e9bf9" absoluteBounds="36.75, 27.75, 2, 1.9631982421875023">
+      <DataClassMoniker Name="/ExigoSqlDataContext/WebCategory" />
+      <nestedChildShapes>
+        <elementListCompartment Id="4b0995a8-e700-4a94-9ca8-c955028e4fa2" absoluteBounds="36.765, 28.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

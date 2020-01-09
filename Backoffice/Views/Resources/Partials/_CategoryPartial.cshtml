@@ -1,0 +1,185 @@
+﻿@model ResourceCategoryViewModel
+@{
+    ViewBag.Title = "_CategoryPartial";
+    var categories = Model.Categories;
+    var edit = Model.Categories.Count > 0;
+
+    var categoryID = edit ? Model.Categories.FirstOrDefault().CategoryID : Guid.Empty;
+    var parentID = edit ? (Guid?)Model.SelectedParentCategoryID : null;
+
+}
+<div id="view-category-modal">
+    <div class="modal-header">
+        <h5 class="modal-title">@Resources.Common.NewCategory</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body category-modal">
+        <h6>@Resources.Common.EnterCategoryInAllLanguages</h6>
+
+        @foreach (var language in Model.allLanguages)
+        {
+            var category = !edit ? string.Empty : categories.FirstOrDefault(c => c.Language == language.LanguageDescription) != null ? categories.FirstOrDefault(c => c.Language == language.LanguageDescription).TranslatedCategoryDescription : string.Empty;
+
+            <div class="form-group">
+                <span>@language.LanguageDescription</span>
+
+                @if (language.LanguageDescription == "English")
+                {
+                    <div id="english-description">
+                        @Html.TextBoxFor(model => model.TranslatedCategoryDescriptions, new
+                        {
+                            @class = "form-control",
+                            language = language.LanguageDescription,
+                            @required = "required",
+                            @value = category
+                        })
+                        <span class="english-desc-required text-danger" style="display: none;">@Resources.Common.ThisFieldRequired</span>
+                    </div>
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => model.TranslatedCategoryDescriptions, new
+                    {
+                        @class = "form-control",
+                        language = language.LanguageDescription,
+                        @value = category
+                    })
+                }
+            </div>
+        }
+
+        @{ Guid? parentid = (Model.SelectedParentCategoryID != null && Model.SelectedParentCategoryID != Guid.Empty) ? (Guid?)Model.SelectedParentCategoryID : null; }
+
+        <div class="form-group">
+            <span>@Resources.Common.ParentCategory</span>
+
+            @if (!Model.hasSubCategories)
+            {
+                @Html.DropDownListFor(m => m.SelectedParentCategoryID, Model.ParentCategories, "-- None --", new { @class = "form-control", @value = parentid })
+            }
+            else
+            {
+                <input type="text" value="@Resources.Common.RemoveSubBeforeModifying" disabled class="form-control" />
+            }
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (edit)
+        {
+            <button type="button" id="btn-edit" class="btn btn-primary">@Resources.Common.Save</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">@Resources.Common.Save</button>
+        }
+        <button type="button" class="btn btn-danger" data-dismiss="modal">@Resources.Common.Close</button>
+    </div>
+</div>
+
+<script>
+    require(["jquery", "ajax", "jquery-ui"], function ($, ajax, jqueryui) {
+        $(function () {
+
+            var $context = ("#view-category-modal"),
+            categoryID = "@categoryID",
+            parentID = "@parentID",
+            transdesc = [], //translationdescription
+            submitURL = '@Url.Action("createcategory", "resources")',
+            editURL = '@Url.Action("editcategory", "resources")';
+
+            $('#btn-edit').on('click', function () {
+                if ($('#english-description').find('input').val() == "") {
+                    actions.required()
+                }
+                else {
+                    actions.edit()
+                }
+            });
+
+            $("[type='submit']").on('click', function () {
+                if ($('#english-description').find('input').val() == "") {
+                    actions.required()
+                }
+                else {
+                    actions.submit()
+                }
+            });
+
+            var actions = {
+                required: function () {
+                    $('.english-desc-required').css("display", "");
+                },
+
+                create: function () {
+                    var description = $('.category-modal').find('input').each(function () {
+                        var value = $(this).first().val();
+                        if (value != "") {
+                            var value = value;
+                            var language = $(this).attr('language');
+                            transdesc.push({ TranslatedCategoryDescription: value, Language: language })
+                        }
+                    });
+                    return transdesc;
+                },
+
+                submit: function () {
+                    actions.create();
+
+                    var parentDropdownSelector = "#@Html.IdFor(m => m.SelectedParentCategoryID)";
+                    var parentDropdownValue = $(parentDropdownSelector).val();
+
+                    ajax.json({
+                        url: submitURL,
+                        data: {
+                            transdesc: transdesc,
+                            parentID: parentDropdownValue
+                        },
+                        success: function (response) {
+                            if (!response.success) {
+                                console.log(response.message);
+                                return;
+                            }
+                            window.location = window.location;
+                        },
+                        error: function (response) {
+                            console.log(response.message, "@Resources.Common.Error");
+                        }
+                    });
+                },
+
+                edit: function () {
+                    actions.create();
+                    parentID = $("#@Html.IdFor(m => m.SelectedParentCategoryID)").val();
+
+                    ajax.json({
+                        url: editURL,
+                        data:
+                            {
+                                categoryID: categoryID,
+                                parentID: parentID,
+                                items: transdesc
+                            },
+                        success: function (response) {
+                            console.log(response)
+                            if (!response.success) {
+                                console.log(response.message);
+                                return;
+                            }
+                            window.location = window.location;
+                        },
+                        error: function (response) {
+                            console.log(response.message, "@Resources.Common.Error");
+                        }
+                    });
+                }
+            }
+
+            function init() {
+
+            }
+
+            $(init);
+
+        })
+    });
+</script>

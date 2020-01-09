@@ -1,0 +1,30 @@
+﻿@model DateTime
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    {
+        @class = "form-control"
+    });
+}
+
+<div class="row">
+    <div class="col-md-6">
+        @Html.DropDownList(@Resources.Common.Month, Html.Months().Select(item => {
+           item.Selected = Convert.ToInt32(item.Value) == Model.Month;
+           return item;
+        }), htmlAttributes)
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownList(@Resources.Common.Day, Html.Days().Select(item => {
+           item.Selected = Convert.ToInt32(item.Value) == Model.Day;
+           return item;
+        }), htmlAttributes)
+    </div>
+    <div class="col-md-4">
+        @Html.DropDownList(@Resources.Common.Year, Html.Years(DateTime.Now.AddYears(-18).Year, 80).Select(item => {
+           item.Selected = Convert.ToInt32(item.Value) == Model.Year;
+           return item;
+       }), htmlAttributes)
+    </div>
+</div>

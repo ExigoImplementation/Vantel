@@ -1,0 +1,25 @@
+﻿@model string
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+
+    var contextID = Guid.NewGuid().ToString();
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    {
+        @class = "form-control time-" + contextID,
+        type   = "text",
+        role   = "textbox"
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)
+
+<script>
+    require(["jquery", "kendo"], function ($, kendo) {
+        $('.time-@contextID').kendoTimePicker({
+            culture: '@UICulture',
+            parseFormats: ["h:mm tt"]
+        }).on("focus click", function () {
+            $(this).data("kendoTimePicker").open();
+        });
+    });
+</script>

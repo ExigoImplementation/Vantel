@@ -1,0 +1,46 @@
+﻿<ul class="list-unstyled">
+    <li class="text-blue text-strong" style="font-size: 18px;">@Identity.Owner.FirstName @Identity.Owner.LastName</li>
+    <li>@CommonResources.CustomerTypes(Identity.Owner.CustomerTypeID)</li>
+    @if (Identity.Owner.Phone.IsNotNullOrEmpty())
+    {
+        <li style="font-size: 12px; margin-top: 5px;"><a><span class="fa-phone"></span>&nbsp;&nbsp;&nbsp;@Identity.Owner.Phone</a></li>
+    }
+    @if (Identity.Owner.Email.IsNotNullOrEmpty())
+    {
+        <li style="font-size: 12px; margin-top: 5px;"><a><span class="fa-envelope"></span>&nbsp;&nbsp;&nbsp;<a href="mailto:@Identity.Owner.Email" target="_blank">@Identity.Owner.Email</a></li>
+    }
+    <li style="margin-top: 5px;">
+        @if (Identity.Owner.FacebookUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.FacebookUrl" target="_blank" class="id-social"><span class="fa-facebook" title="Facebook"></span></a>
+        }
+        @if (Identity.Owner.GooglePlusUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.GooglePlusUrl" target="_blank" class="id-social"><span class="fa-google" title="Google Plus"></span></a>
+        }
+        @if (Identity.Owner.TwitterUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.TwitterUrl" target="_blank" class="id-social"><span class="fa-twitter" title="Twitter"></span></a>
+        }
+        @if (Identity.Owner.BlogUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.BlogUrl" target="_blank" class="id-social"><span class="fa-rss" title="Blog"></span></a>
+        }
+        @if (Identity.Owner.LinkedInUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.LinkedInUrl" target="_blank" class="id-social"><span class="fa-linkedin" title="Linked In"></span></a>
+        }
+        @if (Identity.Owner.YouTubeUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.YouTubeUrl" target="_blank" class="id-social"><span class="fa-youtube-play" title="YouTube"></span></a>
+        }
+        @if (Identity.Owner.PinterestUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.PinterestUrl" target="_blank" class="id-social"><span class="fa-pinterest" title="Pinterest"></span></a>
+        }
+        @if (Identity.Owner.InstagramUrl.IsNotNullOrEmpty())
+        {
+            <a href="@Identity.Owner.InstagramUrl" target="_blank" class="id-social"><span class="fa-instagram" title="Instagram"></span></a>
+        }
+    </li>
+</ul>

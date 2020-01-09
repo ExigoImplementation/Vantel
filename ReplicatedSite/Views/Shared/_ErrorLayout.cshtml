@@ -1,0 +1,53 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@section styles { @RenderSection("styles", required: false) }
+@section header { @RenderSection("header", required: false) }
+@section scripts { @RenderSection("scripts", required: false) }
+
+
+<div id="site-content">
+    @RenderBody()
+</div>
+
+<script>
+    (function () {
+        $('body').append('<div id="__debug" style="width: 10px; height: 10px; position: absolute; bottom: 0; left: 0; z-index: 999999;" />');
+        $('#__debug').on('click', function () {
+            $('#__debuginfo').show();
+        });
+    })();
+</script>
+
+@if (Model != null && (HttpContext.Current.Request.IsLocal || HttpContext.Current.IsDebuggingEnabled))
+{
+    <div class="container container-expandable" id="__debuginfo" style="display: none;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    @Resources.Common.ExceptionDetails <br /><small class="text-muted">(@Resources.Common.ExceptionDetailsError)</small>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <h2>
+                    <span class="text-muted">
+                        @ViewBag.StatusCode:
+                    </span>
+                    <span class="text-danger">
+                        @Model.Exception.Message
+                    </span>
+                    @if (Model.Exception.InnerException != null)
+                    { <br /><small class="text-muted">@Resources.Common.InnerException: @Model.Exception.InnerException.Message</small>
+                    }
+                </h2>
+                <p>
+                    <b>@Resources.Common.Controller:</b> @Model.ControllerName<br />
+                    <b>@Resources.Common.Action:</b> @Model.ActionName
+                </p>
+
+                <pre>@Model.Exception.ToString()</pre>
+            </div>
+        </div>
+    </div>
+}

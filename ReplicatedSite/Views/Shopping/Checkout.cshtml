@@ -1,0 +1,522 @@
+﻿@model CheckoutViewModel
+@{
+    ViewBag.Title = Resources.Common.Checkout;
+    var isAuthenticated = Identity.Customer != null;
+}
+
+<div class="container" id="checkout_view">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>@Resources.Common.Checkout</h2>
+            </div>
+            <div class="col-sm-6">
+                @if (!isAuthenticated)
+                {
+                    <div class="col-lg-12 returning-customer">
+                        @Resources.Common.ReturningCustomer ? <a href="@Url.Action("login", "account", new { ReturnUrl = Url.Action("checkout", "shopping") })">@Resources.Common.ClickHereToLogin</a>
+                    </div>
+
+                    <br />
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+
+                <h3>@Resources.Common.ShippingAddress</h3>
+                @Html.Partial("Partials/Checkout/ShippingAddress")
+
+                <div class="space-20"></div>
+
+                <h3>@Resources.Common.PaymentInfo</h3>
+                @Html.Partial("Partials/Checkout/PaymentInfo")
+
+                <br />
+
+                @if (!isAuthenticated)
+                {
+                    <h3>@Resources.Common.CreateAnAccount</h3>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.Login, Resources.Common.UserLogin + ":", new { })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.Login, new { id = "txtNewLogin", @class = "form-control" })
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary form-control"
+                                                type="button"
+                                                id="Checkout_CheckAvailability_Button"
+                                                data-loading-text="<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> @Resources.Common.Checking">
+                                            @Resources.Common.CheckAvailability
+                                        </button>
+                                    </span>
+                                </div><!-- /input-group -->
+                            </div>
+                            <span id="Checkout_ValidateLogin_Status">
+                            </span>
+                            <input type="text" name="IsLoginValid" class="hidden-field-validation" id="IsLoginValid" required />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="form-group">
+                                <label for="Login.Password">@Resources.Common.Password: </label>
+                                @Html.TextBoxFor(x => x.Password, new { id = "txtNewPassword", @class = "form-control", type = "password" })
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-6">
+
+                @if (Model.ShoppingCartItems.Count() > 0)
+                {
+                    <h3>
+                        @Resources.Common.YourOrder
+                    </h3>
+                    <div class="table-responsive">
+                        <table class="table cart">
+                            <thead>
+                                <tr>
+                                    <th class="cart-product-thumbnail">&nbsp;</th>
+                                    <th class="cart-product-name">@Resources.Common.Product</th>
+                                    <th class="cart-product-quantity">@Resources.Common.Quantity</th>
+                                    <th class="cart-product-subtotal">@Resources.Common.Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ShoppingCartItems)
+                                {
+                                    <tr class="cart_item">
+                                        <td class="cart-product-thumbnail">
+                                            <a href="@Url.Action("ItemDetail", "Shopping", new { itemcode = item.ItemCode })"><img width="64" height="64" src="@item.SmallImageUrl" alt="@item.ItemDescription"></a>
+                                        </td>
+
+                                        <td class="cart-product-name">
+                                            <a href="@Url.Action("ItemDetail", "Shopping", new { itemcode = item.ItemCode })">@item.ItemDescription</a>
+                                        </td>
+
+                                        <td class="cart-product-quantity">
+                                            <div class="quantity clearfix">
+                                                @item.Quantity.ToString("0")
+                                            </div>
+                                        </td>
+
+                                        <td class="cart-product-subtotal">
+                                            <span class="amount">@((item.Price * item.Quantity).ToString("C"))</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @*@if (Model.AutoOrderShoppingCartItems.Count() > 0)
+                {
+                    <h3>
+                        @Resources.Common.YourAutoOrder
+                    </h3>
+                    <div class="table-responsive">
+                        <table class="table cart">
+                            <thead>
+                                <tr>
+                                    <th class="cart-product-thumbnail">&nbsp;</th>
+                                    <th class="cart-product-name">@Resources.Common.Product</th>
+                                    <th class="cart-product-quantity">@Resources.Common.Quantity</th>
+                                    <th class="cart-product-subtotal">@Resources.Common.Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.AutoOrderShoppingCartItems)
+                                {
+                                    <tr class="cart_item">
+                                        <td class="cart-product-thumbnail">
+                                            <a href="@Url.Action("ItemDetail", "Shopping", new { itemcode = item.ItemCode })"><img width="64" height="64" src="@item.SmallImageUrl" alt="@item.ItemDescription"></a>
+                                        </td>
+
+                                        <td class="cart-product-name">
+                                            <a href="@Url.Action("ItemDetail", "Shopping", new { itemcode = item.ItemCode })">@item.ItemDescription</a>
+                                        </td>
+
+                                        <td class="cart-product-quantity">
+                                            <div class="quantity clearfix">
+                                                @item.Quantity.ToString("0")
+                                            </div>
+                                        </td>
+
+                                        <td class="cart-product-subtotal">
+                                            <span class="amount">@((item.Price * item.Quantity).ToString("C"))</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }*@
+
+                @*Cart subtotals*@
+                @if (Model.ShoppingCartItems.Count() > 0)
+                {
+
+                    <h3>@Resources.Common.TodaysOrderTotals</h3>
+
+                    <div class="checkout-row">
+                        <div class="row">
+                            <div class="col-lg-6 strong">
+                                @Resources.Common.CartSubtotal
+                            </div>
+                            <div class="col-lg-6 text-right">
+                                @Model.ShoppingCartItems.Sum(i => i.Price * i.Quantity).ToString("C")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkout-row">
+                        <div class="row">
+                            <div class="col-lg-6 strong">
+                                @Resources.Common.Shipping
+                            </div>
+                            <div class="col-lg-6 text-right" id="summary-ship-method">
+                                @Model.DeliveryType
+                            </div>
+                        </div>
+                    </div>
+                    <div class="padding-v-10">
+                        <div class="row">
+                            <div class="col-lg-6 strong">
+                                @Resources.Common.Total
+                            </div>
+                            <div class="col-lg-6 text-right">
+                                <h3 class="text-primary" id="summary-order-total">@Model.OrderCalculationResponse.Total.ToString("C")</h3>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (Model.AutoOrderShoppingCartItems.Count() > 0)
+                    {
+
+                        <h3>@Resources.Common.AutoOrderTotals</h3>
+                        <strong>@Resources.Common.StartDate: @Model.AutoOrderStartDate.ToShortDateString()</strong>
+
+                        <div class="checkout-row">
+                            <div class="row">
+                                <div class="col-lg-6 strong">
+                                    @Resources.Common.CartSubtotal
+                                </div>
+                                <div class="col-lg-6 text-right">
+                                    @Model.AutoOrderShoppingCartItems.Sum(i => i.Price * i.Quantity).ToString("C")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="checkout-row">
+                            <div class="row">
+                                <div class="col-lg-6 strong">
+                                    @Resources.Common.Shipping
+                                </div>
+                                <div class="col-lg-6 text-right" id="summary-ship-method">
+                                    @Model.DeliveryType
+                                </div>
+                            </div>
+                        </div>
+                        <div class="padding-v-10">
+                            <div class="row">
+                                <div class="col-lg-6 strong">
+                                    @Resources.Common.Total
+                                </div>
+                                <div class="col-lg-6 text-right">
+                                    <h3 class="text-primary" id="summary-order-total">@Model.AutoOrderCalculationResponse.Total.ToString("C")</h3>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                
+
+                <div class="no-padding-h">
+                    <div class="text-right">
+                        <button class="btn btn-primary" type="button" id="Checkout_PlaceOrder_Button" data-loading-text="<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> @Resources.Common.PlacingOrder">@Resources.Common.PlaceOrder</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+
+@*<script src="@Url.Content("~/Scripts/exigopayments-1.0.0.js")"></script>*@
+
+<style>
+    #cc-wrapper {
+        max-height: 40px;
+    }
+</style>
+
+<script src="@Url.Action("TokenEx", "App")"></script>
+
+<script>
+    var paymentoverview;
+    require(["jquery", 'ajax', 'toastr'], function ($, ajax, toastr) {
+
+        paymentoverview = (function () {
+
+            // Iframe width fix
+            var windowWidth = $(window).width();
+            var ccFieldWidth = "90%";
+            if (windowWidth < 330) {
+                ccFieldWidth = "90%";
+            } else if (windowWidth < 576) {
+                ccFieldWidth = "92%";
+            } else if (windowWidth < 767) {
+                ccFieldWidth = "80%";
+            } else if (windowWidth < 1095) {
+                ccFieldWidth = "80%";
+            }
+
+            var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                styles: {
+                    base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;transition: border-color .15s ease-in -out, box-shadow .15s ease-in -out;margin: 0;font-family: inherit;",
+                    focus: "color: #495057;border: 1px solid #f6cac3;outline:none;",
+                    error: "@Resources.Common.CardIsInvalid"
+                }
+            });
+
+            @*var pToken = "@PaymentConfiguration.PaymentCredentials.Create()";*@
+
+            var resources = {
+                IssuePlacingOrder: '@Resources.Common.IssuePlacingOrder',
+                IssueValidatingLoginName: '@Resources.Common.IssueValidatingLoginName',
+                LoginNameValid: '@Resources.Common.LoginNameValid',
+                LoginNameInvalid: '@Resources.Common.LoginNameInvalid',
+                EnterPasswordMessage: '@Resources.Common.EnterPasswordBeforeProceeding',
+                EnterLoginNameMessage: '@Resources.Common.EnterLoginNameBeforeProceeding'
+            };
+
+            var urls = {
+                checkoutSubmit: '@Url.Action("Checkout", "Shopping")',
+                isLoginNameAvailable: '@Url.Action("IsLoginNameAvailable", "App")',
+                getShipMethods: '@Url.Action("GetShipMethods", "shopping")',
+                setShipMethod: '@Url.Action("SetShipMethod", "shopping")'
+            };
+
+            function registerEventHandlers() {
+                // Shipping Address change logic
+                $('#view-checkout-shipping input, #view-checkout-shipping select').on('change', function (e) {
+
+                    var address1 = $('[name="@Html.NameFor(c => c.ShippingAddress.Address1)"]').val(),
+                        address2 = $('[name="@Html.NameFor(c => c.ShippingAddress.Address2)"]').val(),
+                        city     = $('[name="@Html.NameFor(c => c.ShippingAddress.City)"]').val(),
+                        state    = $('[name="@Html.NameFor(c => c.ShippingAddress.State)"]').val(),
+                        zip      = $('[name="@Html.NameFor(c => c.ShippingAddress.Zip)"]').val(),
+                        country = $('[name="@Html.NameFor(c => c.ShippingAddress.Country)"]').val();
+
+                    //console.log(address1, address2, city, state, zip, country);
+
+                    if (address1 != '' && city != '' && state != '' && zip != '' && country != '') {
+                        var address = {
+                            address1: address1,
+                            address2: address2,
+                            city: city,
+                            state: state,
+                            zip: zip,
+                            country: country
+                        };
+
+                        actions.getShipMethods(address);
+                    }
+                });
+
+                // Checkout submit
+                $('#Checkout_PlaceOrder_Button').click(async function () {
+                    await actions.submitOrder();
+                });
+
+                // Login name availability check
+                $('#Checkout_CheckAvailability_Button').click(async function () {
+                    await actions.CheckAvailability();
+                });
+
+                // Ship Method change
+                $('#lstShipMethod').on('change', function () {
+                    var model = $('#view-checkout-shipping').serializeObject();
+                    model.ShipMethodID = $(this).val();
+
+                    actions.setShipMethod(model);
+                });
+            }
+
+            var actions = {
+                updateLoginButton: function (valid) {
+                    if (valid) {
+                        $('#IsLoginValid').val('true');
+                        $('#Checkout_ValidateLogin_Status').html(resources.LoginNameValid);
+                    } else {
+                        $('#Checkout_ValidateLogin_Status').html(resources.LoginNameInvalid);
+                    }
+                },
+                getShipMethods: function (address) {
+                    // Show loading animation so you know Ship Methods are being retrieved
+                    $('#shipmethodLoadingContainer').show();
+
+                    ajax.json({
+                        url: urls.getShipMethods,
+                        data: { address: address },
+                        success: function (response) {
+                            // console.log(response);
+                            if (response.success) {
+                                var options = "";
+
+                                for (var i = 0, length = response.shipMethods.length; i < length; i++) {
+                                    var shipMethod = response.shipMethods[i];
+                                    options += '<option value="{0}" data-description="{1}">{1} {2}</option>'.format(shipMethod.ShipMethodID, shipMethod.ShipMethodDescription, shipMethod.FormattedPrice);
+                                }
+
+                                $('#lstShipMethod').html(options).triggerHandler('change');
+
+                            } else {
+                                console.log("failed to get ship methods", response);
+                            }
+
+                            $('#shipmethodLoadingContainer').slideUp(500);
+                        }
+                    });
+                },
+                // Sets Ship Method ID and Shipping Address
+                setShipMethod: function (model) {
+                    console.log('setShipMethod', model);
+
+                    ajax.json({
+                        url: urls.setShipMethod,
+                        data: model,
+                        success: function (response) {
+                            if (response.success) {
+                                $('#summary-ship-method').html(response.shipMethodDescription);
+                                $('#summary-order-total').html(response.totalDisplay);
+                            } else {
+                                console.log('saveShippingInfo failed', response);
+                            }
+                        }
+                    });
+                },
+                CheckAvailability: async function () {
+                    $('#Checkout_CheckAvailability_Button').button('loading');
+
+                    var data = {};
+                    data["Customer.LoginName"] = $('#txtNewLogin').val();
+
+                    return ajax.json({
+                        url: urls.isLoginNameAvailable,
+                        data: data,
+                        success: function (response) {
+                            if (response) {
+                                $('#Checkout_CheckAvailability_Button').button('reset');
+                                actions.updateLoginButton(true);
+                                return true;
+                            } else {
+                                toastr.warning(resources.IssueValidatingLoginName);
+                                actions.updateLoginButton(false);
+                                $('#Checkout_CheckAvailability_Button').button('reset');
+                                return false;
+                            }
+                        }
+                    });
+                },
+                submitOrder: async function () {
+                    var form = $('#checkout_view').find('form');
+
+                    let result = await actions.CheckAvailability();
+
+                    if (result == false || form.valid() == false) {
+                        return;
+                    }
+
+                    // Check if Login Name is provided, if so, we need to validate password is filled
+                    if ($('#txtNewLogin').is(':visible')) {
+                        if ($('#txtNewLogin').val() !== '') {
+                            if ($('#txtNewPassword').val() == '') {
+                                toastr.error(resources.EnterPasswordMessage);
+                                $('#txtNewPassword').focus();
+                                return;
+                            }
+                        } else if ($('#txtNewPassword').val() !== '') {
+                            toastr.error(resources.EnterLoginNameMessage);
+                            $('#txtNewLogin').focus();
+                            return;
+                        }
+                    }
+
+                    var $this = $('#Checkout_PlaceOrder_Button');
+                    $this.button('loading');
+
+                    ////// **** Temporary testing for Tokens **** //////
+
+                    var tokenize = async function () {
+                        tokenizer.tokenize({
+                            success: function (data) {
+                                console.log('tokenized success', data);
+
+                                var token = data.token;
+                                $(".creditcard-token").val(data.token);
+
+                                var cardDisplay = token.substr(token.length - 4);
+                                $(".creditcard-display").val(cardDisplay);
+
+                                return true;
+                            },
+                            error: function (data) {
+                                console.log("get cc token failed", data);
+                                toastr.error(data);
+                                $this.button("reset");
+                                return false;
+                            }
+                        });
+                    };
+
+                    var tokenizeResult = await tokenize();
+
+                    if (tokenizeResult == false) {
+                        toastr.error("Error on tokenizing the cc");
+                        $this.button("reset");
+                        return;
+                    }
+
+                    // Clear the name so the CC Number is not submitted
+                    $("#CreditCardPayment_CardNumber").attr('name', '');
+
+                    // Submit the Form now that we have token
+                    var model = form.serializeObject();
+
+                    ajax.json({
+                        url: urls.checkoutSubmit,
+                        data: { model: model },
+                        success: function (response) {
+                            if (response.success) {
+                                //console.log('success', response);
+                                window.location.assign(response.redirectUrl);
+                            } else {
+                                toastr.error(resources.IssuePlacingOrder);
+                                console.log('checkoutSubmit failed', response);
+                                $("#CreditCardPayment_CardNumber").attr('name', 'CreditCardPayment.CardNumber');
+                                $this.button("reset");
+                            }
+                        }
+                    });
+                }
+            };
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        })();// end payment overview
+    });
+</script>

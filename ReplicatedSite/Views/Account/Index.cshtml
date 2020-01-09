@@ -1,0 +1,373 @@
+@model AccountSummaryViewModel
+@{
+    ViewBag.Title = Resources.Common.AccountSettings;
+
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var market = Utilities.GetCurrentMarket();
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "accountsettings"
+    };
+}
+
+<div id="view-accountoverview">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    @using (Ajax.BeginForm("xxx", controller, new AjaxOptions()
+                    {
+                        OnBegin = "accountoverview.onBegin",
+                        OnSuccess = "accountoverview.onSuccess"
+                    }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <!-- BASIC INFORMATION -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.BasicInformation</h3>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Name</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.Customer.FirstName @Model.Customer.LastName, @(Resources.Common.ID)# @Model.Customer.CustomerID
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                <div class="form-row mb-2">
+                                                    <div class="col">
+                                                        @Html.LabelFor(c => c.Customer.FirstName)
+                                                        @Html.EditorFor(c => c.Customer.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                                    </div>
+                                                    <div class="col">
+                                                        @Html.LabelFor(c => c.Customer.LastName)
+                                                        @Html.EditorFor(c => c.Customer.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateName" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Email</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.Customer.Email
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Customer.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+
+                                            <button type="submit" name="UpdateEmailAddress" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Username</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Model.Customer.LoginName
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                @Html.EditorFor(c => c.Customer.LoginName,new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+
+                                            <button type="submit" name="UpdateLoginName" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Password</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            ********
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.Password, Resources.Common.ChoosePassword)
+                                                @Html.EditorFor(c => c.Password, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.ConfirmPassword, Resources.Common.ConfirmPassword)
+                                                @Html.EditorFor(c => c.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+
+                                            <button type="submit" name="UpdatePassword" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Language -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Language</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Identity.Customer.Language.GetLanguageDescription()
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                @Html.DropDownListFor(c => c.Customer.LanguageID, ExigoDAL.GetLanguages().Select(x => new SelectListItem()
+                                                {
+                                                    Text = CommonResources.Languages(x.LanguageID),
+                                                    Value = x.LanguageID.ToString()
+                                                }),
+                                                htmlAttributes: new { @class = "form-control" })
+                                            </div>
+                                            <button type="submit" name="UpdateLanguagePreference" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>                                        
+                                </div>
+                            </div>
+                        </div>
+                        <!-- CONTACT INFORMATION -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">@Resources.Common.ContactInformation</h3>
+                            </div>
+
+                            <!-- Addresses -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.Addresses</div>
+                                    <div class="col-md-7">
+                                        @foreach (var address in Model.Customer.Addresses)
+                                        {
+                                            @Format.FlatAddress(address)
+                                            @Html.Raw((address.AddressType == AddressType.Main) ? " <i class='text-muted'>({0})</i>".FormatWith(Resources.Common.Primary) : string.Empty)
+                                            <br />
+                                        }
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <a href="@Url.Action("AddressList")" class="btn btn-link">@Resources.Common.Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notifications -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.NotificationStatus</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @if (Model.Customer.IsOptedIn)
+                                            {
+                                                @Resources.Common.OptedInStatus
+                                                @Html.HiddenFor(c => c.Customer.Email)
+                                            }
+                                            else
+                                            {
+                                                @Resources.Common.OptedOutStatus<br />
+                                                <small class="text-muted">@Resources.Common.OptedOutStatusNote</small>
+                                            }
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                <div class="custom-control custom-checkbox">
+                                                    @Html.CheckBoxFor(c => c.Customer.IsOptedIn,
+                                                    htmlAttributes: new { @class = "custom-control-input" })
+                                                    @Html.LabelFor(c => c.Customer.IsOptedIn, @Resources.Common.ToUpdateYourStatus, htmlAttributes: new { @class = "custom-control-label" })
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="UpdateNotifications" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phone Numbers -->
+                            <div class="card-body border-bottom">
+                                <div class="row">
+                                    <div class="col-md-3">@Resources.Common.PhoneNumbers</div>
+                                    <div class="col-md-7">
+                                        <div class="detail">
+                                            @Resources.Common.Primary: <strong>@Model.Customer.PrimaryPhone</strong><br />
+                                            @Resources.Common.Secondary: <strong>@Model.Customer.SecondaryPhone</strong>
+                                        </div>
+
+                                        <div class="form d-none">
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.Customer.PrimaryPhone, new { @class = "control-label" })
+                                                @Html.EditorFor(c => c.Customer.PrimaryPhone, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>  
+                                            <div class="form-group">
+                                                @Html.LabelFor(c => c.Customer.SecondaryPhone, new { @class = "control-label" })
+                                                @Html.EditorFor(c => c.Customer.SecondaryPhone, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+
+                                            <button type="submit" name="UpdatePhoneNumbers" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SaveChanges</button>
+                                            <button type="button" name="cancel" class="btn btn-link">@Resources.Common.Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <div class="editbutton">
+                                            <button type="button" name="edit" class="btn btn-link">@Resources.Common.Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+
+    <script>
+        var accountoverview;
+
+        require(["jquery", "forms", "bootstrap", "extensions","mask"], function ($) {
+            // Settings
+            var context = "#view-accountoverview",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $('button[name="edit"]', $context).on('click', function () {
+                    actions.beginEdit($(this));
+                });
+                $('button[name="cancel"]', $context).on('click', function () {
+                    actions.endEdit($(this));
+                });
+                $("button[type='submit']").loadingClickEvent();
+            }
+
+
+            // Actions
+            var actions = {
+                onSuccess: function (response) {
+                    var $submitbutton = $('[name="{0}"]'.format(response.action), $context);
+                    var $root = helpers.getFormRoot($submitbutton);
+
+                    // Update the display
+                    $root.find('.detail').html(response.html);
+
+                    // Close the form editor
+                    actions.endEdit($submitbutton);
+
+                    //Re-Enable The Buttons
+                    $("[type='submit']").resetButtons();
+                },
+
+                beginEdit: function ($element) {
+                    var $root = helpers.getFormRoot($element);
+                    $root.find('.form').toggleClass('d-none');
+                    $root.find('.detail').toggleClass('d-none');
+                    $element.toggleClass('d-none');
+                    $root.toggleClass('card-body-edit');
+                },
+                endEdit: function ($element) {
+                    var $root = helpers.getFormRoot($element);
+                    $root.find('.form').toggleClass('d-none');
+                    $root.find('button[name="edit"]').toggleClass('d-none');
+                    $root.find('.detail').toggleClass('d-none');
+                    $root.toggleClass('card-body-edit');
+                }
+            };
+
+
+            // Helpers
+            var helpers = {
+                getFormRoot: function ($element) {
+                    return $element.parents('.card-body');
+                },
+                applyMasks: function () {
+                    $('#Customer_PrimaryPhone').mask('@market.PhoneMask');
+                    $('#Customer_SecondaryPhone').mask('@market.PhoneMask');  
+				}
+            };
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+                helpers.applyMasks();
+            }
+            init();
+
+
+            // Exports
+            accountoverview = {
+                onSuccess: actions.onSuccess
+            }
+
+        });
+    </script>
+}
+

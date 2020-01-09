@@ -1,0 +1,188 @@
+﻿@model CartViewModel
+@{
+    ViewBag.Title = Resources.Common.Cart;
+
+        var pageHeader = new PageHeader
+        {
+            PageName = ViewBag.Title,
+            BreadcrumbItems = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+                new BreadcrumbItem { Description = ViewBag.Title }
+            }
+        };
+}
+<div id="view-cart">
+
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            @if (!Model.OrderItems.Any() && !Model.AutoOrderItems.Any())
+            {
+                <p>@Resources.Common.NoItemsInCart</p>
+            }
+            else
+            {
+                @* Party Info Bar *@
+                
+                if (ViewBag.ActiveParty != null)
+                {
+                    @Html.Partial("Partials/_PartyOrderMessage", Model)
+                }
+                @* End Party Info Bar *@
+
+                <div class="row">
+                    <div class="col-12">
+                        <a href="@Url.Action("checkout", "shopping")" class="button button-3d float-sm-right">@Resources.Common.ProceedToCheckout</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        @{
+                            if (Model.OrderItems.Any())
+                            {
+                                <h3>@Resources.Common.Order</h3>
+                                @Html.Partial("Partials/Cart/PaneledCart", Model.OrderItems, new ViewDataDictionary {
+                                    { "PanelTitle", GlobalUtilities.Capitalize(Resources.Common.ItemsToBuyNow) },
+                                    { "Type", ShoppingCartItemType.Order }
+                                })
+                            }
+
+                            if (Model.AutoOrderItems.Any())
+                            {
+                                <h3>@Resources.Common.AutoOrder</h3>
+                                @Html.Partial("Partials/Cart/PaneledCart", Model.AutoOrderItems, new ViewDataDictionary {
+                                    { "PanelTitle", Resources.Common.AutoOrder + " " + Resources.Common.Items },
+                                    { "Type", ShoppingCartItemType.AutoOrder }
+                                })
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+
+        require(["jquery", "pubsub", "ajax", "extensions"], function ($, pubsub, ajax) {
+            var actions = {
+                UpdateCart: function (item, qty) {
+
+                    // Quantity checking
+                    item.Quantity = item.Quantity || 0;
+                    if (isNaN(item.Quantity)) item.Quantity = 0;
+                    else item.Quantity = parseFloat(item.Quantity) + qty;
+
+                    $('body').trigger('cart.updateitemquantity', item);
+                }
+            };
+
+            $('body').on('cart.updateitemquantity', function (event, item) {
+                ajax.json({
+                    url: '@Url.Action("updateitemquantity")',
+                    data: {
+                        id: item.ID,
+                        quantity: item.Quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('body').trigger('cart.cartupdated', response);
+                        }
+                    }
+                });
+            });
+
+            $('body').on('cart.removeitemfromcart', function (event, id) {
+                ajax.json({
+                    url: '@Url.Action("removeitemfromcart")',
+                    data: {
+                        id: id
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('body').trigger('cart.itemremoved', id);
+                            $('body').trigger('cart.cartupdated', response);
+                        }
+                    }
+                });
+            });
+
+            $('body').on('cart.cartupdated', function (event, data) {
+                var updatedItem = data.item,
+                    items = data.items;
+                
+                if (updatedItem.Quantity == 0) {
+                    $('body').trigger('cart.itemremoved', updatedItem.ID);
+                }
+
+
+                var quantity = 0;
+                for (var i = 0, max = items.length; i < max; i++) {
+                    var item = items[i];
+                    quantity += item.Quantity;
+                }
+
+                // For Cart Preview
+                $('body').trigger('item.GetCartItemsCount');
+                var type = updatedItem.Type.toLowerCase()
+
+                $('[data-text="' + type + 'quantity"]').html(quantity.format("N0"));
+                $('[data-text="' + type + 'subtotal"]').html(data.subtotal.format("C"));
+                $('[data-text="' + type + 'bvsubtotal"]').html(data.bvsubtotal.format("N0"));
+                $('#cartCountContainer').not(':contains("(0)")').fadeIn();
+                $('#cartCountContainer:contains("(0)")').fadeOut();
+            });
+
+            $('.minus').on('click', function () {
+                var $item = $('[name="item.Quantity"]', $(this).parent());
+
+                var item = {
+                    ID: $item.data('id'),
+                    Type: $item.data('type'),
+                    Quantity: $item.val()
+                };
+
+                actions.UpdateCart(item, -1);
+                var quantity = parseInt($item.val()) - 1;
+                var totalPrice = (quantity * $item.data('price'));
+                var totalBV = (quantity * $item.data('bv'));
+                $item.val(quantity);
+                var id = $(this).data('id');
+                var $rows = $('.cart_item[data-id="{0}"]'.format(id));
+                $rows.find('.cart-product-bv .total').text(totalBV.format("N0"));
+                var quantityStatic = $('.static_kit_child[data-id="'+$item.data('id')+'"] .static_kit_child_Quantity');
+                quantityStatic.text(quantity);
+            });
+
+            $('.plus').on('click', function () {
+                var $item = $('[name="item.Quantity"]', $(this).parent());
+
+                var item = {
+                    ID: $item.data('id'),
+                    Type: $item.data('type'),
+                    Quantity: $item.val()
+                };
+
+                actions.UpdateCart(item, 1);
+                var quantity = parseInt($item.val()) + 1;
+                var totalPrice = (quantity * $item.data('price'));
+                var totalBV = (quantity * $item.data('bv'));
+                $item.val(quantity);
+                var id = $(this).data('id');
+                var $rows = $('.cart_item[data-id="{0}"]'.format(id));
+                $rows.find('.cart-product-bv .total').text(totalBV.format("N0"));
+                var quantityStatic = $('.static_kit_child[data-id="'+$item.data('id')+'"] .static_kit_child_Quantity');
+                quantityStatic.text(quantity);
+            });
+
+        });
+
+    </script>
+}

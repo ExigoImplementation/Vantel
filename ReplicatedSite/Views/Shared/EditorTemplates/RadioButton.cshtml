@@ -1,0 +1,11 @@
+﻿@model Boolean
+@{
+    var htmlAttributes = Html.GetEditorHtmlAttributes();
+}
+
+<div class="radio">
+    <label for="@Html.IdFor(c => c)">
+        @Html.RadioButtonFor(c => c, htmlAttributes)
+        @Html.DisplayNameFor(c => c)
+    </label>
+</div>

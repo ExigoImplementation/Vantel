@@ -1,0 +1,67 @@
+﻿@model GetCustomerRankQualificationsResponse
+
+
+@if (Model.IsQualified)
+{
+    <div class="card">
+        <div class="card-body text-center">
+            <strong class="lead text-success">@(Resources.Common.QualifiedAs): @Model.Rank.RankDescription</strong>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h3 class="mb-3">@CommonResources.Ranks(Model.Rank.RankID, defaultDescription: Model.Rank.RankDescription)</h3>
+            <h1>@Model.TotalPercentComplete.ToString("N0")%</h1>
+            <h5>@Resources.Common.Complete</h5>
+        </div>
+        @if (Model.QualificationLegs.Count() == 1)
+        {
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <h4>@CommonResources.Ranks(Model.Rank.RankID, defaultDescription: Model.Rank.RankDescription) @Resources.Common.Requirements.ToLower():</h4>
+                </li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                @foreach (var requirement in Model.QualificationLegs.First().Requirements)
+                {
+                    Html.RenderPartial("~/Views/Commissions/_RankRequirement.cshtml", requirement);
+                }
+            </ul>
+        }
+    </div>
+
+    if (Model.QualificationLegs.Count() > 1)
+    {
+        var columns = 12 / Model.QualificationLegs.Count();
+
+        <div class="space-15"></div>
+        <h4>
+            @Resources.Common.WaysToQualify.FormatWith(Model.QualificationLegs.Count(), CommonResources.Ranks(Model.Rank.RankID)):
+            <br /><small class="text-muted">@Resources.Common.PathFullfullment</small>
+        </h4>
+
+        <div class="row">
+            @for (var index = 0; index < Model.QualificationLegs.Count(); index++)
+            {
+                var leg = Model.QualificationLegs.ToArray()[index];
+
+                <div class="col-md-@columns">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">@Resources.Common.Path #@(index + 1)</h4>
+                            <div class="list-group list-group-flush">
+                                @foreach (var requirement in leg.Requirements)
+                                {
+                                    Html.RenderPartial("_RankRequirement", requirement);
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}

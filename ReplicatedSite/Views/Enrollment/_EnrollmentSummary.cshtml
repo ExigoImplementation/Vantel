@@ -1,0 +1,187 @@
+﻿@model EnrollmentSummaryViewModel
+@{     
+    var hideControls = (ViewData["HideControls"] != null && ViewData["HideControls"].CanBeParsedAs<bool>()) ? (bool)ViewData["HideControls"] : false;
+}
+<div id="view-enrollment-summary">
+    <div class="card">
+        <div class="card-header"">
+            <h3 class="card-title">
+                @Resources.Common.OrderSummary
+            </h3>
+        </div>
+        <div class="card-body">
+            @if (Model.HasItems)
+            {
+                <div class="">
+
+                    @if (Model.HasOrderItems)
+                    {
+                        <h5>
+                            <span class="badge badge-info">@Resources.Common.TodaysOrder</span>
+                            @if (Model.ShowEdit) { 
+                                <a href="@Url.Action("productlist")" class="badge badge-secondary float-right">@Resources.Common.Edit</a>
+                            }
+                        </h5>
+                        <div class="space-5"></div>
+                        <div class="table-responsive">
+                            <table class="table" style="border: 1px solid #CCC; margin: 0">
+                                <tr>
+                                    <th>@Resources.Common.Description</th>
+                                    <th style="width: 40px;">@Resources.Common.QTY</th>
+                                    <th style="width: 75px;">@Resources.Common.Price</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
+                                @if (Model.HasOrderEnrollmentPacks)
+                                {
+                                    foreach (var item in Model.OrderEnrollmentPacks)
+                                    {
+                                        @Html.Partial("~/Views/Enrollment/_SummaryItem.cshtml", item)
+                                    }
+                                }
+                                @if (Model.HasInitialOrderItems)
+                                {
+                                    foreach (var item in Model.OrderItems)
+                                    {
+                                        @Html.Partial("~/Views/Enrollment/_SummaryItem.cshtml", item)
+                                    }
+                                }
+
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            @Resources.Common.Subtotal
+                                        </strong>
+                                    </td>
+                                    <td></td>
+                                    <td>@Model.OrderSubtotal.ToString("C")</td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        if (Model.IsCalculated)
+                        {
+                             <table class="table">
+                                <tr>
+                                    <td></td>
+                                    <td style="width: 40px;">
+                                        <strong>
+                                            @Resources.Common.Shipping
+                                        </strong>
+                                    </td>
+                                    <td style="width: 75px;">
+                                        <strong>
+                                            @Model.Shipping.ToString("C")
+                                        </strong>
+                                    </td>
+                                    <td style="width: 30px;"></td>
+                                </tr>
+
+                                 <tr>
+                                    <td></td>
+                                    <td style="width: 40px;">
+                                        <strong>
+                                            @Resources.Common.Tax
+                                        </strong>
+                                    </td>
+                                    <td style="width: 75px;">
+                                        <strong>
+                                            @Model.Tax.ToString("C")
+                                        </strong>
+                                    </td>
+                                    <td style="width: 30px;"></td>
+                                </tr>
+
+                                 <tr>
+                                    <td></td>
+                                    <td style="width: 40px;">
+                                        <strong>
+                                            @Resources.Common.Total
+                                        </strong>
+                                    </td>
+                                    <td style="width: 75px;">
+                                        <strong>
+                                            @Model.Total.ToString("C")
+                                        </strong>
+                                    </td>
+                                    <td style="width: 30px;"></td>
+                                </tr>
+                             </table>
+                        }
+                        else
+                        {
+                            <small class="text-muted">@Resources.Common.PromotionsOrDiscountsMessage</small>
+                        }
+                    }
+
+
+                    @if (Model.HasAutoOrderItems)
+                    {
+                        <h5><span class="badge badge-info">@Resources.Common.AutoOrder</span></h5>
+                        <div class="space-5"></div>
+
+                        <div class="table-responsive">
+                            <table class="table" style="border: 1px solid #CCC; margin: 0">
+                                <tr>
+                                    <th>@Resources.Common.Description</th>
+                                    <th style="width: 40px;">@Resources.Common.QTY</th>
+                                    <th style="width: 75px;">@Resources.Common.Price</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
+                                @if (Model.HasPackAutoOrderItems)
+                                {
+                                    foreach (var item in Model.AutoOrderEnrollmentPacks)
+                                    {
+                                        @Html.Partial("~/Views/Enrollment/_SummaryItem.cshtml", item)
+                                    }
+                                }
+                                @if (Model.HasNonPackAutoOrderItems)
+                                {
+                                    foreach (var item in Model.AutoOrderItems)
+                                    {
+                                        @Html.Partial("~/Views/Enrollment/_SummaryItem.cshtml", item)
+                                    }
+                                }
+
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            @Resources.Common.Subtotal
+                                        </strong>
+                                    </td>
+                                    <td></td>
+                                    <td>@Model.AutoOrderSubtotal.ToString("C")</td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>@Resources.Common.NoItemsInCart</p>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    require(["jquery", "ajax"], function ($, ajax) {
+        $('.removed').on('click', function () {
+            $This = $(this);
+            console.log($This);
+
+            ajax.json({
+                url: '@Url.Action("DeleteItemFromCart")',
+                data: {
+                    itemcode: $This.data("itemcode"),
+                    type: $This.data("type")
+                },
+                success: function (response) {
+                    location.reload();
+                }
+            });
+        });
+    });
+</script>

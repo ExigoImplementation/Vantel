@@ -1,0 +1,11 @@
+﻿@model IPaymentMethod
+
+@if (Model is CreditCard)
+{
+    @Html.Partial("~/Views/Shared/EditorTemplates/CreditCardOnFile.cshtml", Model)
+}
+
+@if (Model is BankAccount)
+{
+    @Html.Partial("~/Views/Shared/EditorTemplates/BankAccountOnFile.cshtml", Model)
+}

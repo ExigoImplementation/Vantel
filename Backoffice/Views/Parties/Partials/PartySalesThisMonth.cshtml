@@ -1,0 +1,26 @@
+﻿@model PartyDashboardViewModel
+
+<div class="card card-default card-metrics" id="view-partysalescard">
+    <div class="card-heading">
+        <h2 class="card-title">
+            @Resources.Common.MyPartySales
+        </h2>
+    </div>
+    <div class="card-body">
+        <h3>@Model.WeeklySalesTotals.Sum(c => c.Value).ToString("C")</h3>
+        <hr />
+        <table class="table party-sales-this-month">
+            @foreach (var week in Model.WeeklySalesTotals.OrderBy(c => c.Week))
+            {
+                var active = (week.IsActiveWeek) ? "active" : "";
+                <tr class="@active" style="border-style: hidden;">
+                    <td>@Resources.Common.Week @week.Week</td>
+                    <td class="text-right">@week.Value.ToString("C")</td>
+                </tr>
+            }
+        </table>
+    </div>
+    @*<a href="@Url.Action("openparties")" class="card-footer block text-right">
+        View Weekly Sales <i class="fa-chevron-right"></i>
+    </a>*@
+</div>

@@ -1,0 +1,46 @@
+﻿@model Item
+@{
+    var contextID = Guid.NewGuid();
+}
+
+
+<div data-widget="item" id="view-item-@contextID" class="view-item view-item-card work-item-img img-rounded panel panel-default">
+    <div class="no-decorate" href="@Url.Action("itemdetail", new { itemcode = Model.ItemCode })">
+        <div class="panel-body">
+
+            @Html.HiddenFor(c => c.ItemCode)
+            @Html.HiddenFor(c => c.Type)
+            @Html.Hidden("Quantity", 1)
+
+            <div class="image">
+                <img src="@Model.SmallImageUrl" />
+            </div>
+            <div class="details">
+                <div class="itemdescription" data-clamp="2">@Model.ItemDescription</div>
+                <div class="price">@Model.Price.ToString("C")</div>
+            </div>
+        </div>
+        <div class="work-overlay panel-body  img-rounded text-white">
+            <div class="shortDetailContainer">
+                <div class="shortDetail">
+                    @Html.Raw(Model.ShortDetail1)
+                </div>
+            </div>
+            <div class="btnContainer">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-4 text-left">
+                        <button type="button" onclick="location.href='@Url.Action("itemdetail", new { itemcode = Model.ItemCode })'" class="details-btn">@Resources.Common.Details</button>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-8 text-right">
+                        <button type="button" class="cart-btn btn-primary" data-loading-text="@Resources.Common.Loading" data-role="item.addtoorder" data-itemcode="@Model.ItemCode"><i class="fa-shopping-cart"></i> @Resources.Common.AddToCart</button>
+                        @if (Model.AllowOnAutoOrder)
+                        {
+                            <button type="button" class="cart-btn autoorder-cart-btn btn-info" data-loading-text="@Resources.Common.Loading" data-role="item.addtoautoorder" data-itemcode="@Model.ItemCode"><i class="fa-refresh"></i> @Resources.Common.AutoOrder</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="custom-hover img-rounded"></div>
+    </div>
+</div>

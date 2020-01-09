@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = Resources.Common.ThankYou;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title
+    };
+}
+
+<div id="view-order-complete">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    @Html.Raw(Resources.Common.BackOffice_Shopping_OrderComplete.FormatWith(Url.Action("OrderList", "Orders")))
+</div>

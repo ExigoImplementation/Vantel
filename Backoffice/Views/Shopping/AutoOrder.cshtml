@@ -1,0 +1,145 @@
+﻿@model AutoOrderSettingsViewModel
+@{
+    ViewBag.Title = Resources.Common.ConfigureAutoOrder;
+    var minimumStartDate = GlobalUtilities.GetNextAvailableAutoOrderStartDate(DateTime.Now.ToCST());
+    var currentMarket = GlobalUtilities.GetCurrentMarket(this.Context);
+
+    var availableFrequencyTypes = currentMarket.AvailableAutoOrderFrequencyTypes;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem { Description = Resources.Common.Shopping, UrlPath = Url.Action("ItemList", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Cart, UrlPath = Url.Action("Cart", "Shopping") },
+            new BreadcrumbItem { Description = Resources.Common.Shipping, UrlPath = Url.Action("Shipping", "Shopping") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-autoordersettings">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            @using (Html.BeginForm())
+            {
+                <div class="form-group">
+                    <label for="">@Resources.Common.HowOftenDoYouWantToRecieve</label><br />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(c => c.AutoOrderFrequencyType, availableFrequencyTypes.Select(c => new SelectListItem()
+                            {
+                                Value = ((int)c).ToString(),
+                                Text = CommonResources.FrequencyTypes(ExigoDAL.GetFrequencyTypeID(c))
+                            }), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>@Resources.Common.StartingOn</label>
+                    <div class="form-row">
+                        <div class="col-md-3 mb-md-0 mb-4">
+                            <div class="input-group">
+                                <input type="text" id="Date" class="form-control date" value="@Model.AutoOrderStartDate.ToString("M/d/yyyy")" />
+                                <div id="triggerDatePicker" class="input-group-append cursor-pointer">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" id="Time" class="form-control time" value="@Model.AutoOrderStartDate.ToString("HH:mm")" />
+                                <div id="triggerTimePicker" class="input-group-append cursor-pointer">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="@Html.IdFor(c => c.AutoOrderStartDate)" name="@Html.NameFor(c => c.AutoOrderStartDate)" value="@Model.AutoOrderStartDate.ToString("M/d/yyyy")" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 text-right">
+                        <button type="submit" class="btn btn-primary align-self-end">@Resources.Common.Continue</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section scripts
+{
+    <script>
+        require(["jquery", "moment", "jquery-ui", "timepicker"], function ($,moment) {
+
+            // Settings
+            var context = "#view-autoordersettings",
+                $context = $(context),
+                $Date = $("#Date"),
+                $triggerDatePicker = $("#triggerDatePicker"),
+                $Time = $("#Time"),
+                $triggerTimePicker = $("#triggerTimePicker"),
+                $AutoOrderStartDate = $("#" + "@Html.IdFor(c => c.AutoOrderStartDate)");
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+                $Date.on("change", function () {
+                    SetAutoOrderStartDate();
+                });
+
+                $triggerDatePicker.on('click', function(){
+                    $Date.datepicker('show');
+                });
+
+                $Time.on("change", function () {
+                    SetAutoOrderStartDate();
+                });
+
+                $triggerTimePicker.on('click', function(){
+                    $Time.timepicker('show');
+                });
+            }
+
+            function SetAutoOrderStartDate() {
+                let DateTime = moment($Date.val() + " " + $Time.val());
+
+                $AutoOrderStartDate.val(DateTime.format());
+            }
+
+            // Initialization
+            function init() {
+	            $Date.datepicker({
+		            'format': 'M/d/yyyy',
+		            'autoclose': true
+                });
+
+	            $Time.timepicker({
+		            'showDuration': true,
+		            'timeFormat': 'H:i'
+                });
+
+                SetAutoOrderStartDate();
+
+                registerEventHandlers();
+
+                $("#ui-datepicker-div").css("display","none");
+            }
+
+            init();
+        });
+    </script>
+}

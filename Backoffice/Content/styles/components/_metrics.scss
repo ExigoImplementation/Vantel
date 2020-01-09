@@ -1,0 +1,19 @@
+.metric { margin-bottom: 20px;
+	.metric-title { font-size: 1.1em; }
+	.metric-body { font-size: 4em; line-height: 1em; font-weight: bold; }
+
+	&.metric-lg {
+		.metric-title { font-size: 1.2em; }
+		.metric-body { font-size: 5em; line-height: 1em; }
+	}
+
+	&.metric-sm {
+		.metric-title { font-size: 0.9em; }
+		.metric-body { font-size: 3em; line-height: 1em; font-weight: bold; }
+	}
+
+	&.metric-xs {
+		.metric-title { font-size: 0.8em; }
+		.metric-body { font-size: 2em; line-height: 1em; font-weight: bold; }
+	}
+}

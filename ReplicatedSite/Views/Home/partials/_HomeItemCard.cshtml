@@ -1,0 +1,45 @@
+﻿@model List<Item>
+@{
+
+    for (int i = 0; i < Model.Count; i++)
+    {
+        var maxInRow = 3;
+        var totalRows = 12;
+        var mod = Model.Count % maxInRow;
+        var thisChunk = (i >= (Model.Count - mod) ? mod : Math.Min(maxInRow, Model.Count));
+        var colSize = (totalRows / thisChunk);
+        var productImage = (Model[i].SmallImageUrl == null ? "/Content/images/missing-product-image.png" : GlobalUtilities.GetProductImagePath(Model[i].SmallImageUrl));
+        if (Model[i].LongDetail1.IsNotNullOrEmpty())
+        {
+            <div class="col-sm-@colSize home-item-card home-item-card-lg">
+                <div class="card-section">
+                    <h2>@Model[i].ItemDescription</h2>
+                    <div class="space-10"></div>
+                    <div class="row">
+                        <div class="col-sm-5 text-center">
+                            <a class="no-decorate" href="@Url.Action("itemdetail","shopping", new { itemcode = Model[i].ItemCode })">
+                                <img src="@productImage" class="img-responsive">
+                            </a>
+                        </div>
+                        <div class="col-sm-7">
+                            @Html.Raw(Model[i].LongDetail1)
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+    else
+    {
+        <div class="col-sm-@colSize home-item-card home-item-card-sm">
+            <div class="card-section">
+                <p class="text-center">
+                    <a class="no-decorate" href="@Url.Action("itemdetail","shopping", new { itemcode=Model[i].ItemCode })">
+                        <img src="@productImage" class="img-responsive">
+                    </a>
+                </p>
+                <h3 class="text-center">@Model[i].ItemDescription</h3>
+            </div>
+        </div>
+        }
+    }
+}

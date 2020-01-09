@@ -1,0 +1,28 @@
+﻿
+#checkout_view {
+    .returning-customer {
+        border: 1px solid #DFDFDF;
+        padding-top: 15px;
+        padding-bottom: 15px
+    }
+
+    .checkout-table {
+        font-weight: bold;
+        border: 1px solid #DFDFDF;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-width: 1px 0px 1px 0px;
+    }
+
+    .checkout-table-row {
+        padding: 30px 0px 30px 0px;
+        border: 1px solid #DFDFDF;
+        border-width: 0px 0px 1px 0px;
+    }
+
+    .checkout-row {
+        border: 1px solid #DFDFDF;
+        border-width: 0px 0px 1px 0px;
+        padding: 10px 0px 10px 0px;
+    }
+}

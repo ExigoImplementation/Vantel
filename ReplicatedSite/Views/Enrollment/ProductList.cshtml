@@ -1,0 +1,308 @@
+﻿@model EnrollmentProductListViewModel
+@{
+    ViewBag.Title = Resources.Common.EnrollmentShopping;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+    new BreadcrumbItem { Description = Resources.Common.EnrollmentPack, UrlPath = Url.Action("Packs", "Enrollment") },
+    new BreadcrumbItem { Description = ViewBag.Title }
+}
+    };
+}
+
+@Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+<div id="view-enrollment-productlist">
+    <div class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7 col-md-12">
+                    <h3>@Resources.Common.OrderItems</h3>
+                    <div class="space-5"></div>
+
+                    @foreach (var item in Model.OrderItems.Where(el => !el.IsGroupMaster))
+                    {
+                        @Html.Partial("~/Views/Enrollment/_Item.cshtml", item)
+                        <hr class="my-3">
+                    }
+                    @foreach (var item in Model.OrderItems.Where(el => el.IsGroupMaster))
+                    {
+                        foreach (var child in item.GroupMembers.Where(el => !Model.OrderItems.Where(oi => !oi.IsGroupMaster).Any(it => it.ItemCode == el.ItemCode)))
+                        {
+                            @Html.Partial("~/Views/Enrollment/_Item.cshtml", child.Item)
+                            <hr class="my-3">
+                        }
+                    }
+                    <div class="space-15"></div>
+                    <h3>@Resources.Common.AutoOrderItems</h3>
+                    <div class="space-5"></div>
+                    @foreach (var item in Model.AutoOrderItems.Where(el => !el.IsGroupMaster))
+                    {
+                        @Html.Partial("~/Views/Enrollment/_Item.cshtml", item)
+                        <hr class="my-3">
+                    }
+                    @foreach (var item in Model.AutoOrderItems.Where(el => el.IsGroupMaster))
+                    {
+                        foreach (var child in item.GroupMembers.Where(el => !Model.AutoOrderItems.Where(oi => !oi.IsGroupMaster).Any(it => it.ItemCode == el.ItemCode)))
+                        {
+                            @Html.Partial("~/Views/Enrollment/_Item.cshtml", child.Item)
+                            <hr class="my-3">
+                        }
+                    }
+
+                </div>
+                <div class="col-lg-5 col-md-12">
+                    <div class="space-60"></div>
+                    <div id="summary-container" class="mb-4">
+                        <!-- Dynamically Injected -->
+                    </div>
+                    <a href="@Url.Action("packs")" style="margin-right: 10px;" class="btn btn-primary">@Resources.Common.BackToPacks</a>
+                    <a href="@Url.Action("checkout")" class="btn btn-primary">@Resources.Common.Continue</a>
+                </div>
+            </div>
+            <div class="space-10"></div>
+            <a href="@Url.Action("packs")" style="margin-right: 10px;" class="btn btn-primary">@Resources.Common.BackToPacks</a>
+            <a href="@Url.Action("checkout")" class="btn btn-primary">@Resources.Common.Continue</a>
+            <div class="space-30"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    require(["jquery", "ajax", "extensions"], function ($, ajax) {
+
+        var $context             = $('#view-enrollment-productlist'),
+            updateItemSummaryURL = '@Url.Action("updateitemsummary", "enrollment")',
+            addItemsURL          = '@Url.Action("additemtocart", "enrollment")',
+            removeItemsURL       = '@Url.Action("deleteitemfromcart", "enrollment")',
+            updateItemsURL       = '@Url.Action("updateitemquantity", "enrollment")',
+            orderType            = '@ShoppingCartItemType.Order.ToString()',
+            autoOrderType        = '@ShoppingCartItemType.AutoOrder.ToString()';
+
+        // Settings
+        var state = {
+            originalItemQuantity: 0
+        };
+
+        // Event Handlers
+        function registerEventHandlers() {
+
+
+
+            // Increment item quantity button
+            $('[data-role="incrementquantity"]', $context).on('click', function () {
+                var $item = $(this),
+                    $itemParent = $item.parents('.item-container'),
+                    itemType = $itemParent.find('[name="Type"]').val(),
+                    itemCode = $itemParent.data('itemcode'),
+                    originalQuantity = parseInt($('.quantity-box', $itemParent).val()),
+                    newQuantity = originalQuantity + 1;
+
+                $('.quantity-box', $itemParent).val(newQuantity);
+
+                actions.updateCart(itemCode, itemType, originalQuantity);
+            });
+
+            // Decrement item quantity button
+            $('[data-role="decrementquantity"]', $context).on('click', function () {
+                var $item = $(this),
+                    $itemParent = $item.parents('.item-container'),
+                    itemType = $itemParent.find('[name="Type"]').val(),
+                    itemCode = $itemParent.data('itemcode'),
+                    originalQuantity = parseInt($('.quantity-box', $itemParent).val()),
+                    newQuantity = (originalQuantity - 1 >= 0) ? originalQuantity - 1 : 0;
+
+                $('.quantity-box', $itemParent).val(newQuantity);
+
+                actions.updateCart(itemCode, itemType, originalQuantity);
+            });
+
+            // Remove item button
+            $context.on('click', '[data-role="removeitem"]', function () {
+                var $this = $(this),
+                    $itemParent = $this.parents('tr'),
+                    itemcode = $itemParent.data('itemcode'),
+                    itemtype = $itemParent.data('itemtype'),
+                    $item = $('[data-itemcode="' + itemcode + '"][data-itemtype="' + itemtype + '"].item-container .quantity-box');
+                state.originalItemQuantity = 1;
+
+                if ($item.length > 0) {
+                    $item.val(0);
+                    $item.triggerHandler('blur');
+                }
+                else {
+                    actions.updateCart(itemcode, itemtype, state.originalItemQuantity);
+                }
+            });
+
+            // Save the original value of this box in state
+            $('.quantity-box', $context).on('focus', function () {
+                var $this = $(this),
+                    originalquantity = $this.val();
+
+                state.originalItemQuantity = originalquantity;
+                $this.val("");
+            });
+
+            // If a value was entered, submit the change. Else restore the original value from state
+            $('.quantity-box', $context).on('blur', function () {
+                var $item = $(this),
+                    $itemParent = $item.parents('.item-container'),
+                    itemType = $itemParent.find('[name="Type"]').val(),
+                    itemCode = $itemParent.data('itemcode'),
+                    quantity = $item.val();
+
+                if (quantity == "") {
+                    $item.val(state.originalItemQuantity);
+                    return;
+                }
+                else {
+                    actions.updateCart(itemCode, itemType, state.originalItemQuantity);
+                }
+            });
+
+            // Prevent the entering of anything but 1-9
+            $('.quantity-box').on('keypress', function (event) {
+
+                var regex = new RegExp("^[0-9]$");
+                var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+
+                if (!regex.test(key)) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+        }
+
+        // Actions
+        var actions = {
+            updateItemSummary: function () {
+                var $container = $('#summary-container');
+
+                ajax.json({
+                    url: updateItemSummaryURL,
+                    beforeSend: function () {
+                        $container.html('<p class="text-center"><strong>@Resources.Common.Loading</strong></p>');
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $container.html(response.html);
+                        }
+                        else {
+                            console.log("failed:", response.error);
+                        }
+                    },
+                    error: function (xhr, error, status) {
+                        console.log("Error: ", xhr);
+                    }
+                });
+            },
+            updateCart: function (itemcode, type, originalQuantity) {
+                originalQuantity = parseInt(originalQuantity);
+
+                var $container = $('[data-itemcode="' + itemcode + '"][data-itemtype="' + type + '"].item-container'),
+                    $item = null,
+                    quantity = 0;
+
+
+                if ($container.length > 0) {
+                    $item = $container.serializeObject();
+                    quantity = parseInt($item.Quantity);
+                }
+                else {
+                    $item = $('[data-itemcode="' + itemcode + '"][data-itemtype="' + type + '"]tr').serializeObject();
+                    quantity = parseInt($item.Quantity);
+                }
+
+                //console.log("item: ", $item);
+
+                if (originalQuantity === 0 && quantity > 0) { // Add new item
+                    console.log("@Resources.Common.Add");
+                    actions.addItem($item);
+                }
+                else if (originalQuantity > 0 && quantity === 0) { // Remove exisitng item
+                    console.log("@Resources.Common.Remove");
+                    actions.removeItem($item);
+                }
+                else if (originalQuantity > 0 && quantity > 0) { // Update exiting item quantity
+                    console.log("@Resources.Common.Update");
+                    actions.updateItem($item);
+                }
+            },
+            addItem: function ($item) {
+                ajax.json({
+                    url: addItemsURL,
+                    data: {
+                        item: $item,
+                        quantity: 1
+                    },
+                    success: function (response) {
+                        if (response.success) {                            
+                            actions.updateItemSummary();
+                        }
+                        else {
+                            console.log("@Resources.Common.Failed");
+                        }
+                    },
+                    error: function (xhr, error, status) {
+                        console.log("@Resources.Common.Error: ", xhr);
+                    }
+                });
+            },
+            removeItem: function ($item) {
+                ajax.json({
+                    url: removeItemsURL,
+                    data: {
+                        itemcode: $item.ItemCode,
+                        type: $item.Type
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            console.log("@Resources.Common.ItemDeleted");
+                            actions.updateItemSummary();
+                        }
+                        else {
+                            console.log("@Resources.Common.Failed");
+                        }
+                    },
+                    error: function (xhr, error, status) {
+                        console.log("@Resources.Common.Error: ", xhr);
+                    }
+                });
+            },
+            updateItem: function ($item) {
+                ajax.json({
+                    url: updateItemsURL,
+                    data: {
+                        itemcode: $item.ItemCode,
+                        type: $item.Type,
+                        quantity: $item.Quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            console.log("@Resources.Common.ItemUpdated");
+                            actions.updateItemSummary();
+                        }
+                        else {
+                            console.log("@Resources.Common.Failed");
+                        }
+                    },
+                    error: function (xhr, error, status) {
+                        console.log("@Resources.Common.Error: ", xhr);
+                    }
+                });
+            }
+        };
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+            actions.updateItemSummary();
+        }
+        init();
+    })();
+</script>

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<IAddress>
+@{
+    ViewBag.Title = Resources.Common.Addresses;
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "account",
+        DefaultBreadcrumbLinkSitemapID = "addresses"       
+    };
+}
+
+<div id="view-addresslist">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    <div class="content-wrap">
+        <div class="container">            
+            <div class="row">
+                @foreach (var address in Model)
+                {
+                    var typedAddress = address as Address;
+                    var isPrimary = typedAddress.AddressType == AddressType.Main;
+
+                    <div class="col-md-4 mb-2">
+                        <div class="card address-card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <strong>@Html.Raw((isPrimary) ? Resources.Common.Primary : Resources.Common.Secondary)</strong>
+                                </div>
+                                @Html.DisplayFor(c => typedAddress)
+
+                                <div class="space-10"></div>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("ManageAddress", new { type = typedAddress.AddressType })" class="btn btn-secondary"><i class="fa-pencil"></i></a>
+                                    @if (!isPrimary)
+                                    {
+                                        <a href="@Url.Action("DeleteAddress", new { type = typedAddress.AddressType })" class="btn btn-secondary"><i class="fa-trash-o"></i></a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Count() < 3)
+                {
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <a href="@Url.Action("AddAddress")" class="text-muted">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <i class="fa-plus" style="font-size: 48px;"></i><br />
+                                        @Resources.Common.AddANewAddress
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid().ToString();
+}
+
+<div id="view-shippinginformation-@contextID" data-role="hidecountry">
+   
+    <div class="form-group">
+
+        <div class="custom-control custom-checkbox mb-3">
+            <input type="checkbox" id="shipping-checkbox" class="custom-control-input" name="@Html.NameFor(c => c.UseSameShippingAddress)" value="true" @((Model.UseSameShippingAddress) ? "checked" : "") />
+            <input type="hidden" name="@Html.NameFor(c => c.UseSameShippingAddress)" value="false" />
+            <label class="custom-control-label" for="shipping-checkbox"> @Resources.Common.UseMainAddressAsShipping</label>
+        </div>
+
+        <div id="shipping-address-container" style="display: none;">
+            @{ var ShippingAddress = (Model.ShippingAddress != null) ? Model.ShippingAddress : new ShippingAddress(); }
+            @Html.EditorFor(c => ShippingAddress, "ShippingAddress")
+
+            <div class="form-group mb-3">
+                <label for="@Html.IdFor(c => c.OrderNotes)">@Resources.Common.ShippingInformation</label>
+                <textarea class="form-control" id="@Html.IdFor(c => c.OrderNotes)" name="@Html.NameFor(c => c.OrderNotes)" rows="6" cols="30"></textarea>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+<script>
+    require(["jquery"], function($) {
+
+        // Settings
+        var context      = "#view-shippinginformation-@contextID",
+            $context     = $(context),
+            sameshipping = @(Model.UseSameShippingAddress.ToString().ToLower());
+
+
+        // Event Handlers
+        function registerEventHandlers() {
+            $('[name="@Html.NameFor(c => c.UseSameShippingAddress)"]', $context).on('change', function() {
+                $('#shipping-address-container').toggle();
+            });
+        }
+
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+            if (sameshipping === false)
+            {
+                $('[name="@Html.NameFor(c => c.UseSameShippingAddress)"]', $context).triggerHandler('change');
+            }       
+
+        }
+        init();
+
+    });
+</script>

@@ -1,0 +1,161 @@
+﻿@model LoginViewModel
+@{
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+    ViewBag.Title = Resources.Common.SignIn;
+}
+
+<div id="view-sitelogin">
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="text-center">
+                @if (GlobalSettings.Exigo.Themes.ThemeSelectorEnabled)
+                {
+                    <div class="logomain img-fluid"></div>
+                }
+                else
+                {
+                    <img src="~/Content/images/Exigo_Logo_Base.png" class="img-fluid" />
+                }
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                <div class="form-group">
+                    @Html.TextBoxFor(c => c.LoginName, new { @class = "form-control", placeholder = Resources.Common.Username })
+                </div>
+
+                <div class="form-group">
+                    @Html.PasswordFor(c => c.Password, new { @class = "form-control", value = Model.Password, placeholder = Resources.Common.Password })
+                </div>
+
+                <a id="loginbutton" class="btn btn-primary" data-loading-text="@Resources.Common.Loading">@Resources.Common.SignIn</a>
+                <a href="@Url.Action("forgotpassword")">@Resources.Common.ForgotPassword</a>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    
+    <style>
+        body {
+            background-image: url('@(Resources.Common.BackOffice_Login_Background)');
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-color: #464646;
+        }
+
+        #site-content {
+            padding-top: 0 !important;
+        }
+    </style>
+
+    <script>
+        require(["jquery", "ajax", "cookies", "urls", "app", "toastr", "forms", "bootstrap"], function ($, ajax, cookies, url, app, toastr) {
+
+            // Settings
+            var context = '#view-sitelogin',
+                $context = $(context),
+                cookiename = '@(GlobalSettings.Globalization.CookieKey)LoginName',
+                landingUrl = ('@Settings.UseGateKeeper' == "True") ? '@Url.Action("Continue")' : '@Url.Action("Index", "Dashboard")';
+
+            // Event Handlers
+            function registerEventHandlers() {
+
+                // Login Form
+                $('#loginbutton', $context).on('click', function (event) {
+                    $("#loginbutton").buttonState("loading");
+                    actions.signin();
+                });
+                $('input', $context).on('keypress', function (event) {
+                    if (event.which == 13) {
+                        $("#loginbutton").buttonState("loading");
+                        actions.signin();
+                    }
+                });
+            }
+
+
+            // Actions
+            var actions = {
+                clearCookies: function () {
+                    cookies.clear(cookiename);
+                },
+                loadCookies: function () {
+                    var savedLoginName = cookies.get(cookiename);
+                    if (savedLoginName) $('#LoginName').val(savedLoginName);
+
+                },
+                saveCookies: function () {
+                    // Get the expiration date of the cookie
+                    var expires = new Date();
+                    expires.setDate(expires.getDate() + 365);
+
+                    // Set the cookies
+                    cookies.set(cookiename, $('#LoginName').val(), {
+                        expires: expires
+                    });
+                },
+                signin: function () {
+
+                    // Validate the form
+                    if (!$('form', $context).valid()) {
+                        $("#loginbutton").buttonState("reset");
+                        return false;
+                    }
+
+                    // Submit the form
+                    ajax.json({
+                        url: '@Url.Action("login")',
+                        data: $('form').serializeObject(),
+                        beforeSend: function () {
+                            toastr.clear();
+                        },
+                        success: function (response) {
+                            if (!response.Status) {
+                                actions.throwError("@Resources.Common.LoginFailed", response.ErrorMessage);
+                                $("#loginbutton").buttonState("reset");
+                            }
+                            else {
+                                // Save the cookies
+                                actions.saveCookies();
+
+                                // Redirect
+                                window.location = (response.RedirectUrl != '') ? response.RedirectUrl : decodeURIComponent(url.current.queryKey.ReturnUrl || landingUrl);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            actions.throwError("@Resources.Common.LoginFailed", error);
+                            $("#loginbutton").buttonState("reset");
+                        }
+                    });
+                },
+                throwError: function (title, error) {
+                    toastr.error(error, title);
+                    $('#Password').focus();
+                    $("#loginbutton").buttonState("reset");
+                }
+            };
+
+
+            // Initialization
+            function _init() {
+
+                // Register the event handlers
+                registerEventHandlers();
+
+                // Load the saved cookies into the form
+                actions.loadCookies();
+
+                // Focus on the right field
+                if ($('#LoginName').val() == '') $('#LoginName').focus();
+                else $('#Password').focus();
+            }
+            _init();
+
+        });
+    </script>
+}

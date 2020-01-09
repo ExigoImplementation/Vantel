@@ -1,0 +1,13 @@
+﻿@model String
+@{
+    Layout = "~/Views/Shared/EditorTemplates/_FormField.cshtml";
+    
+    var htmlAttributes = Html.GetEditorHtmlAttributes(new
+    { 
+        @class              = "form-control",
+        role                = "textbox",
+        data_restrict_input = "loginname"
+    });
+}
+
+@Html.TextBoxFor(c => c, htmlAttributes)

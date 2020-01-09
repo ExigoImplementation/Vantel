@@ -1,0 +1,76 @@
+﻿@model CreditCard
+@{
+    var contextID = Guid.NewGuid().ToString();
+    var market = GlobalUtilities.GetCurrentMarket(this.Context);
+    Model.BillingAddress = Model.BillingAddress ?? new Address();
+    var defaultCountryCode = (Model.BillingAddress.Country.IsNotNullOrEmpty()) ? Model.BillingAddress.Country : market.MainCountry;
+    var defaultRegionCode = (Model.BillingAddress.State.IsNotNullOrEmpty()) ? Model.BillingAddress.State : "";
+}
+
+<div class="view-creditcard" id="view-creditcard-@contextID">
+
+    <input type="hidden" name="@(Html.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix).PaymentMethodType" value="@Model.GetType().ToString()" />
+    @Html.HiddenFor(c => c.Type)
+
+    <div class="row margin-5">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(x=> x.NameOnCard, Resources.Common.NameOnCard + ":")
+                @Html.TextBoxFor(c => c.NameOnCard, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.NameOnCard,null, new { @class="text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="CardNumber">@Resources.Common.CardNumber: </label>
+
+                <div id="cc-wrapper"></div>
+                @Html.ValidationMessageFor(x => x.CardNumber, "", new { @class = "text-danger" })
+                @Html.HiddenFor(m => m.Token, new { @class = "creditcard-token" })
+                @Html.HiddenFor(m => m.Display, new { @class = "creditcard-display" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row margin-5">
+        <div class="col-6">
+            <div class="form-group">
+                @Html.LabelFor(c => c.ExpirationMonth, new { @class = "" })
+                @Html.DropDownListFor(c => c.ExpirationMonth,
+                    selectList: Html.Months(),
+                    htmlAttributes: new
+                    {
+                        @class = "form-control"
+                    })
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.ExpirationYear, new { @class = "" })  
+                @Html.DropDownListFor(c => c.ExpirationYear,
+                    selectList: Html.ExpirationYears(),
+                    htmlAttributes: new
+                    {
+                        @class = "form-control"
+                    })
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="form-group">
+                @Html.LabelFor(c => c.CVV, new { @class = ""})
+                @Html.TextBoxFor(x => x.CVV, "", new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.CVV, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    @Html.EditorFor(c => Model.BillingAddress, "Address", new { VerifyEnabled = false })
+</div>
+
+<script>
+    require(['jquery', 'mask'], function ($, mask) {
+        $('#@Html.IdFor(x=> x.CVV)').mask('000');
+    });
+</script>

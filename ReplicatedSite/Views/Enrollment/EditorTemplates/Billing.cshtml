@@ -1,0 +1,99 @@
+﻿@model EnrollmentPropertyBag
+@{
+    var contextID = Guid.NewGuid().ToString();
+    IPaymentMethod PaymentMethod;
+
+    var currentMarket = GlobalSettings.Markets.AvailableMarkets.FirstOrDefault(m => m.Name == Model.SelectedMarket);
+    var availablePaymentTypes = currentMarket.AvailablePaymentTypes;
+}
+
+<div id="view-billing-@contextID">
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="PaymentMethodPreference" class="control-label">@Resources.Common.HowWouldYouLikeToPay</label>
+                
+                @foreach (var paymentType in availablePaymentTypes)
+                {
+                    var paymentTypeID = ExigoDAL.GetPaymentTypeID(paymentType);
+
+                    <div class="radio">
+                        <label for="@(Html.IdFor(c => c.PaymentTypeID))_@paymentTypeID">
+                            @Html.RadioButtonFor(c => c.PaymentTypeID, paymentTypeID, new
+                        {
+                            id = Html.IdFor(c => c.PaymentTypeID) + "_" + paymentTypeID
+                        })
+                            @CommonResources.PaymentTypes(paymentTypeID)
+                        </label>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div data-bind="@Html.NameFor(c => c.PaymentTypeID)" data-key="@ExigoDAL.GetPaymentTypeID(Common.Api.ExigoWebService.PaymentType.CreditCard)" class="hidden">
+
+        @{
+            if (Model.PaymentMethod is CreditCard)
+            {
+                PaymentMethod = (CreditCard)Model.PaymentMethod;
+            }
+            else
+            {
+                PaymentMethod = new CreditCard()
+                {
+                    BillingAddress = new Address() { Country = Model.ShippingAddress.Country }
+                };
+            }
+        }
+        @Html.EditorFor(c => PaymentMethod, "CreditCard")
+
+    </div>
+</div>
+
+
+@using (Html.BeginPartialScript())
+{
+
+    <script>
+        require(["jquery", "extensions"], function ($) {
+
+            // Settings
+            var context = "#view-billing-@contextID",
+                $context = $(context);
+
+
+            // Event Handlers
+            function registerEventHandlers() {
+
+                // Handle the PayableType fields
+                var paymentTypeIDName = '@Html.NameFor(c => c.PaymentTypeID)';
+
+                // Auto-check the first option if applicable
+                if ($('[name="{0}"]:checked'.format(paymentTypeIDName), $context).length == 0) {
+                    $('[name="{0}"]:first'.format(paymentTypeIDName), $context).prop('checked', true);
+                }
+
+                // Toggle the respective fieldset on change
+                $('[name="{0}"]'.format(paymentTypeIDName), $context).on('change', function () {
+                    var name = $(this).attr('name'),
+                        value = $('[name="{0}"]:checked'.format(name), $context).val();
+
+                    $('[data-bind="{0}"]'.format(name), $context).addClass('hidden')
+                        .filter('[data-key="{0}"]'.format(value), $context).removeClass('hidden');
+                }).filter(':checked').triggerHandler('change');
+            }
+
+
+            // Initialization
+            function init() {
+                registerEventHandlers();
+            }
+            init();
+
+        });
+    </script>
+}
