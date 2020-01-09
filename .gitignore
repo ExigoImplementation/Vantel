@@ -192,6 +192,6 @@ FakesAssemblies/
 #Ignore All CSS Files that are Changed Regularly             
 #Comment this prior to cloning a new Repo
 #Then Un-Comment this after pushing to that new Repo once
-#/**/Content/styles/*.css             
-#/**/Content/styles/*.css.map
-#/**/Content/scripts/modules/*.min.js
+/**/Content/styles/*.css             
+/**/Content/styles/*.css.map
+/**/Content/scripts/modules/*.min.js
