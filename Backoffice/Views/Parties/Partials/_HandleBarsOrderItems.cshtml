@@ -1,0 +1,48 @@
+﻿<script type="text/x-handlebars-template" id="partyorder-item-template">
+    {{#each items}}
+    <div class="row party-order-item mt-3 pb-3 border-bottom" data-itemCode="{{ItemCode}}" data-index="{{IndexItem}}">
+        <div class="col-5 col-sm-8">
+            <div class="row">
+                <div class="col-sm-2 d-none d-sm-block">
+                    <div class="image">
+                        <img src="{{ImageUrl}}" class="img-responsive" />
+                    </div>
+                </div>
+                <div class="col-sm-10">
+                    <div class="itemdescription">
+                        <h4>{{ItemDescription}}</h4>
+                    </div>
+                    <small class="text-muted"><b>@Resources.Common.Price:</b> {{PriceEach}}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 col-sm-2">
+            <input type="number" name="Order.Details[{{IndexItem}}].Quantity" class="form-control item-quantity" data-itemCode="{{ItemCode}}" placeholder="@Resources.Common.Quantity" aria-describedby="button-addon2" value="1" min="1">
+        </div>
+        <div class="col-3 col-sm-2">
+            <div class="text-center">
+                <a class="btn btn-outline-primary btn-block delete" data-role="delete" data-itemCode="{{ItemCode}}"><i class="fa-trash-o"></i></a>
+            </div>
+            <input type="hidden" name="Order.Details[{{IndexItem}}].ItemCode" value="{{ItemCode}}" />
+        </div>
+        {{#if children}}
+            <div class="col-sm-12">
+                <ul class="list-group list-group-flush pl-5">
+                    {{#each children}}
+                    <li class="list-group-item">
+                        {{ItemCode}} - {{ItemDescription}}
+                        <input type="hidden" name="Order.Details[{{IndexItem}}].ItemCode" value="{{ItemCode}}" />
+                        <input type="hidden" name="Order.Details[{{IndexItem}}].Quantity" value="1" />
+                        <input type="hidden" name="Order.Details[{{IndexItem}}].ParentItemCode" value="{{ParentItemCode}}" />
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        {{/if}}
+
+    </div>
+    {{#if ../newItems}}
+    <p>@Resources.Common.None</p>
+    {{/if}}
+    {{/each}}
+</script>

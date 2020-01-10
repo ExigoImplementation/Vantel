@@ -1,0 +1,78 @@
+﻿#view-new-party-order {
+    #products-section {
+        #modal-kit-catalog {
+            #view-shopping {
+                overflow-x: hidden;
+
+                .modal-item-image {
+                    min-height: 200px;
+
+                    img {
+                        height: 200px;
+                        width: auto;
+                    }
+                }
+
+                .card-body {
+                    min-height: 110px;
+                }
+
+                .card-footer {
+                    border-top: none;
+                    border-bottom: 1px solid rgba(0,0,0,.125);
+                }
+            }
+        }
+    }
+}
+#view-parties-dashboard, #view-parties {
+    table.table {
+        th {
+            min-width: 100px;
+        }
+    }
+}
+
+#view-dynamic-kit-builder {
+    .dkc:not(:first-child) {
+        padding-bottom: 20px;
+    }
+
+    .modal-body {
+        max-height: 600px;
+        overflow-y: scroll;
+
+        .modal-item-image {
+            img {
+                width: 40%;
+            }
+        }
+    }
+
+    .tc {
+        height: 200px
+    }
+
+    .build-area-container {
+        height: 100%;
+    }
+
+    .btn-block {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .btn:hover {
+        background-color: #2c2c2c;
+        color: #FFF;
+    }
+
+    .progress-bar {
+        background-color: $main-color;
+    }
+
+    .btn-primary:disabled, .btn-primary[disabled]:hover {
+        background-color: #333;
+        border-color: #333;
+    }
+}

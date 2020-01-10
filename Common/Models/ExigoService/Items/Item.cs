@@ -13,6 +13,7 @@ namespace ExigoService
         }
         public int ItemID { get; set; }
         public string ItemCode { get; set; }
+        public string ParentItemCode { get; set; }
         public string ItemDescription { get; set; }
         public int MasterSortID { get; set; }
         public decimal Weight { get; set; }

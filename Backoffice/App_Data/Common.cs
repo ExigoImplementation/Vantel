@@ -68,6 +68,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string AccountUpdated => GetObject("AccountUpdated", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string Action => GetObject("Action", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -456,10 +460,6 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
-        public static string BackOffice_Dashboard_NoContentAvailable => GetObject("BackOffice_Dashboard_NoContentAvailable", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
         public static string BackOffice_Dashboard_ViewAllCustomers => GetObject("BackOffice_Dashboard_ViewAllCustomers", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -477,6 +477,14 @@ namespace Resources
        ///
        ///</summary>
         public static string BackOffice_Login_Background => GetObject("BackOffice_Login_Background", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string BackOffice_Parties_ExistingGuests => GetObject("BackOffice_Parties_ExistingGuests", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string BackOffice_Parties_UpdateGuestHeader => GetObject("BackOffice_Parties_UpdateGuestHeader", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -640,19 +648,15 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string BookedFromParty => GetObject("BookedFromParty", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string Bootstrap_Carousel_Grass => GetObject("Bootstrap_Carousel_Grass", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
-        public static string Bootstrap_Carousel_Grass_Mobile => GetObject("Bootstrap_Carousel_Grass_Mobile", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
         public static string Bootstrap_Carousel_Ships => GetObject("Bootstrap_Carousel_Ships", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
-        public static string Bootstrap_Carousel_Ships_Mobile => GetObject("Bootstrap_Carousel_Ships_Mobile", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -665,6 +669,10 @@ namespace Resources
        ///
        ///</summary>
         public static string Browse => GetObject("Browse", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string BuildYourKit => GetObject("BuildYourKit", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -697,6 +705,10 @@ namespace Resources
        ///
        ///</summary>
         public static string CalculateEstimatedShipping => GetObject("CalculateEstimatedShipping", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string CalculateOrder => GetObject("CalculateOrder", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -876,6 +888,14 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string ChooseAHostess => GetObject("ChooseAHostess", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string ChooseAnItem => GetObject("ChooseAnItem", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string ChooseCountry => GetObject("ChooseCountry", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -984,6 +1004,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string CloseDate => GetObject("CloseDate", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string CloseParty => GetObject("CloseParty", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -1048,10 +1072,6 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
-        public static string CompanyEmail => GetObject("CompanyEmail", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
         public static string CompanyLegalName => GetObject("CompanyLegalName", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -1065,10 +1085,6 @@ namespace Resources
        ///
        ///</summary>
         public static string CompanyNewsDetail => GetObject("CompanyNewsDetail", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
-        public static string CompanyPhone => GetObject("CompanyPhone", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -2308,6 +2324,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string CreatePartyOrder => GetObject("CreatePartyOrder", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string CreateYourAutoOrder => GetObject("CreateYourAutoOrder", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -2900,6 +2920,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string EnterHostessName => GetObject("EnterHostessName", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string EnterLocation => GetObject("EnterLocation", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -3013,6 +3037,10 @@ namespace Resources
        ///
        ///</summary>
         public static string ExpiredResetMessage => GetObject("ExpiredResetMessage", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string ExpiredSetAccountMessage => GetObject("ExpiredSetAccountMessage", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -3476,6 +3504,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string HostsName => GetObject("HostsName", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string Hours => GetObject("Hours", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -3693,10 +3725,6 @@ namespace Resources
        ///
        ///</summary>
         public static string JoinDate => GetObject("JoinDate", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
-        public static string Joined => GetObject("Joined", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -4304,10 +4332,6 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
-        public static string NoAcceptedCommissions => GetObject("NoAcceptedCommissions", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
         public static string NoActivity => GetObject("NoActivity", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -4381,6 +4405,10 @@ namespace Resources
        ///
        ///</summary>
         public static string NoResourcesSaved => GetObject("NoResourcesSaved", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string NoResults => GetObject("NoResults", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -4684,6 +4712,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string PartyInfo => GetObject("PartyInfo", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string PartyInvalidMessage => GetObject("PartyInvalidMessage", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -4713,6 +4745,10 @@ namespace Resources
        ///
        ///</summary>
         public static string PartyTime => GetObject("PartyTime", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string PartyTitle => GetObject("PartyTitle", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -4997,6 +5033,10 @@ namespace Resources
        ///
        ///</summary>
         public static string Phone => GetObject("Phone", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string PhoneNumber => GetObject("PhoneNumber", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -5288,14 +5328,6 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
-        public static string RankRequirements => GetObject("RankRequirements", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
-        public static string RankVolumeItem => GetObject("RankVolumeItem", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
         public static string ReadandAgree => GetObject("ReadandAgree", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -5325,6 +5357,10 @@ namespace Resources
        ///
        ///</summary>
         public static string ReEnterCardNumber => GetObject("ReEnterCardNumber", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string RegisterFromPartyOrderInstructions => GetObject("RegisterFromPartyOrderInstructions", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///Shopping Cart Header
        ///</summary>
@@ -5675,6 +5711,10 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string SearchForExistingHostess => GetObject("SearchForExistingHostess", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string SearchForYourDistributor => GetObject("SearchForYourDistributor", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -5735,7 +5775,15 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
+        public static string SelectedHost => GetObject("SelectedHost", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
         public static string SelectItemsBeforeAutoOrder => GetObject("SelectItemsBeforeAutoOrder", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string SelectItemsBeforePartyOrder => GetObject("SelectItemsBeforePartyOrder", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>
@@ -6521,10 +6569,6 @@ namespace Resources
        ///</summary>
         public static string ViewAllOrders => GetObject("ViewAllOrders", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
-       ///
-       ///</summary>
-        public static string ViewAllRanks => GetObject("ViewAllRanks", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
        ///Dashboard
        ///</summary>
         public static string ViewAllRecentActivity => GetObject("ViewAllRecentActivity", Thread.CurrentThread.CurrentUICulture); 
@@ -6707,10 +6751,6 @@ namespace Resources
        ///<summary>
        ///
        ///</summary>
-        public static string WelcomeToCompany => GetObject("WelcomeToCompany", Thread.CurrentThread.CurrentUICulture); 
-       ///<summary>
-       ///
-       ///</summary>
         public static string WelcomeToExigo => GetObject("WelcomeToExigo", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
@@ -6784,6 +6824,10 @@ namespace Resources
        ///
        ///</summary>
         public static string Where => GetObject("Where", Thread.CurrentThread.CurrentUICulture); 
+       ///<summary>
+       ///
+       ///</summary>
+        public static string WhereWillYourPartyBeHosted => GetObject("WhereWillYourPartyBeHosted", Thread.CurrentThread.CurrentUICulture); 
        ///<summary>
        ///
        ///</summary>

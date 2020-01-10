@@ -75,7 +75,7 @@
                     <!-- End Category Listing -->
                     <div class="col col-lg-9" style="min-height:550px;">
                         @* Party Info Bar *@
-                        @*@if (ViewBag.ActiveParty != null)
+                        @if (ViewBag.ActiveParty != null)
                         {
                             Party ActiveParty = ViewBag.ActiveParty;
 
@@ -86,7 +86,7 @@
                             <div class="party-link">Should a hostess get credit for this order? <a data-role="find-party-modal">click here</a></div>
 
                             @Html.Partial("Partials/_PartyHostModal", OpenParties)
-                        }*@
+                        }
                         @* End Party Info Bar*@
 
                         <!-- Item List -->

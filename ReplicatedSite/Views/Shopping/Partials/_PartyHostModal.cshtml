@@ -5,14 +5,14 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">@Resources.Common.Close</span></button>
                     <h3 class="modal-title partyhost-search">@Resources.Common.ConnectWithAParty</h3>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">@Resources.Common.Close</span></button>
                     <div class="clearfix"></div>
                 </div>
                 <div class="modal-body">
                     <div id="party-search-results">
                         <h4 id="results-header">
-                            <span><strong>@Model.Count</strong> @Resources.Common.OpenParties</span>
+                            <span>@Resources.Common.OpenParties <span class="badge badge-primary">@Model.Count</span></span>
                         </h4>
                         @foreach (var party in Model)
                         {

@@ -373,6 +373,7 @@
     <Compile Include="ViewModels\Parties\PartyDashboardViewModel.cs" />
     <Compile Include="ViewModels\Parties\PartyInviteViewModel.cs" />
     <Compile Include="ViewModels\Parties\PartyListViewModel.cs" />
+    <Compile Include="ViewModels\Parties\PartyOrderViewModel.cs" />
     <Compile Include="ViewModels\Parties\PartySummaryViewModel.cs" />
     <Compile Include="ViewModels\ShoppingWithAutoOrder\AutoOrderSettingsViewModel.cs" />
     <Compile Include="ViewModels\Account\AccountNotificationsViewModel.cs" />
@@ -959,6 +960,7 @@
     <Content Include="Content\styles\components\_products.scss" />
     <Content Include="Content\styles\views\_profiles.scss" />
     <Content Include="Content\styles\views\_resources.scss" />
+    <Content Include="Content\styles\views\_parties.scss" />
     <None Include="Properties\PublishProfiles\exigoacc-bo - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\exigobackoffice - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\exigobackoffice - Web Deploy.pubxml" />
@@ -1237,6 +1239,10 @@
     <Content Include="Views\Organization\MyCustomersList.cshtml" />
     <Content Include="Views\Commissions\_RankQualificationDetailDashboard.cshtml" />
     <Content Include="Views\Dashboard\Cards\LastAccepted.cshtml" />
+    <Content Include="Views\Parties\NewPartyOrder.cshtml" />
+    <Content Include="Views\Parties\Partials\_HandleBarsOrderItems.cshtml" />
+    <Content Include="Views\Parties\Partials\_ProductList.cshtml" />
+    <Content Include="Views\Parties\Partials\_DynamicKitBuilder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

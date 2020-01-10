@@ -8,6 +8,7 @@ namespace ExigoService
         Guid ID { get; set; }
         string ItemCode { get; set; }
         decimal Quantity { get; set; }
+        string ParentItemCode { get; set; }
 
         /// <summary>
         /// Master Item code of group member. Group member links to this item when inspecting.

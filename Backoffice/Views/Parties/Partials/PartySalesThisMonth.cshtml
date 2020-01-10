@@ -1,10 +1,10 @@
 ﻿@model PartyDashboardViewModel
 
-<div class="card card-default card-metrics" id="view-partysalescard">
-    <div class="card-heading">
-        <h2 class="card-title">
+<div class="card" id="view-partysalescard">
+    <div class="card-header">
+        <h4 class="card-title">
             @Resources.Common.MyPartySales
-        </h2>
+        </h4>
     </div>
     <div class="card-body">
         <h3>@Model.WeeklySalesTotals.Sum(c => c.Value).ToString("C")</h3>
@@ -20,7 +20,4 @@
             }
         </table>
     </div>
-    @*<a href="@Url.Action("openparties")" class="card-footer block text-right">
-        View Weekly Sales <i class="fa-chevron-right"></i>
-    </a>*@
 </div>

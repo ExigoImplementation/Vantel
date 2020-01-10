@@ -1,7 +1,8 @@
 ﻿@model PartySummaryViewModel
 @{
     var isHostess = Identity.Current.IsHostess();
-    var tableControlColSpan = isHostess ? 2 : 3;
+    //var tableControlColSpan = isHostess ? 2 : 3;
+    var tableControlColSpan = 2;
 
     var canCloseParty = Model.Orders.Any(c => c.CustomerID == Model.Party.HostID) && Model.Party.CustomerID == Identity.Current.CustomerID;
 }
@@ -25,7 +26,7 @@
             if (!guest.AllowEmail)
             {
                 invitedLabel = "N/A";
-                tooltip = Resources.Common.ThisGuestNotAllowEmailInvitations
+                tooltip = Resources.Common.ThisGuestNotAllowEmailInvitations;
             }
 
             <tr data-guestrow="@guest.GuestID">
@@ -47,13 +48,8 @@
                         <text>N</text>
                     }
                 </td>
-
-                @if (!isHostess && !canCloseParty)
-                {
-                    <td><a href="@Url.Action("startpartyorder", "shopping", new { partyID = Model.Party.PartyID, guestID = guest.GuestID })">@Resources.Common.CreateOrder</a></td>
-                }
                 <td><a href="@Url.Action("editguest", "parties", new { partyID = Model.Party.PartyID, guestID = guest.GuestID })">@Resources.Common.Edit</a></td>
-                <td><a data-role="delete-guest" data-guestid="@guest.GuestID">@Resources.Common.Delete</a></td>
+                <td><a data-role="delete-guest" data-guestid="@guest.GuestID" href="#" class="text-danger">@Resources.Common.Delete</a></td>
             </tr>
         }
     </tbody>

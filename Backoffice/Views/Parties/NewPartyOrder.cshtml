@@ -1,0 +1,434 @@
+﻿@model PartyOrderViewModel
+@{
+    ViewBag.Title = Resources.Common.CreatePartyOrder;
+    var canChoosePaymentMethod = (Model.AvailablePaymentMethods != null && Model.AvailablePaymentMethods.Count() > 0);
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem { Description = Resources.Common.BackToPartySummary , UrlPath = Url.Action("summary", new { id = Model.Order.PartyID }) },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+
+<div id="view-new-party-order">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container">
+
+            @if (ViewData.ModelState.Keys.Contains("Result"))
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationMessage("Result")
+                </div>
+            }
+
+            @using (Html.BeginForm())
+            {
+                @Html.HiddenFor(model => model.Order.PartyID)
+                <section id="products-section" class="form-section border-bottom mb-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-section-header">
+                                <h3 class="form-section-title">@Resources.Common.Products</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-8 mb-5">
+                            <fieldset>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12 text-right">
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-kit-catalog">
+                                                @Resources.Common.AddItems
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row text-uppercase text-muted text-xs mt-5 mb-3">
+                                        <div class="col-sm-8 d-none d-md-block"><span style="display: inline-block;margin-left: 14px;">@Resources.Common.Items</span></div>
+                                        <div class="col-sm-2 text-center d-none d-md-block">@Resources.Common.Quantity</div>
+                                        <div class="col-sm-2 text-center d-none d-md-block"></div>
+                                    </div>
+                                    <div id="orderItemList">
+                                        <p>@Resources.Common.NoItemsPurchasedInOrder</p>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modal-kit-catalog" tabindex="-1" role="dialog" aria-labelledby="modal-kit-catalog" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">@Resources.Common.AllProducts</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    @Html.Action("ItemList", "Parties")
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@Resources.Common.Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Shipping -->
+                <section class="form-section border-bottom mb-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-section-header">
+                                <h3 class="form-section-title">@Resources.Common.ShippingAddress</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <fieldset>
+                                @Html.EditorFor(model => model.Order.ShippingAddress)
+                            </fieldset>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section last border-bottom mb-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-section-header">
+                                <h3 class="form-section-title">@Resources.Common.Payment</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <fieldset>
+                                <div class="form-group">
+                                    <div id="newCardContainer">
+                                        <div class="space-20"></div>
+                                        @Html.EditorFor(c => c.NewCreditCard)
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </section>
+
+                <nav class="form-nav text-center">
+                    <a data-role="calculate-order" class="btn btn-secondary btn-lg">@Resources.Common.CalculateOrder</a>
+                </nav>
+
+                <section id="review-section" class="form-section mt-5 pt-3 border-top d-none">
+                    <div class="row">
+                        <div class="form-section-header col-sm-12">
+                            <h3 class="form-section-title text-center">@Resources.Common.Review</h3>
+                        </div>
+                        <div id="new-party-order-review" class="col-sm-8 mx-auto">
+
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <a data-role="submit-order" class="btn btn-primary btn-lg">@Resources.Common.CreatePartyOrder</a>
+                        </div>
+                    </div>
+                </section>
+
+            }
+        </div>
+    </div>
+    <div class="modal fade" id="modal-product-adding">
+        <div class="modal-dialog modal-xl">
+            <div id="items-section" class="modal-content">
+                <!--Dynamically inyected-->
+
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("Partials/_HandleBarsOrderItems")
+<script type="text/x-handlebars-template" id="review-template">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">@Resources.Common.Item</th>
+                    <th scope="col" class="text-right">@Resources.Common.QTY</th>
+                    <th scope="col" class="text-right">@Resources.Common.Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                {{#if IsChild}}
+                <tr>
+                    <td colspan="2" class="text-left pl-5">{{ItemDescription}}</td>
+                    <td></td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td>{{ItemDescription}}</td>
+                    <td class="text-right">{{Quantity}}</td>
+                    <td class="text-right">{{money PriceEach}}</td>
+                </tr>
+                {{/if}}
+                {{/each}}
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="text-right">@Resources.Common.Subtotal</td>
+                    <td scope="row" class="text-right">{{money subtotal}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-right">@Resources.Common.Shipping</td>
+                    <td class="text-right">{{money shipping}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-right">@Resources.Common.Total</td>
+                    <td class="text-right">{{money total}}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</script>
+<script src="@Url.Action("TokenEx", "App")"></script>
+<script>
+    require(["ajax", "handlebars"], function (ajax, Handlebars) {
+        var context = "#view-new-party-order",
+            $context = $(context),
+            $orderProducts = $($context),
+            submitCheckOutUrl = "@Url.Action("NewPartyOrder", "Parties")",
+            calculateOrderUrl = "@Url.Action("CalculateOrder", "Parties")",
+            getDynamicKitItemsUrl = "@Url.Action("DynamicKitBuilder", "Parties")",
+            canChoosePaymentMethod = @canChoosePaymentMethod.ToString().ToLower();
+
+        var templateOrderItems = Handlebars.compile($("#partyorder-item-template").html());
+
+        var items = [];
+
+        var windowWidth = $(window).width();
+            var ccFieldWidth = "90%";
+            if (windowWidth < 330) {
+                ccFieldWidth = "90%";
+            } else if (windowWidth < 576) {
+                ccFieldWidth = "92%";
+            } else if (windowWidth < 767) {
+                ccFieldWidth = "80%";
+            } else if (windowWidth < 1095) {
+                ccFieldWidth = "80%";
+        }
+
+        var tokenizer = new TokenExIframeClient("cc-wrapper", {
+                styles: {
+                    base: "display: block;width: " + ccFieldWidth + ";padding: .375rem .75rem;font-size: 1rem;font-weight: 400;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !default;",
+                    focus: "color: #495057;background-color: #fff;border-color: #80bdff;outline:none;box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);",
+                    error: "@Resources.Common.CardIsInvalid"
+                }
+        });
+
+        function registerEventHandlers() {
+            $('input', $context).on("keypress", function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                }
+            });
+
+            $context.on('dynamicKit.add', function (e, dynamicItems) {
+                var item = {
+                        ItemCode: dynamicItems[0].ItemCode,
+                        ItemDescription: dynamicItems[0].ItemDescription,
+                        ImageUrl: dynamicItems[0].ImageUrl,
+                        PriceEach: dynamicItems[0].PriceEach,
+                        IndexItem: 0,
+                        children: []
+                };
+                $.each(dynamicItems, function (index, i) {
+                    if (index > 0) {
+
+                        var children = {
+                            ItemCode: i.ItemCode,
+                            ItemDescription: i.ItemDescription,
+                            ParentItemCode: item.ItemCode,
+                            ImageUrl: '',
+                            PriceEach: '',
+                        };
+
+                        item.children.add(children);
+                    }
+                });
+
+                $('.clr').html('');
+                $('#modal-product-adding').modal('toggle');
+                items.add(item);
+                actions.rebuildOrderItemList();
+            });
+
+            // Sync the item when the quantity changes.
+            $context.on("change", '.item-quantity', function () {
+                $('#review-section').addClass('d-none');
+            });
+
+            $('[data-role="calculate-order"]').on('click', function () {
+                actions.calculateOrder();
+            });
+
+            // Open Modal to show available items to add to ao.
+            $context.on("click", '.btnChosenItem', function () {
+                var isDynamicMaster = $(this).data('isdynamickitmaster');
+                var itemCode = $(this).data('itemcode');
+                var itemImageUrl = $(this).data('itemimageurl');
+                var itemPrice = $(this).data('itemprice');
+                var itemDescription = $(this).data('itemdescription');
+
+                if (isDynamicMaster != 'False') {
+                    actions.getDynamicKitItems(itemCode);
+                    $('#modal-product-adding').modal('toggle');
+                }
+                else {
+                    //var items;
+                    var item = {
+                            ItemCode: itemCode,
+                            ItemDescription: itemDescription,
+                            ImageUrl: itemImageUrl,
+                            PriceEach: itemPrice,
+                            IndexItem: 0
+                    }
+                    items.add(item);
+                    actions.rebuildOrderItemList();
+                    $('fieldset[data-itemcode="' + itemCode + '"]').attr('disabled', 'disabled');
+                }
+
+                $('#modal-kit-catalog').modal('toggle');
+                $('#review-section').addClass('d-none');
+            });
+
+            //Delete item
+            $context.on("click", '.delete', function () {
+                var itemCode = $(this).data('itemcode');
+
+                $('.party-order-item[data-itemcode="' + itemCode + '"]').remove();
+                $('fieldset[data-itemcode="' + itemCode + '"]').removeAttr('disabled');
+
+                var index = items.findIndex(x => x.ItemCode === itemCode);
+                items.splice(index, 1);
+                actions.rebuildOrderItemList();
+                $('#review-section').addClass('d-none');
+            });
+
+            // Form Submission
+            $('[data-role="submit-order"]').on('click', function () {
+                debugger;
+                var hasItemsSelected = helpers.hasItemsSelected();
+
+                if (!hasItemsSelected) {
+                    toastr.error("@Resources.Common.SelectItemsBeforePartyOrder");
+                    return;
+                }
+
+                var $form = $('form', $context);
+                if ($form.valid()) {
+                    // Form is valid, so we need to get a token now
+                    tokenizer.tokenize({
+                        success: function (data) {
+                            debugger;
+
+                            $(".creditcard-token").val(data.token);
+                            $(".creditcard-display").val(data.token.substr(data.token.length - 4, 4))
+
+                            // Clear the name so the CC Number is not submitted
+                            $("#@Html.IdFor(c => c.NewCreditCard.CardNumber)").attr('name', '');
+
+                            ajax.json({
+                                url: submitCheckOutUrl,
+                                data: $form.serializeObject(),
+                                success: function (response) {
+                                    if (response.success) {
+                                        toastr.success("@Resources.Common.Success");
+                                        setTimeout(function () {
+                                            window.location = response.url;
+                                        }, 2000);
+                                    } else {
+                                        toastr.warning(response.message);
+                                    }
+                                },
+                                complete: function () {
+                                    $('[data-role="calculate"]').button('reset');
+                                }
+                            });
+                        },
+                        failure: function (errorMessage) {
+                            toastr.error(errorMessage);
+                            $(this).button("reset");
+                            return;
+                        }
+                    });
+                } else {
+                    return;
+                }
+            });
+        }
+
+        var actions = {
+            rebuildOrderItemList: function () {
+                var i = 0;
+                $.each(items, function (index, item) {
+                    item.IndexItem = i++;
+                    $.each(item.children, function (a, child){
+                        child.IndexItem = i++;
+                    });
+                });
+
+                 var html = templateOrderItems({ items: items });
+                $("#orderItemList", $context).html(html);
+            },
+            calculateOrder: function () {
+                if (helpers.hasItemsSelected()) {
+                    $('[data-role="calculate-order"]').button('loading');
+                    var formData = $('#view-new-party-order form').serializeObject();
+                    ajax.json({
+                        url: calculateOrderUrl,
+                        data: formData,
+                        success: function (response) {
+                            if (response.success) {
+                                var source = $("#review-template").html();
+                                var template = Handlebars.compile(source);
+                                var html = template(response);
+                                console.log(response);
+                                $('#new-party-order-review').html(html);
+                                $('#review-section').removeClass('d-none');
+                            } else {
+                                console.log("Resources.Common.CalculateAutoOrderFailed", response);
+                            }
+                        },
+                        complete: function () {
+                            $('[data-role="calculate"]').button('reset');
+                        }
+                    });
+                }
+            },
+            getDynamicKitItems: function (itemCode) {
+                $('.clr').html('');
+                ajax.json({
+                    url: getDynamicKitItemsUrl,
+                    data: {itemcode: itemCode},
+                    success: function (response) {
+                            $('#items-section').html(response.html);
+                        }
+                    });
+            }
+        };
+
+        var helpers = {
+            hasItemsSelected: function () {
+                return $orderProducts.find(':input[name$=".Quantity"]').filter(function (index, el) {
+                    return Number($(el).val()) !== 0;
+                }).length > 0;
+            }
+        };
+
+        function init() {
+            registerEventHandlers();
+            localStorage.setItem('OrderItems', items);
+
+        }
+        init();
+    });
+</script>

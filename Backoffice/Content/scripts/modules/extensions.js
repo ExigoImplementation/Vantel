@@ -1036,8 +1036,12 @@
         };
 
         $.fn.buttonState = function (action) {
-            if (action === 'loading' && this.data('loading-text')) {
-                this.data('original-text', this.html()).html(this.data('loading-text')).prop('disabled', true);
+            spinningHtml = [
+                '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ',
+                this.data('loading-text') ? this.data('loading-text') : ''
+            ].join('');
+            if (action === 'loading') {
+                this.data('original-text', this.html()).html(spinningHtml).prop('disabled', true);
             }
             if (action === 'reset' && this.data('original-text')) {
                 this.html(this.data('original-text')).prop('disabled', false);

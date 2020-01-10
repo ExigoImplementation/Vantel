@@ -12,6 +12,7 @@ namespace ExigoService
         public Guid UniqueIdentifier { get; set; }
         public int OrderDetailID { get; set; }
         public int OrderID { get; set; }
+        public string ParentItemCode { get; set; }
 
         public int ItemID { get; set; }
         public string ItemCode { get; set; }

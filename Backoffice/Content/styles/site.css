@@ -11051,7 +11051,52 @@ td.actions {
 @import "views/_items";
 @import "views/_organization";
 ;*/
-/*@import "views/_parties";*/
+#view-new-party-order #products-section #modal-kit-catalog #view-shopping {
+  overflow-x: hidden; }
+  #view-new-party-order #products-section #modal-kit-catalog #view-shopping .modal-item-image {
+    min-height: 200px; }
+    #view-new-party-order #products-section #modal-kit-catalog #view-shopping .modal-item-image img {
+      height: 200px;
+      width: auto; }
+  #view-new-party-order #products-section #modal-kit-catalog #view-shopping .card-body {
+    min-height: 110px; }
+  #view-new-party-order #products-section #modal-kit-catalog #view-shopping .card-footer {
+    border-top: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125); }
+
+#view-parties-dashboard table.table th, #view-parties table.table th {
+  min-width: 100px; }
+
+#view-dynamic-kit-builder .dkc:not(:first-child) {
+  padding-bottom: 20px; }
+
+#view-dynamic-kit-builder .modal-body {
+  max-height: 600px;
+  overflow-y: scroll; }
+  #view-dynamic-kit-builder .modal-body .modal-item-image img {
+    width: 40%; }
+
+#view-dynamic-kit-builder .tc {
+  height: 200px; }
+
+#view-dynamic-kit-builder .build-area-container {
+  height: 100%; }
+
+#view-dynamic-kit-builder .btn-block {
+  background-color: #000;
+  color: #fff; }
+
+#view-dynamic-kit-builder .btn:hover {
+  background-color: #2c2c2c;
+  color: #FFF; }
+
+#view-dynamic-kit-builder .progress-bar {
+  background-color: #000b50; }
+
+#view-dynamic-kit-builder .btn-primary:disabled, #view-dynamic-kit-builder .btn-primary[disabled]:hover {
+  background-color: #333;
+  border-color: #333; }
+
 /* ----------------------------------------------------------------
 	Responsive CSS
 -----------------------------------------------------------------*/

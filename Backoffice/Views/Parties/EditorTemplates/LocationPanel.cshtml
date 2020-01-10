@@ -5,24 +5,26 @@
     var addressVisible = request.IsVirtualOnly ? "style=display:none;" : "";
 }
 <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab">Choose a Location</a></li>
+    <li class="active">
+        <h3>Choose a Location</h3>
+    </li>
 </ul>
-<div class="space-30"></div>
+<div class="space-20"></div>
 
 <div class="locationwrapper" data-type="1">
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" id="virtualParty" name="@Html.NameFor(c => request.IsVirtualOnly)" value="true" @isAddressSelected />
-            Check if this is virtual party only (no actual location for the party)
-        </label>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="virtualParty" name="@Html.NameFor(c => request.IsVirtualOnly)" value="true" @isAddressSelected class="custom-control-input" />
+            <label for="virtualParty" class="custom-control-label">@Resources.Common.CheckIfIsVirtualParty</label>
+        </div>
     </div>
     <div class="space-20"></div>
 
     <div id="addresses">
-        <p>Where will your party be hosted?</p>
+        <p>@Resources.Common.WhereWillYourPartyBeHosted</p>
 
         <div id="partyaddresswrapper" @addressVisible>
-            
+
             <div class="form-group">
                 <label for="Address1">@Resources.Common.Address</label>
                 <div class="row">
@@ -39,7 +41,7 @@
                 <div class="row margin-6">
                     <div class="col-lg-5 col-md-4">
                         <label for="City" class="visible-xs">@Resources.Common.City</label>
-                        @Html.TextBoxFor(c => request.City, new { @class = "form-control", placeholder = Resources.Common.City, style="width:100%;"})
+                        @Html.TextBoxFor(c => request.City, new { @class = "form-control", placeholder = Resources.Common.City, style = "width:100%;" })
                         @Html.ValidationMessageFor(c => request.City)
                     </div>
                     <div class="col-lg-5 col-md-4">

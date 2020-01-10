@@ -1,23 +1,37 @@
 ﻿@model int
 @{
-    ViewBag.Title = "Existing Guests";
+    ViewBag.Title = Resources.Common.BackOffice_Parties_ExistingGuests;
     var partyID = Model;
+    var pageHeader = new PageHeader
+    {
+        PageName = Resources.Common.AddExistingCustomerParty,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem{ Description = Resources.Common.PartyDashboard, UrlPath = Url.Action("index","parties")},
+            new BreadcrumbItem{ Description = Resources.Common.OpenParties, UrlPath = Url.Action("openparties","parties")},
+            new BreadcrumbItem{ Description = Resources.Common.BackToPartySummary, UrlPath = Url.Action("summary", new { id = partyID }) },
+            new BreadcrumbItem{ Description = ViewBag.Title }
+        }
+    };
 }
-
-<h1>Add an Existing Customer to your Party</h1>
-
-<a href="@Url.Action("summary", new { id = partyID })" class="btn btn-primary"><i class="fa-arrow-left"></i> Back to Party Summary</a>
-
-<div class="space-20"></div>
-
-<div id="grid"></div>
+<div id="view-existing-customers">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <a href="@Url.Action("summary", new { id = partyID })" class="btn btn-primary mb-3"><i class="fa-arrow-left"></i> @Resources.Common.BackToPartySummary</a>
+                <div class="space-20"></div>
+                <div id="grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @section scripts
 {
-<script src="~/Scripts/jquery-2.2.1.min.js"></script>
     <script>
-        require(["kendogrids", "ajax", "toastr"], function (kendoGrid, ajax, toastr) {
+        require(["jquery", "kendogrids", "ajax", "toastr"], function ($, kendoGrid, ajax, toastr) {
 
             var cultureCode = "@Identity.Current.Market.CultureCode",
                 addGuestUrl = "@Url.Action("addexistingguest")",
@@ -34,12 +48,12 @@
                     { field: "Email", title: "@Resources.Common.Email", template: "<a href='mailto:#:Email#'>#:Email#</a>" },
                     { field: "Phone", title: "@Resources.Common.Phone" },
                     { field: "CreatedDate", title: "@Resources.Common.StartDate", type: "date", format: "{0:d}", attributes: { "class": "text-right" } },
-                    { field: "CustomerIDToken", title: "Action", template: "<a data-role='add-guest' data-customertoken='#:CustomerIDToken#' class='btn btn-info'>Add Guest</a>", filterable: false, sortable: false, width: 150, attributes: { "class": "text-center" } }
+                    { field: "CustomerIDToken", title: "@Resources.Common.Action", template: "<a data-role='add-guest' data-customertoken='#:CustomerIDToken#' class='btn btn-info'>@Resources.Common.AddGuest</a>", filterable: false, sortable: false, width: 150, attributes: { "class": "text-center" } }
                 ]
             });
 
             function registerEventHandlers() {
-                $("#grid").on("click", "[data-role='add-guest']", function () {                    
+                $("#grid").on("click", "[data-role='add-guest']", function () {
                     var $this = $(this),
                         token = $this.data("customertoken");
 

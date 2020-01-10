@@ -11,5 +11,7 @@ namespace ExigoService
         public decimal Total { get; set; }
 
         public IEnumerable<ShipMethod> ShipMethods { get; set; }
+
+        public List<OrderDetail> Details { get; set; }
     }
 }

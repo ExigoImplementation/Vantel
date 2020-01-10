@@ -957,6 +957,7 @@
     <Content Include="Views\Shared\Partials\_PageHeader.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
     <Content Include="Views\Shared\Partials\_Login.cshtml" />
+    <Content Include="Views\Account\RegisterFromPartyOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\Resources.cshtml" />

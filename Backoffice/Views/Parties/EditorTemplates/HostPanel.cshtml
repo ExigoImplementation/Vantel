@@ -8,64 +8,61 @@
     var currentHostValue = hasExistingHost ? currentHostID.ToString() : "";
 }
 <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab">Choose a Hostess</a></li>
+    <li class="active">
+        <a data-toggle="tab"><h3>@Resources.Common.ChooseAHostess</h3></a>
+    </li>
 </ul>
 <div class="space-20"></div>
 
 <div id="hosts">
     <div class="wizard-input-section">
         <label>
-            Who will be hosting your party?
+            @Resources.Common.WhoWillBeHostingYourParty
         </label>
 
         <div class="form-group">
-            <div class="checkbox">
-                <label for="chkNewHost">
-                    <input type="checkbox" id="chkNewHost" name="UseNewHost" value="true" />
-                    Create a new Hostess?
-                </label>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="chkNewHost" name="UseNewHost" value="true" class="custom-control-input" />
+                <label for="chkNewHost" class="custom-control-label">@Resources.Common.CreateNewHostess</label>
             </div>
         </div>
 
 
         <div id="hostess-search-container">
 
-            <em>or Search for an existing Hostess</em>
+            <em>@Resources.Common.SearchForExistingHostess</em>
             <div class="space-20"></div>
 
             <div id="HostID-container">
                 <div class="input-group">
-                    <input type="text" id="HostID" class="form-control" autocomplete="off" placeholder="Enter Hostess Name..." value="@currentHostDisplay" />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="HostSearch">
+                    <input type="text" id="HostID" class="form-control" autocomplete="off" placeholder="@Resources.Common.EnterHostessName" value="@currentHostDisplay" />
+                    <div class="input-group-append">
+                        <button class="btn btn-light" type="button" id="HostSearch">
                             <i class="fa-search" id="search-icon"></i>
                             <span id="search-loading-container" style="display:none;">
                                 <img src="@Url.Content("~/content/images/loading/circle-24.gif")" class="img-responsive" />
                             </span>
                         </button>
-                    </span>
+                    </div>
                 </div><!-- /input-group -->
                 <div id="host-results"></div>
             </div>
             <div id="selected-host"></div>
         </div>
-        
+
         <input type="hidden" name="@Html.NameFor(c => request.HostID)" value="@currentHostValue" />
         <br />
     </div>
 
     <div id="newhostwrapper" style="display: none;">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="form-group">
-                    <label for="HostFirstName">Host's Name</label>
-                    <div class="row margin-6">
-                        <div class="col-md-6">
+                    <label for="HostFirstName">@Resources.Common.HostsName</label>
+                    <div class="row">
+                        <div class="col-md-6 pb-2 mb-sm-0">
                             @Html.TextBoxFor(c => request.HostFirstName, new { @class = "form-control", placeholder = "First Name" })
                             <span class="text-danger"> @Html.ValidationMessageFor(c => request.HostFirstName)</span>
-                        </div>
-                        <div class="col-12 visible-xs">
-                            <div class="space-5"></div>
                         </div>
                         <div class="col-md-6">
                             @Html.TextBoxFor(c => request.HostLastName, new { @class = "form-control", placeholder = "Last Name" })
@@ -74,12 +71,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="HostEmail">Contact information</label>
+                    <label for="HostEmail">@Resources.Common.ContactInformation</label>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-group">
-                                <span class="input-group-addon"><i class="fa-envelope" style="width: 20px;"></i></span>
-                                @Html.TextBoxFor(c => request.HostEmail, new { @class = "form-control", placeholder = "Email Address" })
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa-envelope" style="width: 20px;"></i></span>
+                                </div>
+                                @Html.TextBoxFor(c => request.HostEmail, new { @class = "form-control", placeholder = Resources.Common.Email })
                             </div>
                             <span class="text-danger">@Html.ValidationMessageFor(c => request.HostEmail)</span>
                         </div>
@@ -88,21 +87,23 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-group">
-                                <span class="input-group-addon"><i class="fa-phone" style="width: 20px;"></i></span>
-                                @Html.TextBoxFor(c => request.HostPhone, new { @class = "form-control", placeholder = "Phone number" })
+                                <div class="input-group-prepend">
+
+                                    <span class="input-group-text"><i class="fa-phone" style="width: 20px;"></i></span>
+                                </div>
+                                @Html.TextBoxFor(c => request.HostPhone, new { @class = "form-control", placeholder = Resources.Common.PhoneNumber })
                             </div>
                             <span class="text-danger">@Html.ValidationMessageFor(c => request.HostPhone)</span>
                         </div>
                     </div>
                 </div>
-
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="form-group">
-                    <label for="HostAddress1">Shipping Address</label>
+                    <label for="HostAddress1">@Resources.Common.ShippingAddress</label>
                     <div class="row">
                         <div class="col-md-12">
-                            @Html.TextBoxFor(c => request.HostAddress1, new { @class = "form-control", placeholder = "Street Address" })
+                            @Html.TextBoxFor(c => request.HostAddress1, new { @class = "form-control", placeholder = Resources.Common.StreetAddress })
                             <span class="text-danger">@Html.ValidationMessageFor(c => request.HostAddress1)</span>
                         </div>
                     </div>
@@ -117,34 +118,28 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="HostCity" class="hidden-xs">City/State/Zip</label>
+                    <label for="HostCity" class="d-none d-sm-block">@Resources.Common.CityStateZip</label>
                     <div class="row margin-6">
                         <div class="col-md-4">
-                            <label for="HostCity" class="visible-xs">City</label>
-                            @Html.TextBoxFor(c => request.HostCity, new { @class = "form-control", placeholder = "City" })
+                            <label for="HostCity" class="d-block d-sm-none">@Resources.Common.City</label>
+                            @Html.TextBoxFor(c => request.HostCity, new { @class = "form-control", placeholder = Resources.Common.City })
                             <span class="text-danger">@Html.ValidationMessageFor(c => request.HostCity)</span>
                         </div>
-                        <div class="col-12 visible-xs">
-                            <div class="space-5"></div>
-                        </div>
                         <div class="col-md-5">
-                            <label for="HostState" class="visible-xs">State</label>
+                            <label for="HostState" class="d-block d-sm-none">@Resources.Common.State</label>
                             <select id="HostState" name="@Html.NameFor(c => request.HostState)" class="form-control">
                                 @Html.RegionOptions("US")
                             </select>
                         </div>
-                        <div class="col-12 visible-xs">
-                            <div class="space-5"></div>
-                        </div>
                         <div class="col-md-3">
-                            <label for="HostZip" class="visible-xs">Zip</label>
-                            @Html.TextBoxFor(c => request.HostZip, new { @class = "form-control", placeholder = "Zip code" })
+                            <label for="HostZip" class="d-block d-sm-none">@Resources.Common.Zip</label>
+                            @Html.TextBoxFor(c => request.HostZip, new { @class = "form-control", placeholder = Resources.Common.Zipcode })
                             <span class="text-danger"> @Html.ValidationMessageFor(c => request.HostZip)</span>
                         </div>
                     </div>
                 </div>
                 <div class="form-group hidden">
-                    <label for="HostCountry">Country</label>
+                    <label for="HostCountry">@Resources.Common.Country</label>
                     <div class="row">
                         <div class="col-md-12">
                             <select id="HostCountry" name="@Html.NameFor(c => request.HostCountry)" class="form-control" data-region-bind="HostState">
