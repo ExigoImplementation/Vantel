@@ -4,7 +4,7 @@
         <h4 class="card-title">
             Closed Parties
             <span class="card-subtitle pt-2 text-muted float-right small">
-                @Resources.Common.ClosedParties:
+                @*@Resources.Common.ClosedParties:*@ Closed Parties:
             @Model.Where(c => Convert.ToDateTime(c.CloseDate).Year == DateTime.Now.Year).Count()
         </span>
     </h4>
@@ -38,6 +38,6 @@
     </div>
 </div>
 <a href="@Url.Action("closedparties")" class="card-footer block text-right">
-    @Resources.Common.ViewAllClosedParties <i class="fa-chevron-right"></i>
+    @*@Resources.Common.ViewAllClosedParties*@ View All Closed Parties<i class="fa-chevron-right"></i>
 </a>
 </div>
