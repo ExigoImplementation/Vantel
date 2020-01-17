@@ -296,6 +296,7 @@
     <Compile Include="Models\ExigoService\Customers\Interfaces\ICustomerSocialNetwork.cs" />
     <Compile Include="Models\ExigoService\DynamicKits\DynamicKitCategoryItem.cs" />
     <Compile Include="Models\ExigoService\Items\Interfaces\IItemDetailFilterRequest.cs" />
+    <Compile Include="Models\ExigoService\Parties\PartyOrder.cs" />
     <Compile Include="Models\ExigoService\Responses\Result.cs" />
     <Compile Include="Models\ExigoService\Items\Interfaces\IChildItemRequest.cs" />
     <Compile Include="Models\ExigoService\Items\Interfaces\IItemInformationRequest.cs" />

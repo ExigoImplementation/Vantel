@@ -547,6 +547,14 @@ namespace ExigoService
             result.Tax = apiresponse.TaxTotal;
             result.Discount = apiresponse.DiscountTotal;
             result.Total = apiresponse.Total;
+            result.Details = apiresponse.Details.Select(c => new OrderDetail
+            {
+                ItemCode = c.ItemCode,
+                PriceEach = c.PriceEach,
+                ItemDescription = c.Description,
+                Quantity = c.Quantity,
+                ParentItemCode = c.ParentItemCode
+            }).ToList();
 
 
             // Assemble the ship methods, if requested

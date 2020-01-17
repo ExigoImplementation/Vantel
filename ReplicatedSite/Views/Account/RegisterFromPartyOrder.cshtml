@@ -1,0 +1,145 @@
+﻿@model ResetPasswordViewModel
+@{
+    ViewBag.Title = Resources.Common.AccountInfo;
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Description = Resources.Common.Account, UrlPath = Url.Action("Index", "Home") },
+            new BreadcrumbItem { Description = ViewBag.Title }
+        }
+    };
+}
+<div id="view-set-account">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+
+    @if (!Model.IsExpiredLink)
+    {
+        <div class="content-wrap">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-xs-12 bottom-border">
+                                    <p>@Resources.Common.RegisterFromPartyOrderInstructions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ll-well">
+                    <div class="container-fluid">
+                        <div>
+                            <div class="reset-password-form-container" id="resetPasswordContainer">
+                                @using (Html.BeginForm())
+                                {
+                                    <div class="form-horizontal">
+                                        @*@Html.AntiForgeryToken()*@
+                                        <hr />
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group">
+                                            @Html.HiddenFor(u => u.CustomerType)
+                                            @Html.HiddenFor(u => u.CustomerID)
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="pull-left">
+                                                        @Html.LabelFor(c => c.LoginName, new { @class = "control-label" })
+
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    @Html.TextBoxFor(model => model.LoginName, new { @class = "form-control", id = "PersonName" })
+                                                    @Html.ValidationMessageFor(model => model.LoginName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="pull-left">
+                                                        @Html.LabelFor(c => c.Password, new { @class = "control-label" })
+
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    @Html.EditorFor(model => model.Password, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+
+                                                    @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label" })
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-10">
+                                                <button type="button" id="btnSetAccount" class="btn btn-primary">@Resources.Common.ResetPassword</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h3> @Resources.Common.AccountInfo</h3>
+        <div class="space-20"></div>
+        <p>@Resources.Common.ExpiredSetAccountMessage</p>
+        <div class="space-20"></div>
+    }
+</div>
+
+<script>
+    require(["ajax", "toastr"], function (ajax, toastr) {
+        var context = '#view-set-account',
+            $context = $(context),
+            updateAccount = '@Url.Action("RegisterFromPartyOrder", "Account")';
+
+        function RegisterEventHandlers() {
+            $context.on("click", '#btnSetAccount', function () {
+                var $form = $('form', $context);
+                if ($form.valid()) {
+                     ajax.json({
+                        url: updateAccount,
+                        data: $form.serializeObject(),
+                        method: 'POST',
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success("@Resources.Common.AccountUpdated");
+                                setTimeout(function () {
+                                    window.location = response.url;
+                                }, 2000);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function init() {
+            RegisterEventHandlers();
+        }
+
+        init();
+    });
+</script>

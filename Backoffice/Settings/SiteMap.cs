@@ -59,16 +59,16 @@ namespace Backoffice
 
                             new NavigationSiteMapNode("orders", Resources.Common.Orders) { Action = "orderlist", Controller = "orders" },
 
-                            //new NavigationSiteMapNode("parties", Resources.Common.Parties)
-                            //{
-                            //    Action = "index", Controller = "parties", Children = new List<ISiteMapNode>()
-                            //    {
-                            //        new NavigationSiteMapNode("partydashboard", Resources.Common.Dashboard) { Action = "index", Controller = "parties" },
-                            //        new NavigationSiteMapNode("addnewparty", Resources.Common.CreateNewParty) { Icon = "fa-plus", Action = "createparty", Controller = "parties" },
-                            //        new NavigationSiteMapNode("openparties", Resources.Common.ViewOpenParties) { Action = "openparties", Controller = "parties" },
-                            //        new NavigationSiteMapNode("closedparties", Resources.Common.ViewClosedParties) { Action = "closedparties", Controller = "parties" }
-                            //    }
-                            //},
+                            new NavigationSiteMapNode("parties", Resources.Common.Parties)
+                            {
+                                Action = "index", Controller = "parties", Children = new List<ISiteMapNode>()
+                                {
+                                    new NavigationSiteMapNode("partydashboard", Resources.Common.Dashboard) { Action = "index", Controller = "parties" },
+                                    new NavigationSiteMapNode("addnewparty", Resources.Common.CreateNewParty) { Icon = "fa-plus", Action = "createparty", Controller = "parties" },
+                                    new NavigationSiteMapNode("openparties", Resources.Common.ViewOpenParties) { Action = "openparties", Controller = "parties" },
+                                    new NavigationSiteMapNode("closedparties", Resources.Common.ViewClosedParties) { Action = "closedparties", Controller = "parties" }
+                                }
+                            },
 
                             new NavigationSiteMapNode("resources", Resources.Common.Resources, new List<ISiteMapNode>()
                             {

@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using Dapper;
 using ExigoWeb.Kendo;
 using Serilog;
+using Common.Api.ExigoWebService;
 
 namespace Backoffice.Controllers
 {
-    public class PartiesController : Controller
+    public class PartiesController : BaseController
     {
         #region Properties
         public string OwnerWebAlias
@@ -56,7 +57,7 @@ namespace Backoffice.Controllers
 
             if (partyID > 0)
             {
-                var parentParty = service.GetParties(new GetPartiesRequest { PartyID = partyID }).FirstOrDefault();
+                var parentParty = service.GetParties(new ExigoService.GetPartiesRequest { PartyID = partyID }).FirstOrDefault();
                 if (parentParty != null)
                 {
                     model.ParentPartyDescription = parentParty.Description;
@@ -68,7 +69,7 @@ namespace Backoffice.Controllers
 
         [HttpPost]
         [Route("createparty")]
-        public JsonNetResult CreateParty(CreatePartyRequest request)
+        public JsonNetResult CreateParty(ExigoService.CreatePartyRequest request)
         {
             var service = PartyService;
 
@@ -109,7 +110,7 @@ namespace Backoffice.Controllers
                 {
                     password = System.Web.Security.Membership.GeneratePassword(8, 2);
 
-                    var createCustomerRequest = new Common.Api.ExigoWebService.CreateCustomerRequest
+                    var createCustomerRequest = new CreateCustomerRequest
                     {
                         FirstName = request.HostFirstName,
                         LastName = request.HostLastName,
@@ -167,7 +168,7 @@ namespace Backoffice.Controllers
                         var newUserName = (hostFirstName + "_" + hostLastName + hostID).Replace(" ", "");
                         password = System.Web.Security.Membership.GeneratePassword(8, 2);
 
-                        ExigoDAL.UpdateCustomer(new Common.Api.ExigoWebService.UpdateCustomerRequest { CustomerID = hostID, LoginName = newUserName, LoginPassword = password, CanLogin = true });
+                        ExigoDAL.UpdateCustomer(new UpdateCustomerRequest { CustomerID = hostID, LoginName = newUserName, LoginPassword = password, CanLogin = true });
                     }
                 }
 
@@ -225,7 +226,7 @@ namespace Backoffice.Controllers
 
         [HttpPost]
         [Route("editparty")]
-        public JsonNetResult EditParty(CreatePartyRequest request)
+        public JsonNetResult EditParty(ExigoService.CreatePartyRequest request)
         {
             var service = PartyService;
 
@@ -261,7 +262,7 @@ namespace Backoffice.Controllers
                 var loginName = "";
                 var password = request.HostID > 0 ? ExigoDAL.GetCustomerPassword(request.HostID) : System.Web.Security.Membership.GeneratePassword(8, 2);
 
-                var currentPartyHostID = service.GetParties(new GetPartiesRequest { PartyID = request.PartyID }).FirstOrDefault().HostID;
+                var currentPartyHostID = service.GetParties(new ExigoService.GetPartiesRequest { PartyID = request.PartyID }).FirstOrDefault().HostID;
 
                 // If we have a new host, we create them here
                 var hostID = request.HostID;
@@ -270,7 +271,7 @@ namespace Backoffice.Controllers
                     hasHostChanged = true;
                     loginName = request.HostEmail;
 
-                    var createCustomerRequest = new Common.Api.ExigoWebService.CreateCustomerRequest
+                    var createCustomerRequest = new CreateCustomerRequest
                     {
                         FirstName = request.HostFirstName,
                         LastName = request.HostLastName,
@@ -314,7 +315,7 @@ namespace Backoffice.Controllers
                     {
                         loginName = (customer.FirstName + "_" + customer.LastName + hostID).Replace(" ", "");
 
-                        ExigoDAL.UpdateCustomer(new Common.Api.ExigoWebService.UpdateCustomerRequest
+                        ExigoDAL.UpdateCustomer(new UpdateCustomerRequest
                         {
                             CustomerID = hostID,
                             LoginName = loginName,
@@ -366,7 +367,7 @@ namespace Backoffice.Controllers
             var customerID = Identity.Current.CustomerID;
             var isHostess = Identity.Current.IsHostess();
 
-            var getPartiesRequest = new GetPartiesRequest { IncludeHostessDetails = true };
+            var getPartiesRequest = new ExigoService.GetPartiesRequest { IncludeHostessDetails = true };
 
             if (isHostess)
             {
@@ -498,7 +499,7 @@ namespace Backoffice.Controllers
             // If we have a booked party this party came from, lets pull that parties information so we can display for the user
             if (model.Party.BookingPartyID > 0)
             {
-                var bookedParentParty = service.GetParties(new GetPartiesRequest { PartyID = model.Party.BookingPartyID, IncludeHostessDetails = true }).FirstOrDefault();
+                var bookedParentParty = service.GetParties(new ExigoService.GetPartiesRequest { PartyID = model.Party.BookingPartyID, IncludeHostessDetails = true }).FirstOrDefault();
 
                 if (bookedParentParty != null)
                 {
@@ -510,13 +511,234 @@ namespace Backoffice.Controllers
         }
         #endregion
 
+        #region Party Orders
+        [Route("new-party-order/{partyID:int=0}")]
+        public ActionResult NewPartyOrder(int partyID)
+        {
+            var model = new PartyOrderViewModel();
+            model.Order.PartyID = partyID;
+            return View(model);
+        }
+
+        public ActionResult ItemList()
+        {
+            var configuration = Utilities.GetCurrentMarket().Configuration.Orders;
+            var model = new ItemListViewModel();
+
+            model.Items = ExigoDAL.GetItems(new ExigoService.GetItemsRequest()
+            {
+                Configuration = configuration,
+                LanguageID = CurrentLanguage.LanguageID,
+                CategoryID = configuration.CategoryID,
+                PriceTypeID = PriceTypes.Wholesale,
+                IncludeAllChildCategories = true,
+                IncludeDynamicKitChildren = true
+            }).ToList();
+
+            return PartialView("Partials/_ProductList", model);
+        }
+
+        public JsonNetResult CalculateOrder(PartyOrderViewModel model)
+        {
+            try
+            {
+                var calculateOrderResponse = ExigoDAL.CalculateOrder(new OrderCalculationRequest
+                {
+                    Address = model.Order.ShippingAddress,
+                    ShipMethodID = Identity.Current.Market.Configuration.Orders.DefaultShipMethodID,
+                    Configuration = Identity.Current.Market.Configuration.Orders,
+                    CustomerID = Identity.Current.CustomerID,
+                    Items = model.Order.Details.Select(i => new ShoppingCartItem { ItemCode = i.ItemCode, Quantity = i.Quantity, ParentItemCode = i.ParentItemCode })
+                });
+
+                return new JsonNetResult(new
+                {
+                    success = true,
+                    total = calculateOrderResponse.Total,
+                    subtotal = calculateOrderResponse.Subtotal,
+                    tax = calculateOrderResponse.Tax,
+                    shipping = calculateOrderResponse.Shipping,
+                    items = calculateOrderResponse.Details
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonNetResult(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [Route("new-party-order/{partyID:int=0}"), HttpPost]
+        public ActionResult NewPartyOrder(int partyID, PartyOrderViewModel model)
+        {
+            try
+            {
+                // Create our list of API Requests
+                List<ApiRequest> details = new List<ApiRequest>();
+
+                CreateOrderResponse createOrderResponse = new CreateOrderResponse();
+
+                // Set up our Create Order Request and the defaults
+                var createOrderRequest = new CreateOrderRequest(model.Order.ShippingAddress)
+                {
+                    CurrencyCode = Identity.Current.Market.Configuration.Orders.CurrencyCode,
+                    Details = model.Order.Details.Select(c => new OrderDetailRequest
+                    {
+                        ItemCode = c.ItemCode,
+                        Quantity = c.Quantity,
+                        ParentItemCode = c.ParentItemCode
+                    }).ToArray(),
+                    OrderDate = DateTime.Now,
+                    PartyID = model.Order.PartyID,
+                    PriceType = PriceTypes.Retail,
+                    ShipMethodID = Identity.Current.Market.Configuration.Orders.DefaultShipMethodID,
+                    WarehouseID = Identity.Current.Market.Configuration.Orders.WarehouseID
+                };
+
+                var card = model.NewCreditCard;
+                var chargeCardRequest = new ChargeCreditCardTokenRequest(card);
+
+                var customer = ExigoDAL.GetCustomersFromEmail(model.Order.ShippingAddress.Email).FirstOrDefault();
+
+                // Check if we have a Customer ID, else we need to create an account at the same time as the Order, via a Transaction 
+                if (customer != null && customer.CustomerID > 0)
+                {
+                    createOrderRequest.CustomerID = customer.CustomerID;
+                }
+                else
+                {
+                    // Now we assemble our Create Customer Request, based off of the Guest record
+                    CreateCustomerRequest createCustomerRequest = new CreateCustomerRequest
+                    {
+                        FirstName = model.Order.ShippingAddress.FirstName,
+                        LastName = model.Order.ShippingAddress.LastName,
+                        CurrencyCode = createOrderRequest.CurrencyCode,
+                        CustomerStatus = CustomerStatuses.Suspended,
+                        CanLogin = false,
+                        CustomerType = CustomerTypes.RetailCustomer,
+                        EntryDate = DateTime.Now,
+                        Notes = "Customer Created from Party # {0} via the Back Office of Customer # {1}.".FormatWith(model.Order.PartyID, Identity.Current.CustomerID)
+                    };
+
+                    if (model.Order.ShippingAddress.Email.IsNotNullOrEmpty())
+                    {
+                        createCustomerRequest.Email = model.Order.ShippingAddress.Email;
+                    }
+                    if (model.Order.ShippingAddress.Phone.IsNotNullOrEmpty())
+                    {
+                        createCustomerRequest.Phone = model.Order.ShippingAddress.Phone;
+                    }
+
+                    details.Add(createCustomerRequest);
+                }
+
+                // Now add the Create Order Request
+                details.Add(createOrderRequest);
+
+                if (!card.IsTestCreditCard)
+                {
+                    details.Add(chargeCardRequest);
+                }
+
+                var transactionResponse = ExigoDAL.WebService().ProcessTransaction(new TransactionalRequest { TransactionRequests = details.ToArray() });
+
+                // If the transaction was successful, lets update our Guest record with the new Customer ID 
+                if (transactionResponse.Result.Status == ResultStatus.Success)
+                {
+                    var newCustomerID = 0;
+
+                    foreach (var response in transactionResponse.TransactionResponses)
+                    {
+                        if (response is CreateCustomerResponse)
+                        {
+                            newCustomerID = ((CreateCustomerResponse)response).CustomerID;
+                            var token = Security.Encrypt(new { CustomerID = newCustomerID, Date = DateTime.Now });
+                            var url = Url.Action("RegisterFromPartyOrder", "Account", new { token = token }, HttpContext.Request.Url.Scheme);
+                            //TO DO: resource email
+                            var emailBody = "Resources.Common.PartyOrderEmailBody.FormatWith(url)";
+
+                            try
+                            {
+                                ExigoDAL.SendEmail(new ExigoService.SendEmailRequest
+                                {
+                                    To = new[] { model.Order.ShippingAddress.Email },
+                                    From = GlobalSettings.Emails.NoReplyEmail,
+                                    ReplyTo = new[] { GlobalSettings.Emails.NoReplyEmail },
+                                    Subject = Resources.Common.ForgotPasswordEmailSubject,
+                                    Body = emailBody
+                                });
+
+                                //Create Request for saving the token
+                                CreateCustomerExtendedRequest reqInsert = new CreateCustomerExtendedRequest
+                                {
+                                    CustomerID = newCustomerID,
+                                    ExtendedGroupID = 1,
+                                    Field1 = token
+                                };
+
+                                CreateCustomerExtendedResponse resInsert = ExigoDAL.WebService().CreateCustomerExtended(reqInsert);
+                            }
+                            catch (Exception e)
+                            {
+                                return new JsonNetResult(new
+                                {
+                                    success = false,
+                                    message = e.Message
+                                });
+                            }
+                        }
+                    }
+                }
+                return new JsonNetResult(new
+                {
+                    success = true,
+                    url = Url.Action("Summary", new { id = model.Order.PartyID })
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonNetResult(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public JsonNetResult DynamicKitBuilder(string itemcode)
+        {
+            var configuration = Utilities.GetCurrentMarket().Configuration.Orders;
+
+            var model = ExigoDAL.GetItems(new ExigoService.GetItemsRequest
+            {
+                Configuration = configuration,
+                ItemCodes = new List<string> { itemcode },
+                LanguageID = CurrentLanguage.LanguageID,
+                IncludeAllChildCategories = true,
+                IncludeDynamicKitChildren = true
+            }).FirstOrDefault();
+
+            string buildKit = this.RenderPartialViewToString("Partials/_DynamicKitBuilder", model);
+
+            return new JsonNetResult(new
+            {
+                html = buildKit,
+                success = true
+            });
+        }
+        #endregion
+
         #region Guests
         [Route("newguest/{partyID}")]
         public ActionResult NewGuest(int partyID)
         {
             var model = new ManageGuestsViewModel(partyID);
             var service = new PartyService(Identity.Current.CustomerID);
-            var party = service.GetParties(new GetPartiesRequest { CustomerID = Identity.Current.CustomerID, PartyID = partyID }).FirstOrDefault();
+            var party = service.GetParties(new ExigoService.GetPartiesRequest { CustomerID = Identity.Current.CustomerID, PartyID = partyID }).FirstOrDefault();
             model.Party = party;
             model.HostessID = party.HostID;
 
@@ -1051,7 +1273,7 @@ namespace Backoffice.Controllers
                 var body = this.RenderPartialViewToString("partials/rsvpemail", model);
 
                 // Send the email
-                ExigoDAL.SendEmail(new SendEmailRequest
+                ExigoDAL.SendEmail(new ExigoService.SendEmailRequest
                 {
                     To = new[] { email },
                     From = GlobalSettings.Emails.NoReplyEmail,
@@ -1061,7 +1283,7 @@ namespace Backoffice.Controllers
                 });
 
                 // The email has been sent, so now we need to update their Guest record to ensure they are marked as Invitation Sent
-                ExigoDAL.WebService().UpdateGuest(new Common.Api.ExigoWebService.UpdateGuestRequest { GuestID = guest.GuestID, Field2 = DateTime.Now.ToLongDateString() });
+                ExigoDAL.WebService().UpdateGuest(new UpdateGuestRequest { GuestID = guest.GuestID, Field2 = DateTime.Now.ToLongDateString() });
 
                 success = true;
             }
@@ -1105,7 +1327,7 @@ namespace Backoffice.Controllers
                 var body = this.RenderPartialViewToString("hostessinviteemail", model);
 
                 // Send the email
-                ExigoDAL.SendEmail(new SendEmailRequest
+                ExigoDAL.SendEmail(new ExigoService.SendEmailRequest
                 {
                     To = new[] { email },
                     From = GlobalSettings.Emails.NoReplyEmail,
@@ -1280,7 +1502,7 @@ namespace Backoffice.Controllers
             {
                 if (orderID > 0)
                 {
-                    ExigoDAL.WebService().ChangeOrderStatus(new Common.Api.ExigoWebService.ChangeOrderStatusRequest { OrderID = orderID, OrderStatus = Common.Api.ExigoWebService.OrderStatusType.Canceled });
+                    ExigoDAL.WebService().ChangeOrderStatus(new ChangeOrderStatusRequest { OrderID = orderID, OrderStatus = OrderStatusType.Canceled });
 
                     return new JsonNetResult(new
                     {
@@ -1309,7 +1531,7 @@ namespace Backoffice.Controllers
         {
             try
             {
-                Common.Api.ExigoWebService.CreateOrderResponse createOrderResponse = new Common.Api.ExigoWebService.CreateOrderResponse();
+                CreateOrderResponse createOrderResponse = new CreateOrderResponse();
                 var attendanceItemCode = "ATT-PTY";
 
                 var guest = PartyService.GetPartyGuests(partyID, guestID, true, true).FirstOrDefault();
@@ -1322,14 +1544,14 @@ namespace Backoffice.Controllers
 
 
                 // Set up our Create Order Request and the defaults
-                var createOrderRequest = new Common.Api.ExigoWebService.CreateOrderRequest();
+                var createOrderRequest = new CreateOrderRequest();
                 createOrderRequest.CurrencyCode = "usd";
-                createOrderRequest.Details = new List<Common.Api.ExigoWebService.OrderDetailRequest> { new Common.Api.ExigoWebService.OrderDetailRequest { ItemCode = attendanceItemCode, Quantity = 1, PriceEachOverride = 0, ShippingPriceEachOverride = 0 } }.ToArray();
+                createOrderRequest.Details = new List<OrderDetailRequest> { new OrderDetailRequest { ItemCode = attendanceItemCode, Quantity = 1, PriceEachOverride = 0, ShippingPriceEachOverride = 0 } }.ToArray();
                 createOrderRequest.FirstName = guest.FirstName;
                 createOrderRequest.LastName = guest.LastName;
                 createOrderRequest.OrderDate = DateTime.Now;
-                createOrderRequest.OrderStatus = Common.Api.ExigoWebService.OrderStatusType.Accepted;
-                createOrderRequest.OrderType = Common.Api.ExigoWebService.OrderType.APIOrder;
+                createOrderRequest.OrderStatus = OrderStatusType.Accepted;
+                createOrderRequest.OrderType = OrderType.APIOrder;
                 createOrderRequest.PartyID = partyID;
                 createOrderRequest.PriceType = (int)PriceTypes.Retail;
                 createOrderRequest.ShipMethodID = 1;
@@ -1349,22 +1571,24 @@ namespace Backoffice.Controllers
                 else
                 {
                     // Create our list of API Requests
-                    List<Common.Api.ExigoWebService.ApiRequest> details = new List<Common.Api.ExigoWebService.ApiRequest>();
+                    List<ApiRequest> details = new List<ApiRequest>();
 
 
 
                     // Now we assemble our Create Customer Request, based off of the Guest record
-                    Common.Api.ExigoWebService.CreateCustomerRequest createCustomerRequest = new Common.Api.ExigoWebService.CreateCustomerRequest();
-                    createCustomerRequest.FirstName = guest.FirstName;
-                    createCustomerRequest.LastName = guest.LastName;
-                    createCustomerRequest.InsertEnrollerTree = true;
-                    createCustomerRequest.EnrollerID = Identity.Current.CustomerID;
-                    createCustomerRequest.CurrencyCode = createOrderRequest.CurrencyCode;
-                    createCustomerRequest.CustomerStatus = (int)CustomerStatuses.Active;
-                    createCustomerRequest.CustomerType = (int)CustomerTypes.RetailCustomer;
+                    CreateCustomerRequest createCustomerRequest = new CreateCustomerRequest
+                    {
+                        FirstName = guest.FirstName,
+                        LastName = guest.LastName,
+                        InsertEnrollerTree = true,
+                        EnrollerID = Identity.Current.CustomerID,
+                        CurrencyCode = createOrderRequest.CurrencyCode,
+                        CustomerStatus = (int)CustomerStatuses.Active,
+                        CustomerType = (int)CustomerTypes.RetailCustomer,
 
-                    createCustomerRequest.EntryDate = DateTime.Now;
-                    createCustomerRequest.Notes = "Customer Created from Guest account # {0} via the Back Office of Customer # {1}.".FormatWith(guestID, Identity.Current.CustomerID);
+                        EntryDate = DateTime.Now,
+                        Notes = "Customer Created from Guest account # {0} via the Back Office of Customer # {1}.".FormatWith(guestID, Identity.Current.CustomerID)
+                    };
 
                     if (guest.Email.IsNotNullOrEmpty())
                     {
@@ -1381,16 +1605,16 @@ namespace Backoffice.Controllers
                     // Now add the Create Order Request
                     details.Add(createOrderRequest);
 
-                    var transactionResponse = ExigoDAL.WebService().ProcessTransaction(new Common.Api.ExigoWebService.TransactionalRequest { TransactionRequests = details.ToArray() });
+                    var transactionResponse = ExigoDAL.WebService().ProcessTransaction(new TransactionalRequest { TransactionRequests = details.ToArray() });
 
                     // If the transaction was successful, lets update our Guest record with the new Customer ID 
-                    if (transactionResponse.Result.Status == Common.Api.ExigoWebService.ResultStatus.Success)
+                    if (transactionResponse.Result.Status == ResultStatus.Success)
                     {
                         var newCustomerID = 0;
 
                         foreach (var response in transactionResponse.TransactionResponses)
                         {
-                            if (response is Common.Api.ExigoWebService.CreateCustomerResponse) newCustomerID = ((Common.Api.ExigoWebService.CreateCustomerResponse)response).CustomerID;
+                            if (response is CreateCustomerResponse) newCustomerID = ((CreateCustomerResponse)response).CustomerID;
                         }
 
                         guest.CustomerID = newCustomerID;
@@ -1408,7 +1632,7 @@ namespace Backoffice.Controllers
                     vModel.Guests.FirstOrDefault(g => g.GuestID == guestID).HasAttendedParty = true;
                 }
 
-                vModel.Party = PartyService.GetParties(new GetPartiesRequest { CustomerID = Identity.Current.CustomerID, PartyID = partyID }).FirstOrDefault();
+                vModel.Party = PartyService.GetParties(new ExigoService.GetPartiesRequest { CustomerID = Identity.Current.CustomerID, PartyID = partyID }).FirstOrDefault();
 
                 var html = this.RenderPartialViewToString("partials/partyguesttable", vModel);
 

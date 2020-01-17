@@ -1,48 +1,40 @@
 ﻿@model List<Party>
-<div class="card card-default card-metrics" id="view-openpartiescard">
-    <div class="card-heading">
-        <h2 class="card-title">
+<div class="card card-metrics" id="view-openpartiescard">
+    <div class="card-header">
+        <h4 class="card-title">
             @Resources.Common.OpenParties
-        </h2>
-        <div class="space-10"></div>
-            <div class="my-parties">@Resources.Common.MyOpenParties</div>
-            <div class="pull-right parties-count">@Model.Count()</div>
-        <div class="clearfix"></div>
+            <span class="card-subtitle pt-2 text-muted float-right small">
+                @Resources.Common.MyOpenParties: @Model.Count()
+            </span>
+        </h4>
     </div>
     <div class="card-body text-center">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>@Resources.Common.Date</th>
-                    <th>@Resources.Common.Time</th>
-                    <th>Sales</th>
-                    <th>@Resources.Common.Host</th>
-                </tr>
-            </thead>
-            @if(Model != null && Model.Count() > 0)
-            { 
-                foreach (var party in Model.OrderBy(c => c.EventStart))
-                {
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@Convert.ToDateTime(party.EventStart).ToShortDateString()</td>
-                        <td>@Convert.ToDateTime(party.EventStart).ToShortTimeString()</td>
-                        <td class="text-blue">@party.CurrentSales.ToString("C")</td>
-                        <td>@party.HostDisplayName</td>
+                        <th scope="col">@Resources.Common.Name</th>
+                        <th scope="col">@Resources.Common.Date</th>
+                        <th scope="col">@Resources.Common.Time</th>
+                        <th scope="col">@Resources.Common.Sale</th>
+                        <th scope="col">@Resources.Common.Host</th>
                     </tr>
-                    @*<tr>
-                        <td colspan="4">
-                            <div class="progress progress-md no-margin">
-                                <span>@party.SalesGoalPercentageDisplay%</span>
-                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="@party.SalesGoalPercentageDisplay" aria-valuemin="0" aria-valuemax="100" style="width: @party.SalesGoalPercentageDisplay%; height:100%">
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                        </td>
-                    </tr>*@                
+                </thead>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    foreach (var party in Model.OrderBy(c => c.EventStart).Take(10))
+                    {
+                        <tr>
+                            <th scope="row">@party.Description</th>
+                            <td>@Convert.ToDateTime(party.EventStart).ToShortDateString()</td>
+                            <td>@Convert.ToDateTime(party.EventStart).ToShortTimeString()</td>
+                            <td class="text-secondary">@party.CurrentSales.ToString("C")</td>
+                            <td>@party.HostDisplayName</td>
+                        </tr>
+                    }
                 }
-            }
-
-        </table>
+            </table>
+        </div>
     </div>
     <a href="@Url.Action("openparties")" class="card-footer block text-right">
         @Resources.Common.ViewAllOpenParties <i class="fa-chevron-right"></i>

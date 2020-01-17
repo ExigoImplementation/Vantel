@@ -9,6 +9,20 @@ namespace Common.Api.ExigoWebService
     public partial class CreateOrderRequest
     {
         public CreateOrderRequest() { }
+        public CreateOrderRequest(ShippingAddress address)
+        {
+            FirstName = address.FirstName;
+            MiddleName = address.MiddleName;
+            LastName = address.LastName;
+            Email = address.Email;
+            Phone = address.Phone;
+            Address1 = address.Address1;
+            Address2 = address.Address2;
+            City = address.City;
+            State = address.State;
+            Zip = address.Zip;
+            Country = address.Country;
+        }
         public CreateOrderRequest(IOrderConfiguration configuration, int shipMethodID, IEnumerable<IShoppingCartItem> items, ShippingAddress address)
         {
             WarehouseID  = configuration.WarehouseID;

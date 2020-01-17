@@ -12,6 +12,7 @@ namespace ExigoService
             ID                  = Guid.NewGuid();
             ItemCode            = string.Empty;
             Quantity            = 0;
+            ParentItemCode      = string.Empty;
             GroupMasterItemCode = string.Empty;
             Type                = ShoppingCartItemType.Order;
         }
@@ -20,6 +21,7 @@ namespace ExigoService
             ID                  = (item.ID != Guid.Empty) ? item.ID : Guid.NewGuid();
             ItemCode            = GlobalUtilities.Coalesce(item.ItemCode);
             Quantity            = item.Quantity;
+            ParentItemCode = GlobalUtilities.Coalesce(item.ParentItemCode);
             GroupMasterItemCode = GlobalUtilities.Coalesce(item.GroupMasterItemCode);
             Type                = item.Type;
             Children            = item.Children;
@@ -44,6 +46,7 @@ namespace ExigoService
 
         public string ItemCode { get; set; }
         public decimal Quantity { get; set; }
+        public string ParentItemCode { get; set; }
         public string GroupMasterItemCode { get; set; }
         public ShoppingCartItemType Type { get; set; }
 

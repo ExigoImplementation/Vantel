@@ -1,43 +1,43 @@
 ﻿@model List<Party>
-<div class="card card-default card-metrics" id="view-closedparties">
-    <div class="card-heading">
-        <h2 class="card-title">
+<div class="card card-metrics" id="view-closedparties">
+    <div class="card-header">
+        <h4 class="card-title">
             Closed Parties
-        </h2>
-        <div class="space-10"></div>
-        <div class="my-parties">Closed Parties YTD</div>
-        <div class="pull-right parties-count">@Model.Where(c => Convert.ToDateTime(c.CloseDate).Year == DateTime.Now.Year).Count()</div>
-        <div class="clearfix"></div>
-    </div>
-    <div class="card-body text-center">
+            <span class="card-subtitle pt-2 text-muted float-right small">
+                @*@Resources.Common.ClosedParties:*@ Closed Parties:
+            @Model.Where(c => Convert.ToDateTime(c.CloseDate).Year == DateTime.Now.Year).Count()
+        </span>
+    </h4>
+</div>
+<div class="card-body text-center">
+    <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Sales</th>
-                    <th>@Resources.Common.Host</th>
+                    <th scope="col">@Resources.Common.Name</th>
+                    <th scope="col">@Resources.Common.Date</th>
+                    <th scope="col">@Resources.Common.Time</th>
+                    <th scope="col">@Resources.Common.Sale</th>
+                    <th scope="col">@Resources.Common.Host</th>
                 </tr>
             </thead>
             @if (Model != null && Model.Count() > 0)
             {
-                foreach (var party in Model.OrderByDescending(c => c.CloseDate))
+                foreach (var party in Model.OrderByDescending(c => c.CloseDate).Take(10))
                 {
                     <tr>
+                        <th scope="row">@party.Description</th>
                         <td>@Convert.ToDateTime(party.CloseDate).ToShortDateString()</td>
                         <td>@Convert.ToDateTime(party.CloseDate).ToShortTimeString()</td>
-                        <td class="text-blue">@party.CurrentSales.ToString("C")</td>
+                        <td class="text-secondary">@party.CurrentSales.ToString("C")</td>
                         <td>@party.HostDisplayName</td>
                     </tr>
-
                 }
             }
-            
         </table>
-
-
     </div>
-    <a href="@Url.Action("closedparties")" class="card-footer block text-right">
-        View all closed parties <i class="fa-chevron-right"></i>
-    </a>
+</div>
+<a href="@Url.Action("closedparties")" class="card-footer block text-right">
+    @*@Resources.Common.ViewAllClosedParties*@ View All Closed Parties<i class="fa-chevron-right"></i>
+</a>
 </div>

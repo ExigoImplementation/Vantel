@@ -1,0 +1,42 @@
+﻿@model ItemListViewModel
+@{
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+}
+<div id="view-shopping" class="item-list">
+    <div class="row">
+        <div class="card-deck">
+
+            @foreach (var item in Model.Items)
+            {
+                var parentPack = item.DynamicKitCategories.FirstOrDefault();
+                // available "slots" in each pack times 10 flavor packets in each available slot
+                //var pixiesCount = (int)parentPack.Quantity * 10;
+                // available flavors to fill slots
+                //var flavorcount = parentPack.Items.Count();
+
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card border-0">
+                        <fieldset data-itemCode="@item.ItemCode">
+                            <div class="modal-item-image text-center">
+                                <img src="@item.SmallImageUrl" class="img-responsive" alt="" />
+                            </div>
+                            <div class="card-body">
+                                <p class="card-title">@item.ItemDescription</p>
+                                <p class="card-text">@item.Price.ToString("C")</p>
+                            </div>
+                            <div class="card-footer text-center">
+                                <button href="#" class="btn btn-outline-secondary btnChosenItem stretched-link" type="button"
+                                            data-itemCode="@item.ItemCode"
+                                            data-isDynamicKitMaster="@item.IsDynamicKitMaster"
+                                            data-itemImageUrl="@item.SmallImageUrl"
+                                            data-itemDescription="@item.ItemDescription"
+                                            data-itemPrice="@item.Price.ToString("C")">
+                                        @Resources.Common.Choose</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

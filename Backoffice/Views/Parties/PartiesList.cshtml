@@ -1,153 +1,150 @@
 ﻿@model PartyListViewModel
 @{
     ViewBag.Title = Resources.Common.Parties;
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "parties",
+        DefaultBreadcrumbLinkSitemapID = Model.StatusDescription.ToLower() + "parties"
+    };
 }
 
-<h2>@ViewBag.Title</h2>
-
-<div id="view-open-parties">
-    <div class="row">
-        <div class="col-md-3">
-            @Html.Navigation()
-        </div>
-        <div class="col-md-9">
+<div id="view-parties">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
             <div class="row">
                 <div class="col-12">
-                    <ul class="nav nav-tabs">
-                        <li role="presentation" class="active"><a href="#">@Model.StatusDescription @Resources.Common.Parties</a></li>
-                    </ul>
+                    <h3>@Model.StatusDescription @Resources.Common.Parties</h3>
+
                     @if (Model.Parties != null && Model.Parties.Count > 0)
                     {
-                        <table id="party-table" class="table">
-                            <thead>
-                                <tr>
-                                    <th>@Resources.Common.HostessInfo</th>
-                                    <th>@Resources.Common.PartyDate</th>
-                                    <th>@Resources.Common.Time</th>
-                                    <th>@Resources.Common.SalesToDate</th>
-                                    <th>@Resources.Common.RewardsToDate</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var party in Model.Parties.OrderByDescending(c => c.StartDate))
-                                {
-                                    var isPartyOpen = Convert.ToDateTime(party.StartDate).BeginningOfMonth() <= DateTime.Now && party.PartyStatusType == (int)PartyStatusTypes.Open;
-                                    var canBeCancelled = party.CurrentSales == 0;
-                                    var hasHostessOrderPlaced = party.HostOrderIsPlaced;
-
-
+                        <div class="table-responsive-sm">
+                            <table id="party-table" class="table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <strong>@party.HostName</strong>
-                                            @if (party.Address.IsComplete)
-                                            {
-                                                @Html.DisplayFor(c => party.Address, "Address")
-                                            }
-                                        </td>
-
-                                        <td>@party.GetStartDate</td>
-                                        <td>@party.GetStartTime</td>
-                                        <td>@party.CurrentSales.ToString("C")</td>
-                                        <td class="rewards">
-                                            @if (party.HostessRewards != null)
-                                            {
-                                                var hasFreeItems = party.HostessRewards.FreeProductAmount > 0 || party.HostessRewards.FreeProductPercentage > 0;
-                                                var hasHalfPricedItems = party.HostessRewards.HalfPricedItems > 0;
-
-                                                <small>@Resources.Common.FreeShipping</small>
-                                                <br />
-                                                <small>@Resources.Common.HostessShopportunity</small>
-                                                <br />
-
-                                                if (hasHalfPricedItems)
-                                                {
-                                                    <small>@Resources.Common.HalfPriceItem: @party.HostessRewards.HalfPricedItems.ToString("0")</small>
-                                                    <br />
-                                                }
-                                                if (hasFreeItems)
-                                                {
-                                                    <small>@Resources.Common.HostessCredits: @party.HostessRewards.GetFreeProductAmount(party.CurrentSales).ToString("C")</small>
-                                                }
-                                            }
-                                        </td>
+                                        <th>@Resources.Common.HostessInfo</th>
+                                        <th>@Resources.Common.PartyDate</th>
+                                        <th>@Resources.Common.Time</th>
+                                        <th>@Resources.Common.SalesToDate</th>
+                                        <th>@Resources.Common.RewardsToDate</th>
                                     </tr>
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <small class="txt-grey">@Resources.Common.Title:</small>
+                                </thead>
+                                <tbody>
+                                    @foreach (var party in Model.Parties.OrderByDescending(c => c.StartDate))
+                                    {
+                                        var isPartyOpen = Convert.ToDateTime(party.StartDate).BeginningOfMonth() <= DateTime.Now && party.PartyStatusType == (int)PartyStatusTypes.Open;
+                                        var canBeCancelled = party.CurrentSales == 0;
+                                        var hasHostessOrderPlaced = party.HostOrderIsPlaced;
+
+
+                                        <tr>
+                                            <td>
+                                                <strong>@party.HostName</strong>
+                                                @if (party.Address.IsComplete)
+                                                {
+                                                    @Html.DisplayFor(c => party.Address, "Address")
+                                                }
+                                            </td>
+
+                                            <td>@party.GetStartDate</td>
+                                            <td>@party.GetStartTime</td>
+                                            <td>@party.CurrentSales.ToString("C")</td>
+                                            <td class="rewards">
+                                                @if (party.HostessRewards != null)
+                                                {
+                                                    var hasFreeItems = party.HostessRewards.FreeProductAmount > 0 || party.HostessRewards.FreeProductPercentage > 0;
+                                                    var hasHalfPricedItems = party.HostessRewards.HalfPricedItems > 0;
+
+                                                    <small>@Resources.Common.FreeShipping</small>
                                                     <br />
-                                                    @if (party.Description.IsNotNullOrEmpty())
-                                                    {<text>@party.Description</text>}
+                                                    <small>@Resources.Common.HostessShopportunity</small>
+                                                    <br />
+
+                                                    if (hasHalfPricedItems)
+                                                    {
+                                                        <small>@Resources.Common.HalfPriceItem: @party.HostessRewards.HalfPricedItems.ToString("0")</small>
+                                                        <br />
+                                                    }
+                                                    if (hasFreeItems)
+                                                    {
+                                                        <small>@Resources.Common.HostessCredits: @party.HostessRewards.GetFreeProductAmount(party.CurrentSales).ToString("C")</small>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">@Resources.Common.Title:</small>
+                                                        <br />
+                                                        @if (party.Description.IsNotNullOrEmpty())
+                                                        {<text>@party.Description</text>}
                                                     else
                                                     { <text> @Resources.Common.NoTitleSpecified</text>}
 
-                                                    <div class="space-20"></div>
-                                                    <strong>@party.PartyOwner.CustomerTypeDescription</strong>
-                                                    <div>
-                                                        @party.PartyOwner.FirstName @party.PartyOwner.LastName
-                                                        <br />
-                                                        <a href="mailto:@party.PartyOwner.Email;">@party.PartyOwner.Email</a>
-                                                        <br />
-                                                        @Common.Resources.Models.MobilePhone: @party.PartyOwner.MobilePhone
-                                                        <br />
-                                                        <a href="@Url.Action("replicatedsiteredirect", "app", new { customerID = party.CustomerID })" target="_blank">@Resources.Common.VisitWebsite</a>
+                                                        <div class="space-20"></div>
+                                                        <strong>@party.PartyOwner.CustomerTypeDescription</strong>
+                                                        <div>
+                                                            @party.PartyOwner.FirstName @party.PartyOwner.LastName
+                                                            <br />
+                                                            <a href="mailto:@party.PartyOwner.Email;">@party.PartyOwner.Email</a>
+                                                            <br />
+                                                            @Common.Resources.Models.MobilePhone: @party.PartyOwner.MobilePhone
+                                                            <br />
+                                                            <a href="@Url.Action("replicatedsiteredirect", "app", new { customerID = party.CustomerID })" target="_blank">@Resources.Common.VisitWebsite</a>
+                                                        </div>
+
                                                     </div>
 
-                                                </div>
-
-                                                <div class="col-md-8">
-                                                    @if (isPartyOpen && !hasHostessOrderPlaced)
-                                                    {
-                                                        <small class="txt-grey">@Resources.Common.PartyWebsite:</small>
-                                                        <div class="input-group">
-                                                            <input type="text" readonly="readonly" class="form-control partyURL" aria-describedby="basic-addon2" value="@party.PartyUrl" />
-                                                            <span class="input-group-btn">
-                                                                <button class="btn btn-default copyURL" type="button"><i class="fa fa-copy"></i></button>
-                                                            </span>
-                                                        </div>
-                                                    }
-                                                    else if (Convert.ToDateTime(party.StartDate).BeginningOfMonth() >= DateTime.Now)
-                                                    {
-                                                        <strong style="font-size:15px;">@Resources.Common.ThisPartyIsNotAvailable @Convert.ToDateTime(party.StartDate).ToShortDateString()</strong>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="5" class="td-border-bottom">
-                                            <div class="row">
-                                                @if (isPartyOpen)
-                                                {
-                                                    if (!hasHostessOrderPlaced)
-                                                    {
-                                                        <div class="col-md-5">
-                                                            <a class="btn btn-primary" href="@Url.Action("hostorder", "shopping", new { partyID = party.PartyID, hostID = party.HostID })" title="@Resources.Common.OnceCreatedHostessOrderMessage">@Resources.Common.CreateHostersOrder</a>
-                                                        </div>
-                                                    }
-
-                                                    <div class="col-md-3">
-                                                        <a class="btn btn-success" href="@Url.Action("summary", new { id = party.PartyID })">@Resources.Common.ManageParty</a>
+                                                    <div class="col-md-8">
+                                                        @if (isPartyOpen && !hasHostessOrderPlaced)
+                                                        {
+                                                            <small class="text-muted">@Resources.Common.PartyWebsite:</small>
+                                                            <div class="input-group">
+                                                                <input type="text" readonly="readonly" class="form-control partyURL" aria-describedby="basic-addon2" value="@party.PartyUrl" />
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-primary copyURL" type="button"><i class="fa fa-copy"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (Convert.ToDateTime(party.StartDate).BeginningOfMonth() >= DateTime.Now)
+                                                        {
+                                                            <strong style="font-size:15px;">@Resources.Common.ThisPartyIsNotAvailable @Convert.ToDateTime(party.StartDate).ToShortDateString()</strong>
+                                                        }
                                                     </div>
-
-                                                    if (canBeCancelled)
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" class="td-border-bottom">
+                                                <div class="row">
+                                                    @if (isPartyOpen)
                                                     {
-                                                        <div class="col-md-3">
-                                                            <a class="btn btn-danger" data-role="cancel-party" data-partyid="@party.PartyID">@Resources.Common.CancelParty</a>
+
+                                                        <div class="col-6 col-md-4 p-1">
+                                                            <a class="btn btn-success w-100" href="@Url.Action("summary", new { id = party.PartyID })">@Resources.Common.ManageParty</a>
                                                         </div>
+
+                                                        if (canBeCancelled)
+                                                        {
+                                                            <div class="col-6 col-md-4 p-1">
+                                                                <a class="btn btn-danger w-100" data-role="cancel-party" data-partyid="@party.PartyID">@Resources.Common.CancelParty</a>
+                                                            </div>
+                                                        }
                                                     }
-                                                }
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     }
                     else
                     {
-                        <text> @String.Format(Resources.Common.YouHaveNoParties, Model.StatusDescription); </text>
+                        <text> @String.Format(Resources.Common.YouHaveNoParties, Model.StatusDescription) </text>
                     }
                 </div>
             </div>
@@ -182,6 +179,7 @@
 
                     urlField.select().focus();
                     urlField.tooltip('show');
+                    document.execCommand("copy");
                 });
 
                 $(".partyURL").click(function () {

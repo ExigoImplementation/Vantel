@@ -1,7 +1,7 @@
 ﻿@model PartySummaryViewModel
 @{
     var title = Model.Party.Description;
-    ViewBag.Title = title;
+    ViewBag.Title = title + " " + Resources.Common.Summary;
     ViewBag.ActiveLink = Resources.Common.Summary;
 
     var justCreatedParty = HttpContext.Current.Request.QueryString["new"] == "1";
@@ -10,175 +10,195 @@
     var isHostess = Identity.Current.IsHostess();
 
     var canCloseParty = Model.Orders.Any(c => c.CustomerID == Model.Party.HostID) && Model.Party.CustomerID == Identity.Current.CustomerID;
+    var canCreateHostOrder = Model.Orders.Any(c => c.CustomerID != Model.Party.HostID);
+
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem{ Description = Resources.Common.PartyDashboard, UrlPath = Url.Action("index","parties")},
+            new BreadcrumbItem{ Description = Resources.Common.OpenParties, UrlPath = Url.Action("openparties","parties")},
+            new BreadcrumbItem{ Description = ViewBag.Title }
+        }
+    };
 }
 
 <div id="view-partysummary">
-    <h1>@Model.Party.Description @Resources.Common.Summary</h1>
-    <div class="row">
-        <div class="col-md-4">
-            <!-- Summary -->
-            <dl>
-                <dt>@Model.Party.PartyOwner.CustomerTypeDescription</dt>
-                <dd>
-                    @Model.Party.PartyOwner.FirstName @Model.Party.PartyOwner.LastName
-                    <br />
-                    <a href="mailto:@Model.Party.PartyOwner.Email;">@Model.Party.PartyOwner.Email</a>
-                    <br />
-                    @Common.Resources.Models.MobilePhone: @Model.Party.PartyOwner.MobilePhone
-                    <br />
-                    <a href="@Url.Action("replicatedsiteredirect", "app", new { customerID = Model.Party.CustomerID })"  target="_blank">@Resources.Common.VisitWebsite</a>
-                </dd>
-                <dt>@Resources.Common.Title</dt>
-                <dd>@title</dd>
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Summary -->
+                    <dl>
+                        <dt>@Model.Party.PartyOwner.CustomerTypeDescription</dt>
+                        <dd>
+                            @Model.Party.PartyOwner.FirstName @Model.Party.PartyOwner.LastName
+                            <br />
+                            <a href="mailto:@Model.Party.PartyOwner.Email;">@Model.Party.PartyOwner.Email</a>
+                            <br />
+                            @Common.Resources.Models.MobilePhone: @Model.Party.PartyOwner.MobilePhone
+                            <br />
+                            <a href="@Url.Action("replicatedsiteredirect", "app", new { customerID = Model.Party.CustomerID })" target="_blank">@Resources.Common.VisitWebsite</a>
+                        </dd>
+                        <dt>@Resources.Common.Title</dt>
+                        <dd>@title</dd>
 
-                <dt>@Resources.Common.Host</dt>
-                <dd>@Model.Party.HostName</dd>
+                        <dt>@Resources.Common.Host</dt>
+                        <dd>@Model.Party.HostName</dd>
 
-                @if (Model.Party.Address.IsComplete)
-                {
-                    var address = Model.Party.Address.Address1 + ((!string.IsNullOrEmpty(Model.Party.Address.Address2)) ? ", " + Model.Party.Address.Address2 : string.Empty);
-                    address = string.Join(", ", address, Model.Party.Address.City, Model.Party.Address.State + " " + Model.Party.Address.Zip, Model.Party.Address.Country);
+                        @if (Model.Party.Address.IsComplete)
+                        {
+                            var address = Model.Party.Address.Address1 + ((!string.IsNullOrEmpty(Model.Party.Address.Address2)) ? ", " + Model.Party.Address.Address2 : string.Empty);
+                            address = string.Join(", ", address, Model.Party.Address.City, Model.Party.Address.State + " " + Model.Party.Address.Zip, Model.Party.Address.Country);
 
-                    <dt>@Resources.Common.Location</dt>
-                    <dd>
-                        @address
-                    </dd>
-                }
-                <dt>@Resources.Common.Date</dt>
-                @{
-                    var rawStartDate = Convert.ToDateTime(Model.Party.StartDate);
-                    var rawEventStart = Convert.ToDateTime(Model.Party.EventStart);
+                            <dt>@Resources.Common.Location</dt>
+                            <dd>
+                                @address
+                            </dd>
+                        }
+                        <dt>@Resources.Common.Date</dt>
+                        @{
+                            var rawStartDate = Convert.ToDateTime(Model.Party.StartDate);
+                            var rawEventStart = Convert.ToDateTime(Model.Party.EventStart);
 
-                    var startDate = new DateTime(rawStartDate.Year, rawStartDate.Month, rawStartDate.Day, rawEventStart.Hour, rawEventStart.Minute, rawEventStart.Second);  }
-                <dd>@startDate.ToString("dddd, MMMM d, yyyy h:mmtt") - @Convert.ToDateTime(Model.Party.EventEnd).ToString("h:mmtt")</dd>
+                            var startDate = new DateTime(rawStartDate.Year, rawStartDate.Month, rawStartDate.Day, rawEventStart.Hour, rawEventStart.Minute, rawEventStart.Second); }
+                        <dd>@startDate.ToString("dddd, MMMM d, yyyy h:mmtt") - @Convert.ToDateTime(Model.Party.EventEnd).ToString("h:mmtt")</dd>
 
-                @if (Model.ParentBookingParty != null)
-                {
-                    <dt>Booked from Party:</dt>
-                    <dd>@Model.ParentBookingParty.HostDisplayName - #@Model.ParentBookingParty.PartyID - @Model.ParentBookingParty.Description </dd>
-                }
-            </dl>
+                        @if (Model.ParentBookingParty != null)
+                        {
+                            <dt>@Resources.Common.BookedFromParty:</dt>
+                            <dd>@Model.ParentBookingParty.HostDisplayName - #@Model.ParentBookingParty.PartyID - @Model.ParentBookingParty.Description </dd>
+                        }
+                    </dl>
 
 
-            @if (canCloseParty)
-            {
-                <div class="alert alert-info">@Resources.Common.PartyReadyClosed.</div>
-                
-                if (Model.Party.CloseDate != null && Model.Party.CloseDate.Value.AddDays(60) > DateTime.Now)
-                {
-                    <a class="btn btn-primary" href="@Url.Action("createparty", "parties", new { partyID = partyID })"><i class="fa-plus"></i> @Resources.Common.BookAnotherParty</a>
-                }
-            }
-            else
-            {
-                if (isHostess)
-                {
-                    <a class="btn btn-primary" href="@Url.Action("hostorder", "shopping", new { partyID = Model.Party.PartyID, hostID = Model.Party.HostID })" title="@Resources.Common.PartyWillCloseCompleteHostessOrder">@Resources.Common.CreateHostersOrder &amp; @Resources.Common.CloseParty</a>
-
-                }
-                else
-                {
-                    <a class="btn btn-primary" href="@Url.Action("editparty", "parties", new { partyID = partyID })"><i class="fa-pencil"></i> @Resources.Common.EditParty</a>
-                    <a class="btn btn-info" href="@Url.Action("createparty", "parties", new { partyID = partyID })"><i class="fa-plus"></i> @Resources.Common.BookAnotherParty</a>
-                }
-            }
-        </div>
-        <div class="col-md-8">
-            <a href="@Url.Action("openparties")" class="text-right">
-                <i class="fa-chevron-left"></i>  @Resources.Common.BackToOpenParties
-            </a>
-            <div class="space-20"></div>
-
-            <div id="party-guest-container">
-                <h3>@Resources.Common.PartyGuests</h3>
-                <p>@Resources.Common.ClickCreateOrderBehalfOfCurrentGuest</p>
-                @if (Model.Guests.Count() > 0)
-                {
-                    <div id="party-guest-table-container">
-                        @Html.Partial("partials/partyguesttable", Model)
-                    </div>
-                }
-                else
-                {
-                    <strong>@Resources.Common.HaveNotInvited</strong>
-                }
-
-                @if (!canCloseParty)
-                {
-                    <a class="btn btn-info" href="@Url.Action("newguest", new { partyID = Model.Party.PartyID })">@Resources.Common.AddGuest</a>
-
-                    if (!isHostess)
+                    @if (canCloseParty)
                     {
-                        <a class="btn btn-primary" href="@Url.Action("existingguestlist", new { partyID = Model.Party.PartyID })">@Resources.Common.AddExistingCustomer</a>
-                    }
+                        <div class="alert alert-info">@Resources.Common.PartyReadyClosed.</div>
 
-                    if (Model.Guests.Count() > 0 && Model.Guests.Any(g => g.AllowEmail && !g.HasSentInvite))
+                        if (Model.Party.CloseDate != null && Model.Party.CloseDate.Value.AddDays(60) > DateTime.Now)
+                        {
+                            <a class="btn btn-primary" href="@Url.Action("createparty", "parties", new { partyID = partyID })"><i class="fa-plus"></i> @Resources.Common.BookAnotherParty</a>
+                        }
+                    }
+                    else
                     {
-                        <a class="btn btn-info" data-role="invite-guests">@Resources.Common.SendInvitations</a>
-                    }
-                }
-            </div>
+                        if (isHostess)
+                        {
+                            <a class="btn btn-primary" href="@Url.Action("hostorder", "shopping", new { partyID = Model.Party.PartyID, hostID = Model.Party.HostID })" title="@Resources.Common.PartyWillCloseCompleteHostessOrder">@Resources.Common.CreateHostersOrder &amp; @Resources.Common.CloseParty</a>
 
-            <h3>@Resources.Common.PartyOrders</h3>
-
-            <!-- Party Orders Report -->
-            <table class="table table-bordered table-teal" id="party-table">
-                <tr>
-                    <th>@Resources.Common.Customer</th>
-                    <th>@Resources.Common.OrderID</th>
-                    <th>@Resources.Common.OrderDate</th>
-                    <th>@Resources.Common.OrderTotal</th>
-                    <th>@Resources.Common.CommissionableVolume</th>
-                    @if (!canCloseParty)
-                    {
-                        <th>&nbsp;</th>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary" href="@Url.Action("editparty", "parties", new { partyID = partyID })"><i class="fa-pencil"></i> @Resources.Common.EditParty</a>
+                            <a class="btn btn-secondary" href="@Url.Action("createparty", "parties", new { partyID = partyID })"><i class="fa-plus"></i> @Resources.Common.BookAnotherParty</a>
+                        }
                     }
-                </tr>
+                </div>
+                <div class="col-md-8">
+                    <a href="@Url.Action("openparties")" class="text-right">
+                        <i class="fa-chevron-left"></i>  @Resources.Common.BackToOpenParties
+                    </a>
+                    <div class="space-20"></div>
 
-                @if (Model.Orders.Count() == 0 || Model.Orders.Where(o => o.Total > 0).Count() == 0)
-                {
-                    <tr id="no-parties-row">
-                        <td colspan="5">
-                            @Resources.Common.NoCurrentOrdersParty
-                        </td>
-                    </tr>
-                }
-                else
-                {
-                    foreach (var order in Model.Orders.Where(o => o.Total > 0))
-                    {
-                        @Html.Partial("Partials/PartyOrderTableRow", order, new ViewDataDictionary { { "CanCloseParty", canCloseParty } })
-                    }
-                    <tfoot>
-                        <tr id="totals-row">
-                            <td colspan="2">&nbsp;</td>
-                            <td>Totals</td>
-                            <td class="text-right">@Model.Orders.Sum(o => o.Total).ToString("C")</td>
-                            <td class="text-right">@Model.Orders.Sum(o => o.CVTotal).ToString("C")</td>
-                            @if (!canCloseParty)
+                    <div id="party-guest-container">
+                        <h3>@Resources.Common.PartyGuests</h3>
+                        <p>@Resources.Common.ClickCreateOrderBehalfOfCurrentGuest</p>
+                        @if (Model.Guests.Count() > 0)
+                        {
+                            <div id="party-guest-table-container" class="table-responsive">
+                                @Html.Partial("partials/partyguesttable", Model)
+                            </div>
+                        }
+                        else
+                        {
+                            <strong>@Resources.Common.HaveNotInvited</strong>
+                        }
+
+                        @if (!canCloseParty)
+                        {
+                            <a class="btn btn-primary" href="@Url.Action("newguest", new { partyID = Model.Party.PartyID })">@Resources.Common.AddGuest</a>
+
+                            if (!isHostess)
                             {
-                                <td>&nbsp;</td>
+                                <a class="btn btn-secondary" href="@Url.Action("existingguestlist", new { partyID = Model.Party.PartyID })">@Resources.Common.AddExistingCustomer</a>
                             }
 
-                        </tr>
+                            if (Model.Guests.Count() > 0 && Model.Guests.Any(g => g.AllowEmail && !g.HasSentInvite))
+                            {
+                                <a class="btn btn-secondary" data-role="invite-guests">@Resources.Common.SendInvitations</a>
+                            }
+                        }
+                    </div>
+                    <div class="space-20"></div>
+                    <h3>@Resources.Common.PartyOrders</h3>
 
-                    </tfoot>
-                }
-            </table>
-            <!-- End Party Orders Report -->
-            @if (canCloseParty)
-            {
-                <a class="btn btn-success btn-lg" href="@Url.Action("finalizeparty", new { partyID = Model.Party.PartyID })" title="">@Resources.Common.CloseSubmitParty</a>
-            }
-            else
-            {
-                <a class="btn btn-success btn-lg" href="@Url.Action("hostorder", "shopping", new { partyID = Model.Party.PartyID, hostID = Model.Party.HostID })" title="@Resources.Common.OnceCreatedHostessOrderMessage">@Resources.Common.CreateHostersOrder</a>
-            }
+                    <!-- Party Orders Report -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-teal" id="party-table">
+                            <tr>
+                                <th>@Resources.Common.Customer</th>
+                                <th>@Resources.Common.OrderID</th>
+                                <th>@Resources.Common.OrderDate</th>
+                                <th>@Resources.Common.OrderTotal</th>
+                                <th>@Resources.Common.CommissionableVolume</th>
+                                @if (!canCloseParty)
+                                {
+                                    <th>&nbsp;</th>
+                                }
+                            </tr>
 
-            <div class="space-50"></div>
+                            @if (Model.Orders.Count() == 0 || Model.Orders.Where(o => o.Total > 0).Count() == 0)
+                            {
+                                <tr id="no-parties-row">
+                                    <td colspan="5">
+                                        @Resources.Common.NoCurrentOrdersParty
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var order in Model.Orders.Where(o => o.Total > 0))
+                                {
+                                    @Html.Partial("Partials/PartyOrderTableRow", order, new ViewDataDictionary { { "CanCloseParty", canCloseParty } })
+                                }
+                                <tfoot>
+                                    <tr id="totals-row">
+                                        <td colspan="2">&nbsp;</td>
+                                        <td>Totals</td>
+                                        <td class="text-right">@Model.Orders.Sum(o => o.Total).ToString("C")</td>
+                                        <td class="text-right">@Model.Orders.Sum(o => o.CVTotal).ToString("C")</td>
+                                        @if (!canCloseParty)
+                                        {
+                                            <td>&nbsp;</td>
+                                        }
+
+                                    </tr>
+
+                                </tfoot>
+                            }
+                        </table>
+                    </div>
+                    <!-- End Party Orders Report -->
+                    <!-- TODO: Set up create order link -->
+                    <a class="btn btn-primary btn-lg" href="@Url.Action("NewPartyOrder", "Parties", new { partyID = Model.Party.PartyID })" title="@Resources.Common.CreatePartyOrder">@Resources.Common.CreatePartyOrder</a>
+                    @if (canCreateHostOrder)
+                    {
+                        <a class="btn btn-secondary btn-lg" href="@Url.Action("hostorder", "shopping", new { partyID = Model.Party.PartyID, hostID = Model.Party.HostID })" title="@Resources.Common.OnceCreatedHostessOrderMessage">@Resources.Common.CreateHostersOrder</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger btn-lg" href="@Url.Action("finalizeparty", new { partyID = Model.Party.PartyID })" title="">@Resources.Common.CloseSubmitParty</a>
+                    }
+
+                    <div class="space-50"></div>
+                </div>
+
+                <div id="invitation-modal-container"></div>
+            </div>
         </div>
-
-        <div id="invitation-modal-container"></div>
     </div>
 </div>
 

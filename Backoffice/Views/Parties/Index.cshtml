@@ -3,26 +3,34 @@
     ViewBag.Title = Resources.Common.PartyDashboard;
     var openParties = Model.Parties.Where(c => c.PartyStatusType == (int)PartyStatusTypes.Open).ToList();
     var closedParties = Model.Parties.Where(c => c.PartyStatusType != (int)PartyStatusTypes.Open).ToList().Where(p => Convert.ToDateTime(p.CloseDate) > DateTime.Now.BeginningOfYear()).ToList();
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        DefaultParentLinkSitemapID = "parties",
+        DefaultBreadcrumbLinkSitemapID = "partydashboard"
+    };
 }
 
 
-<div id="party-module-container">
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <div class="space-50"></div>
-            <a class="btn btn-primary btn-lg btn-party-setup" href="@Url.Action("createparty")" style="width:100%">
-                <span class="fa fa-plus"></span> @Resources.Common.CreateNewParty
-            </a>
-            <div class="space-5"></div>
-            @Html.Partial("Partials/PartySalesThisMonth")
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="space-50"></div>
-            @Html.Partial("Partials/OpenParties", openParties)
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="space-50"></div>
-            @Html.Partial("Partials/ClosedParties", closedParties)
+<div id="view-parties-dashboard">
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div class="row pb-3">
+                <div class="col">
+                    <a class="btn btn-primary btn-lg btn-party-setup float-right" href="@Url.Action("createparty")" role="button">
+                        <span class="fa fa-plus"></span> @Resources.Common.CreateNewParty
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6 pb-3">
+                    @Html.Partial("Partials/OpenParties", openParties)
+                </div>
+                <div class="col-12 col-md-6 pb-3">
+                    @Html.Partial("Partials/ClosedParties", closedParties)
+                </div>
+            </div>
         </div>
     </div>
 </div>

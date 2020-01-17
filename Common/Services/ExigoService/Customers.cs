@@ -699,101 +699,110 @@ namespace ExigoService
         public static CustomerRankCollection GetCustomerRanks(GetCustomerRanksRequest request)
         {
             var result = new CustomerRankCollection();
-            var periodID = (request.PeriodID != null) ? request.PeriodID : ExigoDAL.GetCurrentPeriod(request.PeriodTypeID).PeriodID;
-
-            //Get the highest paid rank in any period from the customer record
-            var highestRankAchieved = new Rank();
-
-            using (var context = ExigoDAL.Sql())
+            try
             {
-                highestRankAchieved = context.Query<Rank>(@"
-                        SELECT 
-	                        c.RankID
-	                        ,r.RankDescription	
+            
+                var periodID = (request.PeriodID != null) ? request.PeriodID : ExigoDAL.GetCurrentPeriod(request.PeriodTypeID).PeriodID;
+                
+                //Get the highest paid rank in any period from the customer record
+                var highestRankAchieved = new Rank();
 
-                        FROM
-	                        Customers c
-	                        INNER JOIN Ranks r
-		                        ON r.RankID = c.RankID
-
-                        WHERE
-	                        c.CustomerID = @customerid                       
-                        ", new
+                using (var context = ExigoDAL.Sql())
                 {
-                    customerid = request.CustomerID
-                }).FirstOrDefault();
+                    highestRankAchieved = context.Query<Rank>(@"
+                            SELECT 
+	                            c.RankID
+	                            ,r.RankDescription	
 
-                if (highestRankAchieved != null)
-                {
-                    result.HighestPaidRankInAnyPeriod = highestRankAchieved;
+                            FROM
+	                            Customers c
+	                            INNER JOIN Ranks r
+		                            ON r.RankID = c.RankID
+
+                            WHERE
+	                            c.CustomerID = @customerid                       
+                            ", new
+                    {
+                        customerid = request.CustomerID
+                    }).FirstOrDefault();
+
+                    if (highestRankAchieved != null)
+                    {
+                        result.HighestPaidRankInAnyPeriod = highestRankAchieved;
+                    }
                 }
+
+                //Get the current period rank for the period/period type specified
+                var currentPeriodRank = new Rank();
+
+                using (var context = ExigoDAL.Sql())
+                {
+                    currentPeriodRank = context.Query<Rank>(@"
+                            SELECT 
+	                            RankID = pv.PaidRankID
+	                            ,r.RankDescription	
+
+                            FROM
+	                            PeriodVolumes pv
+	                            INNER JOIN Ranks r
+		                            ON r.RankID = pv.PaidRankID	
+
+                            WHERE
+	                            pv.CustomerID = @customerid
+	                            AND pv.PeriodTypeID = @periodtypeid
+	                            AND pv.PeriodID = @periodid                      
+                            ", new
+                    {
+                        customerid = request.CustomerID,
+                        periodtypeid = request.PeriodTypeID,
+                        periodid = periodID
+                    }).FirstOrDefault();
+
+                    if (currentPeriodRank != null)
+                    {
+                        result.CurrentPeriodRank = currentPeriodRank;
+                    }
+                }
+
+                //Get the highest paid rank up to the specified period
+                var highestPaidRankUpToPeriod = new Rank();
+
+                using (var context = ExigoDAL.Sql())
+                {
+                    highestPaidRankUpToPeriod = context.Query<Rank>(@"
+                            SELECT 
+	                            pv.RankID
+	                            ,r.RankDescription	
+
+                            FROM
+	                            PeriodVolumes pv
+	                            INNER JOIN Ranks r
+		                            ON r.RankID = pv.RankID	
+
+                            WHERE
+	                            pv.CustomerID = @customerid
+	                            AND pv.PeriodTypeID = @periodtypeid
+	                            AND pv.PeriodID = @periodid                      
+                            ", new
+                    {
+                        customerid = request.CustomerID,
+                        periodtypeid = request.PeriodTypeID,
+                        periodid = periodID
+                    }).FirstOrDefault();
+
+                    if (highestPaidRankUpToPeriod != null)
+                    {
+                        result.HighestPaidRankUpToPeriod = highestPaidRankUpToPeriod;
+                    }
+                }
+                return result;
+            }
+            catch(Exception ex)
+            {
+                var error = ex.Message;
+                return result;
             }
 
-            //Get the current period rank for the period/period type specified
-            var currentPeriodRank = new Rank();
-
-            using (var context = ExigoDAL.Sql())
-            {
-                currentPeriodRank = context.Query<Rank>(@"
-                        SELECT 
-	                        RankID = pv.PaidRankID
-	                        ,r.RankDescription	
-
-                        FROM
-	                        PeriodVolumes pv
-	                        INNER JOIN Ranks r
-		                        ON r.RankID = pv.PaidRankID	
-
-                        WHERE
-	                        pv.CustomerID = @customerid
-	                        AND pv.PeriodTypeID = @periodtypeid
-	                        AND pv.PeriodID = @periodid                      
-                        ", new
-                {
-                    customerid = request.CustomerID,
-                    periodtypeid = request.PeriodTypeID,
-                    periodid = periodID
-                }).FirstOrDefault();
-
-                if (currentPeriodRank != null)
-                {
-                    result.CurrentPeriodRank = currentPeriodRank;
-                }
-            }
-
-            //Get the highest paid rank up to the specified period
-            var highestPaidRankUpToPeriod = new Rank();
-
-            using (var context = ExigoDAL.Sql())
-            {
-                highestPaidRankUpToPeriod = context.Query<Rank>(@"
-                        SELECT 
-	                        pv.RankID
-	                        ,r.RankDescription	
-
-                        FROM
-	                        PeriodVolumes pv
-	                        INNER JOIN Ranks r
-		                        ON r.RankID = pv.RankID	
-
-                        WHERE
-	                        pv.CustomerID = @customerid
-	                        AND pv.PeriodTypeID = @periodtypeid
-	                        AND pv.PeriodID = @periodid                      
-                        ", new
-                {
-                    customerid = request.CustomerID,
-                    periodtypeid = request.PeriodTypeID,
-                    periodid = periodID
-                }).FirstOrDefault();
-
-                if (highestPaidRankUpToPeriod != null)
-                {
-                    result.HighestPaidRankUpToPeriod = highestPaidRankUpToPeriod;
-                }
-            }
-
-            return result;
         }
 
         public static DateTime GetCustomerCreatedDate(int customerID)

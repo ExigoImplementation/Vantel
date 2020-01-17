@@ -1,72 +1,82 @@
 ﻿@model CreatePartyViewModel
 @{
-    ViewBag.Title = "Edit your Party";
+    ViewBag.Title = Resources.Common.EditParty;
+    var pageHeader = new PageHeader
+    {
+        PageName = ViewBag.Title,
+        BreadcrumbItems = new List<BreadcrumbItem>
+{
+            new BreadcrumbItem{ Description = Resources.Common.PartyDashboard, UrlPath = Url.Action("index","parties")},
+            new BreadcrumbItem{ Description = Resources.Common.OpenParties, UrlPath = Url.Action("openparties","parties")},
+            new BreadcrumbItem{ Description = Resources.Common.BackToPartySummary, UrlPath = Url.Action("summary", new { id = Model.PartyID }) },
+            new BreadcrumbItem{ Description = ViewBag.Title }
+
+        }
+    };
 }
-
-<h2>@ViewBag.Title</h2>
-
 <div id="party-manager">
-    <div id="view-createparty">
-        <div class="space-10"></div>
-        <div class="alert alert-danger alert-dismissable" style="display: none;" id="createpartyerror">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <span class="body"></span>
-        </div>
+    @Html.Partial("~/Views/Shared/Partials/_PageHeader.cshtml", pageHeader)
+    <div class="content-wrap">
+        <div class="container container-expandable">
+            <div id="view-createparty">
+                <div class="space-10"></div>
+                <div class="alert alert-danger alert-dismissable" style="display: none;" id="createpartyerror">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span class="body"></span>
+                </div>
 
-        <div class="row">
-            <div class="col-md-3">
-                @Html.Navigation()
+                <div class="row">
+                    <div class="col-md-12">
+
+                        @using (Ajax.BeginForm(new AjaxOptions
+                        {
+                            OnBegin = "partyModule.onBegin",
+                            OnSuccess = "partyModule.onSuccess",
+                            OnFailure = "partyModule.onFailure",
+                            OnComplete = "partyModule.onComplete"
+                        }))
+                        {
+                            if (Model.PartyID > 0)
+                            {
+                                <input type="hidden" value="@Model.PartyID" name="request.PartyID" />
+                            }
+                            else
+                            {
+                                <input type="hidden" value="@Model.ParentPartyID" name="request.ParentPartyID" />
+                            }
+
+                            <div class="wizard-card" data-cardname="details">
+                                @Html.EditorForModel("PartyPanel", Model)
+                            </div>
+                            <div class="space-40"></div>
+                            <div class="wizard-card" data-cardname="host">
+                                @Html.EditorForModel("HostPanel", Model)
+                            </div>
+                            <div class="space-40"></div>
+
+                            <div class="wizard-card" data-cardname="location">
+                                @Html.EditorForModel("LocationPanel", Model)
+                            </div>
+
+                            <div class="space-40"></div>
+
+                            <button type="submit" class="btn btn-lg btn-primary btn-submit">@Resources.Common.UpdateParty</button>
+
+                            <div class="space-40"></div>
+                        }
+                    </div>
+                </div>
             </div>
-            <div class="col-md-9">
 
-                @using (Ajax.BeginForm(new AjaxOptions
-                {
-                    OnBegin = "partyModule.onBegin",
-                    OnSuccess = "partyModule.onSuccess",
-                    OnFailure = "partyModule.onFailure",
-                    OnComplete = "partyModule.onComplete"
-                }))
-                {
-                    if (Model.PartyID > 0)
-                    {
-                        <input type="hidden" value="@Model.PartyID" name="request.PartyID" />
-                    }
-                    else
-                    {
-                        <input type="hidden" value="@Model.ParentPartyID" name="request.ParentPartyID" />
-                    }
-
-                    <div class="wizard-card" data-cardname="details">
-                        @Html.EditorForModel("PartyPanel", Model)
-                    </div>
-                    <div class="space-40"></div>
-                    <div class="wizard-card" data-cardname="host">
-                        @Html.EditorForModel("HostPanel", Model)
-                    </div>
-                    <div class="space-40"></div>
-
-                    <div class="wizard-card" data-cardname="location">
-                        @Html.EditorForModel("LocationPanel", Model)
-                    </div>
-
-                    <div class="space-40"></div>
-
-                    <button type="submit" class="btn btn-lg btn-primary btn-submit">Update Party</button>
-
-                    <div class="space-40"></div>
-                }
+            <div id="host-choice-container">
+                <div class="modal fade"></div>
             </div>
         </div>
-    </div>
-
-    <div id="host-choice-container">
-        <div class="modal fade"></div>
     </div>
 </div>
 
 @section scripts
 {
-    <script src="@Url.Content("~/Scripts/jquery-2.2.2.min.js")"></script>
     <link href="@Url.Content("~/Content/scripts/vendor/typeahead/typeahead.css")" rel="stylesheet" />
     <script src="@Url.Content("~/Content/scripts/vendor/typeahead/typeahead.js")"></script>
 
@@ -174,7 +184,7 @@
                     if (isChecked) {
                         $("[name='request.HostID']").val(0);
                         $('#newhostwrapper').slideDown('fast');
-                        $("#hostaddresswrapper .addresstext").html("<strong>Host Address</strong>");
+                        $("#hostaddresswrapper .addresstext").html("<strong>@Resources.Common.HostAddress</strong>");
                         $('#hostess-search-container').slideUp('fast');
                         actions.populateSelectedAddress(null, true);
                         $("#HostID").val("");
@@ -266,7 +276,7 @@
 
 
                         if (query.length % 3 == 0 || (hosts.length * .25) > matchCount || hosts.length == 0 || matchCount == 0) {
-                            
+
                             if(!sendingHosts){
                                 sendingHosts = true;
                                 $('#loading-container').slideDown();
@@ -280,14 +290,14 @@
 
                                             helpers.substringMatcher(query,hosts, callback);
                                         } else {
-                                            toastr.error("Unable to load hosts");
+                                            toastr.error("@Resources.Common.UnableLoadHosts");
                                             sendingHosts = false;
 
                                             helpers.substringMatcher(query,hosts, callback, true);
                                         }
-                                                                                
+
                                         $('#loading-container').slideUp();
-                                        
+
                                         //var theVal = $('#HostID').val();
                                         //$("#HostID").typeahead('val', '')
                                         //$("#HostID").focus().typeahead('val',theVal).focus();
@@ -474,7 +484,7 @@
                     // Toggle the new host content wrapper
                     if (option.CustomerID == 0) {
                         $('#newhostwrapper').slideDown('fast');
-                        $("#hostaddresswrapper .addresstext").html("<strong>Host Address</strong>");
+                        $("#hostaddresswrapper .addresstext").html("<strong>@Resources.Common.HostAddress</strong>");
                     }
                     else {
                         $('#newhostwrapper').slideUp('fast');

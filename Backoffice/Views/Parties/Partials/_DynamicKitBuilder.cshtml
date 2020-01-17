@@ -1,0 +1,229 @@
+﻿@model Item
+@{
+    ViewBag.Title = "Build Your Box";
+    var total = Model.DynamicKitCategories.Sum(v => v.Quantity);
+}
+
+<!-- Modal content-->
+<div id="view-dynamic-kit-builder">
+    <div class="modal-header">
+        <h4 class="modal-title">@Resources.Common.BuildYourKit</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body clr">
+        <input type="hidden" id="master-code" value="@Model.ItemCode" />
+        <div id="accordion">
+            @{int j = 0; }
+            @foreach (var cat in Model.DynamicKitCategories)
+            {
+                <div class="card">
+                    <div class="card-header border-0" id="headingOne-@j" data-toggle="collapse" data-target="#collapseOne-@j">
+                        <h5 class="mb-0">
+                            Please Choose @cat.Quantity.ToString("N0") @cat.DynamicKitCategoryDescription
+                            <span class="float-right"><span id="fraction-value-@j">0</span>/@cat.Quantity.ToString("N0")</span>
+                        </h5>
+                    </div>
+                    <div id="collapseOne-@j" class="collapse @(j == 0 ? "show" : "")" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="row mb-sm-5">
+                                <div class="col-sm-8">
+                                    <div class="card-deck">
+                                        <div class="row">
+                                            @foreach (var pix in cat.Items)
+                                            {
+                                                <div class="col-sm-4">
+                                                    <div class="card border-0">
+                                                        <fieldset>
+                                                            <div class="modal-item-image text-center">
+                                                                <img src="@pix.TinyImageUrl" class="product-image img-responsive" />
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <p class="card-title">@pix.ItemDescription</p>
+                                                            </div>
+                                                            <div class="card-footer text-center">
+                                                                <button type="button" class="btn btn-block add-dk"
+                                                                        data-itemcode="@pix.ItemCode"
+                                                                        data-isDynamicKitMaster="@pix.IsDynamicKitMaster"
+                                                                        data-itemImageUrl="@pix.SmallImageUrl"
+                                                                        data-itemPrice="@pix.Price.ToString("C")"
+                                                                        data-desc="@pix.ItemDescription" 
+                                                                        data-category="@cat.DynamicKitCategoryID"
+                                                                        data-index="@j"
+                                                                        data-total="@cat.Quantity">
+                                                                    @Resources.Common.Add
+                                                                </button>
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 tc">
+                                    <div class="build-area-container">
+                                        <div class="build-area">
+                                            <div class="build-area-inside" data-category="@cat.DynamicKitCategoryID">
+                                                <!-- Initial Empty Slots -->
+                                                @for (int i = 0; i < cat.Quantity; i++)
+                                                {
+                                                    <div class="empty-choice border p-1 m-1">
+                                                        <div class="empty-choice-outside">
+                                                            <div class="empty-choice-inside">
+                                                                <span>@Resources.Common.ChooseAnItem</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                j++;
+            }
+        </div>
+    </div>
+    <div class="modal-footer border-0 d-block clr">
+        <div class="row">
+            <div class="col-sm-7">
+                <!-- Progress Bar -->
+                <h3 class="text-center"><span id="fraction-value">0</span>/@total.ToString("N0")</h3>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="60"></div>
+                </div>
+            </div>
+            <div class="col-sm-5 mt-3">
+                <button type="button" id="send" class="btn btn-primary float-right" disabled>@Resources.Common.AddToCart <em class="fa fa-angle-double-right"></em></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    require(["ajax", "app"], function (ajax, app) {
+
+        var $dkcontext = $('#view-dynamic-kit-builder'),
+            addKitURL = '@Url.Action("AddDynamicPack", "enrollment")',
+            packCount = @total,
+            lastClickedCat = 0;
+
+
+        // Event Handlers
+        function registerEventHandlers() {
+            // add item to kit
+            $dkcontext.on('click', '.add-dk', function () {
+                lastClickedCat = $(this).data("category");
+                actions.addItem($(this));
+            });
+
+            // remove item from kit
+            $dkcontext.on('click', '.remove-item', function () {
+                actions.removeItem($(this));
+            });
+
+            // submit
+            $dkcontext.on('click', '#send', function () {
+                $('#send').prop('disabled', true)
+                actions.submit();
+            });
+        }
+
+        // Actions
+        var actions = {
+            addItem: function ($this) {
+                var $container = $('.build-area-inside[data-category="' + lastClickedCat + '"]'),
+                $firstEmptySlot = $container.find('.empty-choice').first();
+                $firstEmptySlot.html('<div style="background: #FFF; color: #FFF; border - radius: 2px; border: solid 1px #ECECEC; padding: 2px; font - size: 14px; " class="choice" data-itemcode="' + $this.data('itemcode') + '" data-isDynamicKitMaster="' + $this.data('isDynamicKitMaster') + '" data-itemImageUrl="' + $this.data('itemImageUrl') + '" data-itemPrice="' + $this.data('itemPrice') + '" data-desc="' + $this.data('desc') + '"><div style = "background: #000; padding: 4px 10px;" ><div><strong>' + $this.data('desc') +'</strong><i style=" font-size: 20px; color: #FFF; cursor: pointer;" class="fa-times-circle pull-right remove-item" data-index="' + $this.data('index') + '" data-total="' + $this.data('total') + '"></i></div></div></div>');
+                $firstEmptySlot.removeClass('empty-choice');
+                $firstEmptySlot.addClass('filled-choice');
+                helpers.updateSubmitButtonState();
+                helpers.incrementChoose($this);
+                helpers.updateProgressBar($this);
+            },
+            removeItem: function ($row) {
+                var $parent = $row.parents('.filled-choice').first();
+                $parent.html('<div class="empty-choice-outside"><div class= "empty-choice-inside"><span>Choose an Item</span></div></div>');
+                $parent.removeClass('filled-choice');
+                $parent.addClass('empty-choice');
+                helpers.updateSubmitButtonState();
+                helpers.dincrementChoose($row);
+                helpers.updateProgressBar();
+            },
+            submit: function () {
+                var $choices = $('.choice'),
+                    items = [];
+                //Set the MasterItem
+                var item = {
+                            ItemCode: '@Model.ItemCode',
+                            ItemDescription: '@Model.ItemDescription',
+                            ImageUrl: '@Model.SmallImageUrl',
+                            PriceEach: '@Model.Price.ToString("C")',
+                            IndexItem: 0
+                    }
+                items.push(item);
+
+                //Set the chosen children
+                $choices.each(function () {
+                    item = {
+                            ItemCode: $(this).data('itemcode'),
+                            ItemDescription: $(this).data('desc'),
+                            ImageUrl: $(this).data('itemImageUrl'),
+                            PriceEach: $(this).data('itemPrice'),
+                            IndexItem: 0
+                    }
+                    items.push(item);
+                });
+
+                $('#view-new-party-order').trigger('dynamicKit.add', [items]);
+            }
+        };
+
+        // Helpers
+        var helpers = {
+            updateSubmitButtonState: function () {
+                var $emptySlots = $('.empty-choice'),
+                    $submitButton = $('#send');
+                if ($emptySlots.length > 0) {
+                    $submitButton.prop('disabled', true);
+                }
+                else {
+                    $submitButton.prop('disabled', false);
+                }
+            },
+            updateProgressBar: function () {
+                var $filledSlots = $('.filled-choice'),
+                    $progressCounter = $('#fraction-value'),
+                    $progressBarInner = $('.progress-bar'),
+                    percentComplete = $filledSlots.length / packCount * 100;
+
+                $progressBarInner.css('width', percentComplete +'%');
+                $progressCounter.html($filledSlots.length);
+                
+            },
+            incrementChoose: function (obj) {
+                var currentVal = parseInt($('#fraction-value-' + obj.data('index')).html());
+                if (obj.data('total') > currentVal) {
+                    $('#fraction-value-' + obj.data('index')).html(currentVal + 1);
+                }
+            },
+            dincrementChoose: function (obj) {
+                debugger;
+                var currentVal = parseInt($('#fraction-value-' + obj.data('index')).html());
+                if (obj.data('total') > 0) {
+                    $('#fraction-value-' + obj.data('index')).html(currentVal - 1);
+                }
+            }
+        };
+
+        // Initialization
+        function init() {
+            registerEventHandlers();
+        }
+        init();
+    })();
+</script>

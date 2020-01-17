@@ -620,7 +620,85 @@ namespace ReplicatedSite.Controllers
                 return Json(new { success = false, message = e.Message });
             }
         }
-        
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("~/account/RegisterFromPartyOrder")]
+        public ActionResult RegisterFromPartyOrder(string token)
+        {
+            try
+            {
+                var model = new ResetPasswordViewModel();
+                var decryptedToken = Security.Decrypt(token);
+                var customerID = decryptedToken.CustomerID;
+                var date = Convert.ToDateTime(decryptedToken.Date);
+                var customer = Customers.GetCustomer((int)customerID);
+                var dateExpiration = date.AddDays(7);
+
+                //GetCustomerExtendedRequest req = new GetCustomerExtendedRequest();
+                //req.ExtendedGroupID = 1;
+                //req.CustomerID = customer.CustomerID;
+
+                //GetCustomerExtendedResponse res = ExigoDAL.WebService().GetCustomerExtended(req);
+                //var tokens = res.Items.FirstOrDefault();
+
+                //if (token == tokens.Field1)
+                //{
+                //    // blabla
+                //}
+
+                if (DateTime.Now > dateExpiration)
+                {
+                    model.IsExpiredLink = true;
+                }
+
+                model.CustomerID = customer.CustomerID;
+                model.CustomerType = customer.CustomerTypeID;
+
+                return View(model);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Invalid Password Reset Token Used: {Message}", e.Message);
+                return RedirectToAction("Login", "Authentication", new { error = "invalidtoken" });
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("~/account/RegisterFromPartyOrder")]
+        public ActionResult RegisterFromPartyOrder(ResetPasswordViewModel model)
+        {
+            try
+            {
+                ExigoDAL.WebService().UpdateCustomer(new UpdateCustomerRequest()
+                {
+                    CustomerID = model.CustomerID,
+                    LoginPassword = model.Password,
+                    LoginName = model.LoginName,
+                    CustomerStatus = CustomerStatuses.Active,
+                    CanLogin = true
+                });
+
+                var urlHelper = new UrlHelper(Request.RequestContext);
+                var url = GlobalSettings.Company.BaseReplicatedUrl + "/account/login";
+
+                return new JsonNetResult(new
+                {
+                    success = true,
+                    url
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonNetResult(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ResetPassword(string token)
